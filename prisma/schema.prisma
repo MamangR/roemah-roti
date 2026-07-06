@@ -1,0 +1,210 @@
+// Prisma schema for roemah-roti bakery membership system
+// Migrated from Firebase Firestore collections:
+//   - "members"        → model Member
+//   - "memberRewards"  → model MemberReward
+//   - "referrals"      → model Referral
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Members ─────────────────────────────────────────────────────────────────
+// Previously: Firestore "members" collection.
+// Document ID was phoneToken (normalized digits e.g. "628123456789").
+// We keep phoneToken as the natural primary key — no UUID needed.
+model Member {
+  id                  String   @id                     // phoneToken — e.g. "628123456789"
+  uid                 String?                           // Firebase anonymous UID (nullable, kept for transition)
+  name                String
+  firstName           String
+  initials            String
+  phone               String                            // masked display phone e.g. "+62 81 .... 7890"
+  rawPhone            String
+  password            String?
+  email               String?
+  birthday            String                            // formatted display e.g. "June 15"
+  birthdayInput       String                            // raw date input e.g. "1990-06-15"
+  since               String                            // member-since label e.g. "July 2025"
+  referralCode        String   @unique
+  totalVisits         Int      @default(0)
+  rewardsEarned       Int      @default(0)
+  memberDurationLabel String   @default("new")
+  status              String   @default("Active")
+  favorites           String[]                          // PostgreSQL native text array
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relations
+  rewards             MemberReward[]
+  activities          Activity[]
+  referredFriends     ReferredFriend[] @relation("MemberToReferredFriend")
+  referral            Referral?
+  sessions            Session[]
+
+  @@index([birthdayInput])                              // used for birthday queries
+  @@index([updatedAt])                                  // used for admin list ordering
+}
+
+// ─── Member Rewards ───────────────────────────────────────────────────────────
+// Previously: Firestore "memberRewards" collection.
+// Document ID was a composite string: "${memberId}_${rewardId}" e.g. "628123456789_birthday_treat".
+// Replaced by a proper relational row with a @@unique([memberId, rewardType]) constraint.
+model MemberReward {
+  id           String    @id @default(cuid())
+  memberId     String                                   // FK → Member.id
+  rewardType   String                                   // e.g. "birthday_treat", "visit_reward"
+  title        String
+  type         String                                   // display type label e.g. "Free item"
+  description  String
+  location     String    @default("Roemah Roti")
+  value        String    @default("")                   // display value label
+  expiresAtLabel String  @default("No expiry")
+  isAvailable  Boolean   @default(true)
+  isOneTimeUse Boolean   @default(true)
+  redeemedAt   DateTime?
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  member       Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  // Replaces Firebase composite doc-ID pattern "memberId_rewardType"
+  @@unique([memberId, rewardType])
+  @@index([memberId])
+}
+
+// ─── Reward Templates (Admin) ─────────────────────────────────────────────────
+model RewardTemplate {
+  id             String   @id @default(cuid())
+  name           String
+  desc           String
+  visitsRequired Int
+  status         String   @default("Aktif") // "Aktif" or "Nonaktif"
+  expiryDate     DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ─── Referrals ────────────────────────────────────────────────────────────────
+// Previously: Firestore "referrals" collection.
+// Document ID was memberId. One referral record per member (1-to-1).
+model Referral {
+  id              String   @id @default(cuid())
+  memberId        String   @unique                      // FK → Member.id (enforces 1-to-1)
+  code            String   @unique                      // e.g. "ADIT-INSIDER"
+  joinedFriends   Int      @default(0)
+  requiredFriends Int      @default(3)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  member          Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+// ─── POS Mappings ─────────────────────────────────────────────────────────────
+model StoreMapping {
+  id        String   @id @default(cuid())
+  name      String
+  posId     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Updates ──────────────────────────────────────────────────────────────────
+model NewMenu {
+  id        String   @id @default(cuid())
+  name      String
+  category  String
+  shortDesc String
+  longDesc  String   @db.Text
+  dateAdded String
+  status    String   @default("Draft")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Promo {
+  id          String   @id @default(cuid())
+  name        String
+  shortDesc   String
+  longDesc    String   @db.Text
+  terms       String[]
+  startDate   String
+  endDate     String
+  promoStatus String   @default("Aktif")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Announcement {
+  id         String   @id @default(cuid())
+  title      String
+  summary    String
+  content    String   @db.Text
+  outlet     String   @default("All outlets")
+  pinned     Boolean  @default(false)
+  datePosted String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ─── Authentication ────────────────────────────────────────────────────────────
+model OtpSession {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  code      String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  memberId  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+// ─── Feed / Activities ────────────────────────────────────────────────────────
+model Activity {
+  id        String   @id @default(cuid())
+  memberId  String
+  type      String   // 'visit', 'earned', 'redeemed'
+  date      String   // "Jun 20, 2026"
+  time      String?
+  outlet    String?
+  visitNo   String?
+  reward    String?
+  earnedVia String?
+  status    String?  // 'ready', 'redeemed'
+  ref       String?
+
+  createdAt DateTime @default(now())
+  
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+// ─── Referred Friends ─────────────────────────────────────────────────────────
+model ReferredFriend {
+  id           String   @id @default(cuid())
+  referrerId   String
+  friendName   String
+  date         String
+  status       String
+  contribution String
+
+  createdAt    DateTime @default(now())
+  
+  referrer     Member   @relation("MemberToReferredFriend", fields: [referrerId], references: [id], onDelete: Cascade)
+}
+
