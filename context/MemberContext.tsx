@@ -78,7 +78,7 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loading) {
       const isAuthPage = pathname === '/' || pathname === '/register';
-      if (!member && !isAuthPage && !pathname.startsWith('/admin')) {
+      if (!member && !isAuthPage) {
         router.push('/');
       } else if (member && isAuthPage) {
         router.push('/visits');

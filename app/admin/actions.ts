@@ -3,18 +3,20 @@
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 
-// Optional: Admin authorization check
 async function checkAdmin() {
   const sessionId = (await cookies()).get('rr_session')?.value;
-  if (!sessionId) throw new Error('Unauthorized');
+  if (!sessionId) {
+    throw new Error('Unauthorized');
+  }
   
   const session = await prisma.session.findUnique({ where: { id: sessionId }, include: { member: true } });
-  if (!session || new Date() > session.expiresAt) throw new Error('Unauthorized');
+  if (!session || new Date() > session.expiresAt) {
+    throw new Error('Unauthorized');
+  }
   
   // In a real app, check if session.member.role === 'ADMIN'
   return session.member;
 }
-
 export async function getDashboardStats(startDateStr: string, endDateStr: string) {
   await checkAdmin();
   
