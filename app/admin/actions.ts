@@ -245,17 +245,20 @@ export async function getReferralsAdmin() {
   await checkAdmin();
   const referrals = await prisma.referral.findMany({
     include: {
-      member: true, // referrer
-      friends: true
+      member: {
+        include: {
+          referredFriends: true
+        }
+      }
     },
     orderBy: { createdAt: 'desc' }
   });
 
   const flatList: any[] = [];
   for (const r of referrals) {
-    for (const f of r.friends) {
-      // Find if friend registered
-      const friendMember = f.phone ? await prisma.member.findFirst({ where: { rawPhone: f.phone.replace(/\D/g, '') } }) : null;
+    for (const f of r.member.referredFriends) {
+      // Find if friend registered (matching by name since phone is not stored in ReferredFriend schema)
+      const friendMember = await prisma.member.findFirst({ where: { name: f.friendName } });
       
       flatList.push({
         id: f.id,
@@ -265,11 +268,11 @@ export async function getReferralsAdmin() {
         referrerJoinDate: r.member.createdAt.toISOString().slice(0, 10),
         referrerWa: r.member.phone,
         referrerMemberId: r.member.referralCode,
-        referredName: f.name,
+        referredName: f.friendName,
         referredRegisterDate: friendMember ? friendMember.createdAt.toISOString().slice(0, 10) : '-',
         referredMemberId: friendMember ? friendMember.referralCode : '-',
         referredVisitDone: friendMember ? friendMember.totalVisits > 0 : false,
-        date: f.createdAt.toISOString().slice(0, 10),
+        date: f.date || f.createdAt.toISOString().slice(0, 10),
         status: f.status,
         rewardName: 'Gratis 5 Kunjungan' // Hardcoded proxy for now
       });
@@ -280,7 +283,7 @@ export async function getReferralsAdmin() {
 
 export async function approveReferralAdmin(friendId: string) {
   await checkAdmin();
-  const f = await prisma.referredFriend.findUnique({ where: { id: friendId }, include: { referral: true } });
+  const f = await prisma.referredFriend.findUnique({ where: { id: friendId }, include: { referrer: true } });
   if (!f) throw new Error('Not found');
   
   await prisma.$transaction([
@@ -289,12 +292,12 @@ export async function approveReferralAdmin(friendId: string) {
       data: { status: 'Approved' }
     }),
     prisma.member.update({
-      where: { id: f.referral.memberId },
+      where: { id: f.referrerId },
       data: { totalVisits: { increment: 5 } } // Proxy for reward
     }),
     prisma.memberReward.create({
       data: {
-        memberId: f.referral.memberId,
+        memberId: f.referrerId,
         rewardType: 'REF_BONUS_' + Date.now(),
         title: 'Referral Bonus',
         type: 'Referral',

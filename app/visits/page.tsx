@@ -193,10 +193,11 @@ export default function VisitsPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Date earned</span><span style={{ fontWeight: 600 }}>{sel.dateFull}</span></div>
             </div>
 
-            <div style={{ marginTop: '18px', background: sel.statusBg, borderRadius: '14px', padding: '13px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: sel.statusDot, flex: 'none' }}></span>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: sel.statusColor }}>{sel.statusLine}</span>
+            <div style={{ marginTop: '18px', background: (sel as any).statusBg, borderRadius: '14px', padding: '13px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: (sel as any).statusDot, flex: 'none' }}></span>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: (sel as any).statusColor }}>{(sel as any).statusLine}</span>
             </div>
+
           </div>
         )}
 

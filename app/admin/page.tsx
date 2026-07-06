@@ -223,7 +223,7 @@ export default function AdminDashboardPage() {
   const firstDow = new Date(calYear, calMonth, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const cells = [];
-  for (let i = 0; i < firstDow; i++) cells.push({ blank: true, filled: false, day: null, cellStyle: '', onClick: () => {} });
+  for (let i = 0; i < firstDow; i++) cells.push({ blank: true, filled: false, day: null, cellStyle: {}, onClick: () => {} });
   const baseCellStyle: React.CSSProperties = { textAlign: 'center', padding: '7px 0', fontSize: '12px', fontWeight: 500, borderRadius: '8px', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', color: '#3B2A22' };
   const endpointCellStyle: React.CSSProperties = { textAlign: 'center', padding: '7px 0', fontSize: '12px', fontWeight: 600, borderRadius: '8px', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', background: '#A67C52', color: '#fff' };
   const inRangeCellStyle: React.CSSProperties = { textAlign: 'center', padding: '7px 0', fontSize: '12px', fontWeight: 500, borderRadius: '8px', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', background: 'rgba(122, 150, 116, 0.18)', color: '#3B2A22' };

@@ -22,6 +22,11 @@ export default function RegisterPage() {
   const [calMode, setCalMode] = useState<'day' | 'month' | 'year'>('day');
   const [calMonth, setCalMonth] = useState(6);
   const [calYear, setCalYear] = useState(1995);
+  const [referral, setReferral] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
 
   const toggleCalendar = () => {
     setCalendarOpen(v => !v);
@@ -113,7 +118,12 @@ export default function RegisterPage() {
     }
   };
 
+  const submitOtp = async () => {
+    // Unused: registration bypasses OTP
+  };
+
   return (
+
     <PhoneLayout>
       {step === 'form' && (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>

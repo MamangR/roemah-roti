@@ -286,7 +286,7 @@ export default function MemberManagementPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr 1fr', gap: '10px', padding: '13px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
                   <div>Tanggal</div><div>Invoice</div><div>Total Belanja</div><div>Visit Earned</div>
                 </div>
-                {selectedMemberTransactions.map((t, i) => (
+                {selectedMemberTransactions.map((t: any, i: number) => (
                   <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr 1fr', gap: '10px', padding: '14px 20px', borderTop: '1px solid #EAE1D5', fontSize: '13.5px', color: '#4A3830' }}>
                     <div style={{ fontVariantNumeric: 'tabular-nums' }}>{t.dateLabel}</div>
                     <div style={{ fontVariantNumeric: 'tabular-nums', color: '#7A6A5F' }}>{t.invoice}</div>
