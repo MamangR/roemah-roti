@@ -297,3 +297,25 @@ a {
 button {
     cursor: pointer;
 }
+
+/* Responsive visibility utilities used in admin layouts */
+.hidden { display: none !important; }
+.flex { display: flex !important; }
+.flex-col { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.items-start { align-items: flex-start !important; }
+.chart-label { font-size: 8px !important; letter-spacing: -0.05em; }
+
+.text-responsive-heading { font-size: 8px !important; }
+.text-responsive-row { font-size: 11px !important; }
+
+@media (min-width: 768px) {
+    .md\:hidden { display: none !important; }
+    .md\:flex { display: flex !important; }
+    .md\:flex-row { flex-direction: row !important; }
+    .md\:items-center { align-items: center !important; }
+    .md\:flex-nowrap { flex-wrap: nowrap !important; }
+    .chart-label { font-size: 11px !important; letter-spacing: normal; }
+    .text-responsive-heading { font-size: 11px !important; }
+    .text-responsive-row { font-size: 13.5px !important; }
+}

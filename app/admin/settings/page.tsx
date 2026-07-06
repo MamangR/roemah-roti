@@ -83,11 +83,33 @@ export default function SettingsPage() {
   const [templateModalMode, setTemplateModalMode] = useState<'add' | 'edit'>('add');
   const [activeTemplate, setActiveTemplate] = useState<any>(null);
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#FCFBF8', fontFamily: "'Inter', sans-serif", color: '#3B2A22', boxSizing: 'border-box', overflow: 'hidden' }}>
-      
-      {/* Sidebar */}
-      <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }}>
+
+      {/* Mobile sidebar drawer */}
+      {sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(26,19,15,0.55)', backdropFilter: 'blur(2px)' }}>
+          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '260px', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box', boxShadow: '4px 0 40px rgba(0,0,0,0.4)' }}>
+            <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span></div>
+              <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div></div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', background: 'rgba(166,124,82,.9)', color: '#2A1E18' }}>
+                <div style={{ width: '15px', height: '15px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', top: '5px', left: '2px', width: '7px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div><div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div></div>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
+              </div>
+            </div>
+            <div style={{ flex: 1 }}></div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>Logged in as {role === 'owner' ? 'Owner' : 'Cashier'}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar — hidden on mobile */}
+      <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }} className="hidden md:flex">
         <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
           <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
@@ -112,7 +134,18 @@ export default function SettingsPage() {
         <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>Logged in as {role === 'owner' ? 'Owner' : 'Cashier'}</div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
+      {/* Main content with mobile top bar */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="flex md:hidden" style={{ background: '#3B2A22', padding: '14px 16px', alignItems: 'center', gap: '12px', flex: 'none' }}>
+          <button onClick={() => setSidebarOpen(true)} style={{ background: 'rgba(255,255,255,.08)', border: 'none', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', flex: 'none' }}>
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+          </button>
+          <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Settings</div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '920px', margin: '0 auto', padding: '52px 40px 70px' }}>
 
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
@@ -307,8 +340,9 @@ export default function SettingsPage() {
             </>
           )}
 
-        </div>
-      </div>
+        </div>{/* close max-width inner div */}
+      </div>{/* close overflowY:auto */}
+      </div>{/* close flex flex-col main wrapper */}
 
       {templateModalOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(43, 30, 24, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>

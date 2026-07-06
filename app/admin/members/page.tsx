@@ -77,6 +77,7 @@ export default function MemberManagementPage() {
   const router = useRouter();
   const [screen, setScreen] = useState<'list' | 'search' | 'detail' | 'edit'>('list');
   const [members, setMembers] = useState<any[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function fetchM() {
@@ -131,9 +132,50 @@ export default function MemberManagementPage() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#FCFBF8', fontFamily: "'Inter', sans-serif", color: '#3B2A22', boxSizing: 'border-box', overflow: 'hidden' }}>
-      
-      {/* Sidebar */}
-      <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }}>
+
+      {/* Mobile sidebar drawer overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(26,19,15,0.55)', backdropFilter: 'blur(2px)' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '260px', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box', boxShadow: '4px 0 40px rgba(0,0,0,0.4)' }}
+          >
+            <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+                <span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
+              </div>
+              <div>
+                <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
+              <div onClick={() => { setScreen('search'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen === 'search' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen === 'search' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
+                <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}>
+                  <div style={{ position: 'absolute', width: '6px', height: '1.6px', background: 'currentColor', transform: 'rotate(45deg)', right: '-4px', bottom: '1px' }}></div>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Cari Member</span>
+              </div>
+              <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen === 'list' || screen === 'detail' || screen === 'edit' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen === 'list' || screen === 'detail' || screen === 'edit' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
+                <div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
+                  <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
+                  <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Member</span>
+              </div>
+            </div>
+            <div style={{ flex: 1 }}></div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{members.length} member terdaftar</div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar — hidden on mobile */}
+      <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }} className="hidden md:flex">
         <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
           <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
@@ -163,7 +205,22 @@ export default function MemberManagementPage() {
         <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{members.length} member terdaftar</div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
+      {/* Main content area with mobile top bar */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Mobile top bar */}
+        <div className="flex md:hidden" style={{ background: '#3B2A22', padding: '14px 16px', alignItems: 'center', gap: '12px', flex: 'none' }}>
+          <button
+            onClick={() => setSidebarOpen(true)}
+            style={{ background: 'rgba(255,255,255,.08)', border: 'none', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', flex: 'none' }}
+          >
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+          </button>
+          <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Member Management</div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
         
         {screen === 'search' && (
           <div style={{ maxWidth: '760px', margin: '0 auto', padding: '52px 40px 60px' }}>
@@ -204,9 +261,9 @@ export default function MemberManagementPage() {
                 <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Member</div>
                 <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{sortedMembers.length} dari {members.length} member</div>
               </div>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <div style={{ width: '220px' }}><Button variant="outline" onClick={() => setScreen('search')}>Cari Member</Button></div>
-                <div style={{ width: '180px' }}><Button variant="primary" onClick={() => setAddMemberOpen(true)}>+ Tambah Member</Button></div>
+              <div style={{ display: 'flex', gap: '10px', width: '100%', flex: '1 1 auto', justifyContent: 'flex-start' }}>
+                <div style={{ flex: '1 1 50%', maxWidth: '220px' }}><Button variant="outline" onClick={() => setScreen('search')} style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}>Cari Member</Button></div>
+                <div style={{ flex: '1 1 50%', maxWidth: '180px' }}><Button variant="primary" onClick={() => setAddMemberOpen(true)} style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}>+ Tambah Member</Button></div>
               </div>
             </div>
             <div style={{ marginTop: '22px', maxWidth: '520px' }}>
@@ -340,7 +397,8 @@ export default function MemberManagementPage() {
           </div>
         )}
 
-      </div>
+      </div>{/* close overflowY:auto */}
+      </div>{/* close flex flex-col main content wrapper */}
 
       {addMemberOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(43, 30, 24, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>

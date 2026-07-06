@@ -55,6 +55,7 @@ export default function ReferralManagementPage() {
   const [screen, setScreen] = useState<'list' | 'detail' | 'history'>('list');
   const [referrals, setReferrals] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -130,9 +131,27 @@ export default function ReferralManagementPage() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#FCFBF8', fontFamily: "'Inter', sans-serif", color: '#3B2A22', boxSizing: 'border-box', overflow: 'hidden' }}>
-      
-      {/* Sidebar */}
-      <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }}>
+
+      {/* Mobile sidebar drawer */}
+      {sidebarOpen && (
+        <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(26,19,15,0.55)', backdropFilter: 'blur(2px)' }}>
+          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '260px', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box', boxShadow: '4px 0 40px rgba(0,0,0,0.4)' }}>
+            <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span></div>
+              <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div></div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
+              <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={navItemStyle(screen === 'list')}><div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Referral List</span></div>
+              <div onClick={() => { setScreen('history'); setSidebarOpen(false); }} style={navItemStyle(screen === 'history')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div><div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Referral History</span></div>
+            </div>
+            <div style={{ flex: 1 }}></div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{referrals.length} referral tersimpan</div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar — hidden on mobile */}
+      <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }} className="hidden md:flex">
         <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
           <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
@@ -195,7 +214,18 @@ export default function ReferralManagementPage() {
         <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{referrals.length} referral tersimpan</div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
+      {/* Main content with mobile top bar */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="flex md:hidden" style={{ background: '#3B2A22', padding: '14px 16px', alignItems: 'center', gap: '12px', flex: 'none' }}>
+          <button onClick={() => setSidebarOpen(true)} style={{ background: 'rgba(255,255,255,.08)', border: 'none', borderRadius: '8px', width: '36px', height: '36px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', flex: 'none' }}>
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+            <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
+          </button>
+          <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Referral Management</div>
+        </div>
+        <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
         
         {screen === 'list' && (
           <div style={{ padding: '52px 40px 60px' }}>
@@ -212,11 +242,11 @@ export default function ReferralManagementPage() {
             </div>
 
             <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+              <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
                 <div>Referrer</div><div>Referred</div><div>Tanggal</div><div>Status</div><div>Reward</div>
               </div>
               {filteredReferrals.map((r: any) => (
-                <div key={r.id} onClick={() => { setSelectedReferralId(r.id); setActiveTab('referrer'); setScreen('detail'); }} style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '15px 20px', cursor: 'pointer', borderTop: '1px solid #EAE1D5', alignItems: 'center', fontSize: '13.5px', color: '#4A3830' }}>
+                <div key={r.id} className="text-responsive-row" onClick={() => { setSelectedReferralId(r.id); setActiveTab('referrer'); setScreen('detail'); }} style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '15px 20px', cursor: 'pointer', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
                   <div style={{ fontWeight: 600, color: '#3B2A22' }}>{r.referrerName}</div>
                   <div>{r.referredName}</div>
                   <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{r.dateLabel}</div>
@@ -389,7 +419,8 @@ export default function ReferralManagementPage() {
           </div>
         )}
 
-      </div>
+      </div>{/* close overflowY:auto */}
+      </div>{/* close flex flex-col main wrapper */}
     </div>
   );
 }

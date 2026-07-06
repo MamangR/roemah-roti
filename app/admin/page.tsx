@@ -10,7 +10,7 @@ export default function AdminDashboardPage() {
 
   const DATA = {
     today: {
-      labels: ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'],
+      labels: ['7AM','8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM','6PM','7PM','8PM'],
       revenue: [180000,320000,410000,380000,520000,610000,540000,430000,390000,460000,410000,350000,290000,240000],
       visits: [8,14,18,16,22,26,24,19,17,20,18,15,12,9],
       newMembers: [0,1,0,1,0,1,1,0,0,1,0,0,0,1],
@@ -60,6 +60,7 @@ export default function AdminDashboardPage() {
   const [appliedStart, setAppliedStart] = useState('2026-06-30');
   const [appliedEnd, setAppliedEnd] = useState('2026-07-06');
   const [hover, setHover] = useState<{key: string, i: number} | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const [liveData, setLiveData] = useState<any>(null);
 
@@ -249,83 +250,169 @@ export default function AdminDashboardPage() {
     ? fmtShort(appliedStart) + ', ' + appliedStart.split('-')[0]
     : fmtShort(appliedStart) + ' – ' + fmtShort(appliedEnd) + ', ' + appliedEnd.split('-')[0];
 
+  const navItems = [
+    { label: 'Overview', path: '/admin', active: true },
+    { label: 'Members', path: '/admin/members', active: false },
+    { label: 'Rewards', path: '/admin/rewards', active: false },
+    { label: 'Referrals', path: '/admin/referrals', active: false },
+    { label: 'Updates', path: '/admin/updates', active: false },
+  ];
+
   return (
     <div style={{ minHeight: '100vh', background: '#F8F4EE', paddingBottom: '64px', fontFamily: "'Inter', sans-serif" }}>
-      
+
+      {/* Mobile nav drawer overlay */}
+      {mobileNavOpen && (
+        <div
+          onClick={() => setMobileNavOpen(false)}
+          style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(26,19,15,0.55)', backdropFilter: 'blur(2px)' }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '280px', background: '#3B2A22', padding: '28px 20px', display: 'flex', flexDirection: 'column', boxShadow: '4px 0 40px rgba(0,0,0,0.4)' }}
+          >
+            {/* Drawer header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: '10px', background: 'rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
+                </div>
+                <div>
+                  <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>Roemah Roti</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248,244,238,.92)' }}>Owner Dashboard</div>
+                </div>
+              </div>
+              <button
+                onClick={() => setMobileNavOpen(false)}
+                style={{ background: 'rgba(248,244,238,.08)', border: 'none', color: 'rgba(248,244,238,.7)', width: '32px', height: '32px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '16px' }}
+              >✕</button>
+            </div>
+            {/* Nav items */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {navItems.map(item => (
+                <div
+                  key={item.path}
+                  onClick={() => { router.push(item.path); setMobileNavOpen(false); }}
+                  style={{ padding: '13px 14px', borderRadius: '12px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', background: item.active ? 'rgba(166,124,82,.9)' : 'transparent', color: item.active ? '#2A1E18' : 'rgba(248,244,238,.72)', transition: 'background .15s' }}
+                >
+                  {item.label}
+                </div>
+              ))}
+            </div>
+            <div style={{ flex: 1 }} />
+            <div style={{ fontSize: '11px', color: 'rgba(248,244,238,.35)', lineHeight: 1.5 }}>Staff tool · internal use</div>
+          </div>
+        </div>
+      )}
+
       {/* Sticky filter bar */}
       <div style={{ position: 'sticky', top: 0, zIndex: 40, background: '#FCFBF8', borderBottom: '1px solid #EAE1D5', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
-          <div>
-            <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Roemah Roti · Owner dashboard</div>
-            <div style={{ fontSize: '27px', letterSpacing: '-0.03em', fontWeight: 600, color: '#3B2A22', marginTop: '2px' }}>Dashboard overview</div>
-          </div>
-          
-          {/* Top nav to admin menus */}
-          <div style={{ display: 'flex', gap: '20px', marginLeft: 'auto', marginRight: '40px' }}>
-             <span onClick={() => router.push('/admin')} style={{ fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Overview</span>
-             <span onClick={() => router.push('/admin/members')} style={{ fontWeight: 500, color: '#7A6A5F', cursor: 'pointer' }}>Members</span>
-             <span onClick={() => router.push('/admin/rewards')} style={{ fontWeight: 500, color: '#7A6A5F', cursor: 'pointer' }}>Rewards</span>
-             <span onClick={() => router.push('/admin/referrals')} style={{ fontWeight: 500, color: '#7A6A5F', cursor: 'pointer' }}>Referrals</span>
-             <span onClick={() => router.push('/admin/updates')} style={{ fontWeight: 500, color: '#7A6A5F', cursor: 'pointer' }}>Updates</span>
-          </div>
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between" style={{ maxWidth: '1280px', margin: '0 auto', padding: '16px 20px', gap: '16px' }}>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative' }}>
-            <div style={{ display: 'flex', background: '#F1EBE1', borderRadius: '14px', padding: '4px', width: '330px' }}>
-              <div onClick={() => { setFilter('today'); setCalendarOpen(false); }} style={{ flex: 1, textAlign: 'center', padding: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'today' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'today' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'today' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none' }}>Today</div>
-              <div onClick={() => { setFilter('allTime'); setCalendarOpen(false); }} style={{ flex: 1, textAlign: 'center', padding: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'allTime' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'allTime' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'allTime' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none' }}>All Time</div>
-              <div onClick={() => { setFilter('custom'); setCalendarOpen(true); }} style={{ flex: 1, textAlign: 'center', padding: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'custom' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'custom' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'custom' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none' }}>Custom</div>
+          {/* Top Row for Mobile (Title + Burger) / Left Side for Desktop */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flex: '1 1 auto', minWidth: 0, width: '100%' }}>
+            {/* Logo + title */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Roemah Roti · Owner dashboard</div>
+              <div style={{ fontSize: '22px', letterSpacing: '-0.03em', fontWeight: 600, color: '#3B2A22', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Dashboard overview</div>
             </div>
 
-            {filter === 'custom' && (
-              <div onClick={() => setCalendarOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '14px', cursor: 'pointer', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
-                <div style={{ width: '14px', height: '14px', border: '1.5px solid #A67C52', borderRadius: '3px', position: 'relative' }}>
-                  <div style={{ position: 'absolute', left: '2px', right: '2px', top: '-4px', height: '4px', borderLeft: '1.5px solid #A67C52', borderRight: '1.5px solid #A67C52' }}></div>
-                  <div style={{ position: 'absolute', left: '1px', right: '1px', top: '2px', height: '1px', background: '#A67C52' }}></div>
-                </div>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22', fontVariantNumeric: 'tabular-nums' }}>{rangeLabel}</span>
-              </div>
-            )}
+            {/* Burger button — shown on mobile only */}
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              className="flex md:hidden"
+              style={{ background: 'rgba(255,255,255,.08)', border: '1px solid rgba(59,42,34,.1)', borderRadius: '8px', width: '36px', height: '36px', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', flex: 'none' }}
+            >
+              <span style={{ width: '14px', height: '1.6px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
+              <span style={{ width: '14px', height: '1.6px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
+              <span style={{ width: '14px', height: '1.6px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
+            </button>
+          </div>
 
-            {calendarOpen && (
-              <div style={{ position: 'absolute', top: '52px', right: 0, zIndex: 60, background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 18px 40px -18px rgba(59,42,34,.55)', padding: '20px', width: '320px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                  <div onClick={() => {
-                    let m = calMonth - 1, y = calYear;
-                    if (m < 0) { m = 11; y -= 1; }
-                    setCalMonth(m); setCalYear(y);
-                  }} style={{ width: '26px', height: '26px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#F1EBE1' }}>
-                    <div style={{ width: '7px', height: '7px', borderLeft: '1.5px solid #3B2A22', borderBottom: '1.5px solid #3B2A22', transform: 'rotate(45deg)', marginLeft: '2px' }}></div>
-                  </div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22' }}>{monthNames[calMonth]} {calYear}</div>
-                  <div onClick={() => {
-                    let m = calMonth + 1, y = calYear;
-                    if (m > 11) { m = 0; y += 1; }
-                    setCalMonth(m); setCalYear(y);
-                  }} style={{ width: '26px', height: '26px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#F1EBE1' }}>
-                    <div style={{ width: '7px', height: '7px', borderRight: '1.5px solid #3B2A22', borderTop: '1.5px solid #3B2A22', transform: 'rotate(45deg)', marginRight: '2px' }}></div>
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px', marginBottom: '6px' }}>
-                  {['S','M','T','W','T','F','S'].map((wd, i) => <div key={i} style={{ fontSize: '10px', fontWeight: 600, color: '#A08A7B', textAlign: 'center', padding: '4px 0' }}>{wd}</div>)}
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px' }}>
-                  {cells.map((cell, i) => (
-                    <div key={i}>
-                      {cell.filled && <div onClick={cell.onClick} style={cell.cellStyle}>{cell.day}</div>}
-                    </div>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                  <div onClick={() => { setCalendarOpen(false); setSelStart(appliedStart); setSelEnd(appliedEnd); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', border: '1px solid #E0D5C6', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer' }}>Cancel</div>
-                  <div onClick={() => { setCalendarOpen(false); setAppliedStart(selStart); setAppliedEnd(selEnd || selStart); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', background: '#A67C52', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#fff', cursor: 'pointer', boxShadow: '0 14px 26px -14px rgba(166,124,82,.9)' }}>Apply</div>
-                </div>
+          {/* Right Side for Desktop / Bottom Row for Mobile */}
+          <div className="flex flex-col md:flex-row items-start md:items-center" style={{ gap: '16px' }}>
+            {/* Desktop nav links — hidden on mobile */}
+            <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }} className="hidden md:flex">
+              {navItems.map(item => (
+                <span
+                  key={item.path}
+                  onClick={() => router.push(item.path)}
+                  style={{ fontWeight: item.active ? 600 : 500, color: item.active ? '#A67C52' : '#7A6A5F', cursor: 'pointer', fontSize: '14px' }}
+                >{item.label}</span>
+              ))}
+            </div>
+
+            {/* Filter row */}
+            <div className="flex flex-wrap md:flex-nowrap items-start md:items-center" style={{ gap: '10px', position: 'relative' }}>
+              {/* Date filter pill */}
+              <div style={{ display: 'flex', background: '#F1EBE1', borderRadius: '14px', padding: '4px' }}>
+                <div onClick={() => { setFilter('today'); setCalendarOpen(false); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'today' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'today' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'today' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>Today</div>
+                <div onClick={() => { setFilter('allTime'); setCalendarOpen(false); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'allTime' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'allTime' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'allTime' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>All Time</div>
+                <div onClick={() => { setFilter('custom'); setCalendarOpen(true); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'custom' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'custom' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'custom' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>Custom</div>
               </div>
-            )}
+
+              {filter === 'custom' && (
+                <div onClick={() => setCalendarOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 12px', background: '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '14px', cursor: 'pointer', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', whiteSpace: 'nowrap' }}>
+                  <div style={{ width: '14px', height: '14px', border: '1.5px solid #A67C52', borderRadius: '3px', position: 'relative', flex: 'none' }}>
+                    <div style={{ position: 'absolute', left: '2px', right: '2px', top: '-4px', height: '4px', borderLeft: '1.5px solid #A67C52', borderRight: '1.5px solid #A67C52' }}></div>
+                    <div style={{ position: 'absolute', left: '1px', right: '1px', top: '2px', height: '1px', background: '#A67C52' }}></div>
+                  </div>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22', fontVariantNumeric: 'tabular-nums' }}>{rangeLabel}</span>
+                </div>
+              )}
+
+              {calendarOpen && (
+                <div style={{ position: 'absolute', top: '52px', right: 0, zIndex: 60, background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 18px 40px -18px rgba(59,42,34,.55)', padding: '20px', width: '300px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <div onClick={() => {
+                      let m = calMonth - 1, y = calYear;
+                      if (m < 0) { m = 11; y -= 1; }
+                      setCalMonth(m); setCalYear(y);
+                    }} style={{ width: '26px', height: '26px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#F1EBE1' }}>
+                      <div style={{ width: '7px', height: '7px', borderLeft: '1.5px solid #3B2A22', borderBottom: '1.5px solid #3B2A22', transform: 'rotate(45deg)', marginLeft: '2px' }}></div>
+                    </div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22' }}>{monthNames[calMonth]} {calYear}</div>
+                    <div onClick={() => {
+                      let m = calMonth + 1, y = calYear;
+                      if (m > 11) { m = 0; y += 1; }
+                      setCalMonth(m); setCalYear(y);
+                    }} style={{ width: '26px', height: '26px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#F1EBE1' }}>
+                      <div style={{ width: '7px', height: '7px', borderRight: '1.5px solid #3B2A22', borderTop: '1.5px solid #3B2A22', transform: 'rotate(45deg)', marginRight: '2px' }}></div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px', marginBottom: '6px' }}>
+                    {['S','M','T','W','T','F','S'].map((wd, i) => <div key={i} style={{ fontSize: '10px', fontWeight: 600, color: '#A08A7B', textAlign: 'center', padding: '4px 0' }}>{wd}</div>)}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px' }}>
+                    {cells.map((cell, i) => (
+                      <div key={i}>
+                        {cell.filled && <div onClick={cell.onClick} style={cell.cellStyle}>{cell.day}</div>}
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+                    <div onClick={() => { setCalendarOpen(false); setSelStart(appliedStart); setSelEnd(appliedEnd); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', border: '1px solid #E0D5C6', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer' }}>Cancel</div>
+                    <div onClick={() => { setCalendarOpen(false); setAppliedStart(selStart); setAppliedEnd(selEnd || selStart); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', background: '#A67C52', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#fff', cursor: 'pointer', boxShadow: '0 14px 26px -14px rgba(166,124,82,.9)' }}>Apply</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Burger button — shown on mobile only */}
+              <button
+                onClick={() => setMobileNavOpen(true)}
+                className="md:hidden"
+                style={{ background: '#F1EBE1', border: 'none', borderRadius: '10px', width: '38px', height: '38px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', flex: 'none' }}
+              >
+                <span style={{ width: '16px', height: '1.8px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
+                <span style={{ width: '16px', height: '1.8px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
+                <span style={{ width: '16px', height: '1.8px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '36px 40px 0' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 20px 0' }}>
         
         {/* BUSINESS PERFORMANCE */}
         <section style={{ marginBottom: '44px' }}>
@@ -384,7 +471,7 @@ export default function AdminDashboardPage() {
                 ))}
               </svg>
               <div style={{ display: 'flex', position: 'absolute', left: '10px', right: '10px', bottom: '8px', pointerEvents: 'none' }}>
-                {d.labels.map((lbl, i) => <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: '11px', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
+                {d.labels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
               </div>
               {hover?.key === 'stacked' && (
                 <div style={{ position: 'absolute', left: `${(stk.bars[hover.i].cx / 10)}%`, top: `${Math.min(stk.bars[hover.i].memY, stk.bars[hover.i].nonY) - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
@@ -438,7 +525,7 @@ export default function AdminDashboardPage() {
                 ))}
               </svg>
               <div style={{ display: 'flex', position: 'absolute', left: '10px', right: '10px', bottom: '8px', pointerEvents: 'none' }}>
-                {d.labels.map((lbl, i) => <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: '11px', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
+                {d.labels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
               </div>
               {hover?.key === 'rev' && (
                 <div style={{ position: 'absolute', left: `${(rev.points[hover.i].x / 10)}%`, top: `${rev.points[hover.i].y - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
