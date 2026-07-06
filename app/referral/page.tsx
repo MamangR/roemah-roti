@@ -33,19 +33,19 @@ export default function ReferralPage() {
 
   const code = member?.referralCode || 'RR-CODE';
   const link = 'roemahroti.id/join/' + code;
-  const baseRewardState = locallyClaimed ? 'claimed' : 'ready'; // for demo, set to ready
-
-  // We now use member.referredFriends instead of friendsRaw
-
-  const goalCount = 3;
+  const goalCount = 1;
   const rawFriends = member?.referredFriends || [];
-  const qualifying = rawFriends.filter((f: any) => f.status === 'First visit completed').length;
-  const pct = Math.round((qualifying / goalCount) * 100);
+  const qualifying = rawFriends.filter((f: any) => f.status !== 'Rejected').length;
+  
+  const hasClaimed = member?.rewards?.some((r: any) => r.type === 'Referral' && r.title.includes('Garlic Cream Cheese'));
+  const baseRewardState = locallyClaimed || hasClaimed ? 'claimed' : (qualifying >= goalCount ? 'ready' : 'locked');
+
+  const pct = Math.round((Math.min(qualifying, goalCount) / goalCount) * 100);
   const remaining = Math.max(0, goalCount - qualifying);
 
   const friends = rawFriends.map((f: any) => {
     // Basic color mapping based on status
-    const isQual = f.status === 'First visit completed';
+    const isQual = f.status !== 'Rejected';
     const color = isQual ? '#5C7B5A' : '#A08A7B';
     const dot = isQual ? '#5C7B5A' : '#C9B7A6';
     return {
@@ -77,12 +77,20 @@ export default function ReferralPage() {
     'Cannot be combined with other promotions.'
   ];
 
-  const claimReward = () => {
-    const ref = 'RR-REF-' + String(1000 + Math.floor(Math.random() * 8999));
-    setLocallyClaimed(true);
-    setClaimDate('Jul 4, 2026');
-    setClaimRef(ref);
-    setView('success');
+  const claimReward = async () => {
+    try {
+      const res = await fetch('/api/referral/claim', { method: 'POST' });
+      if (res.ok) {
+        setLocallyClaimed(true);
+        setClaimDate(new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }));
+        setClaimRef('RR-REF-' + String(1000 + Math.floor(Math.random() * 8999)));
+        setView('success');
+      } else {
+        toast('Failed to claim reward');
+      }
+    } catch (err) {
+      toast('Error claiming reward');
+    }
   };
 
   return (
@@ -92,7 +100,7 @@ export default function ReferralPage() {
         {view === 'referral' && (
           <div style={{ padding: '8px 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => router.push('/')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', flex: 'none' }}>←</div>
+              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', flex: 'none' }}>←</div>
               <div>
                 <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Referral Program</div>
               </div>
@@ -247,7 +255,7 @@ export default function ReferralPage() {
             <div style={{ fontSize: '14px', color: '#8A7A6E', marginTop: '8px', maxWidth: '250px', lineHeight: 1.55 }}>Thank you for sharing Roemah Roti with someone you trust, {member?.firstName || 'User'}.</div>
 
             <div style={{ marginTop: '24px', width: '100%', background: '#F8F4EE', borderRadius: '18px', padding: '18px 20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reward</span><span style={{ fontWeight: 600 }}>Free Butter Croissant</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reward</span><span style={{ fontWeight: 600 }}>Free Garlic Cream Cheese</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Date</span><span style={{ fontWeight: 600 }}>{claimDate}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reference</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{claimRef}</span></div>
             </div>

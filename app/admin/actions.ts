@@ -8,29 +8,29 @@ async function checkAdmin() {
   if (!sessionId) {
     throw new Error('Unauthorized');
   }
-  
+
   const session = await prisma.session.findUnique({ where: { id: sessionId }, include: { member: true } });
   if (!session || new Date() > session.expiresAt) {
     throw new Error('Unauthorized');
   }
-  
+
   // In a real app, check if session.member.role === 'ADMIN'
   return session.member;
 }
 export async function getDashboardStats(startDateStr: string, endDateStr: string) {
   await checkAdmin();
-  
+
   const start = new Date(startDateStr + 'T00:00:00Z');
   const end = new Date(endDateStr + 'T23:59:59Z');
-  
+
   const members = await prisma.member.findMany({
     where: { createdAt: { gte: start, lte: end } }
   });
   const totalMembers = await prisma.member.count();
-  
+
   const activeMembers = await prisma.activity.groupBy({
     by: ['memberId'],
-    where: { 
+    where: {
       createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Active in last 30 days
     }
   });
@@ -42,9 +42,9 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
   const rewardsRedeemed = await prisma.memberReward.count({
     where: { redeemedAt: { not: null }, updatedAt: { gte: start, lte: end } }
   });
-  
+
   const totalVisits = activities.filter(a => a.type === 'visit').length;
-  
+
   // Since we don't have POS yet, we'll mock the revenue / top products based on visits
   // Let's pretend every visit = 1 transaction of Rp. 100,000 average
   const memberTxnSum = totalVisits;
@@ -52,7 +52,7 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
   const transactions = memberTxnSum + nonMemberTxnSum;
   const aov = 125000;
   const revenueSum = transactions * aov;
-  
+
   return {
     totalMembers,
     newMembersSum: members.length,
@@ -79,11 +79,11 @@ export async function getMembers() {
   return members.map(m => {
     // Determine last activity date
     const lastActivity = m.activities.length > 0 ? m.activities[0].createdAt.toISOString().slice(0, 10) : m.createdAt.toISOString().slice(0, 10);
-    
+
     // Map transactions (mocked for now since we don't have POS)
     const transactions = m.activities.filter(a => a.type === 'visit').map((a, i) => ({
       date: a.createdAt.toISOString().slice(0, 10),
-      invoice: `INV-${new Date(a.createdAt).getFullYear().toString().slice(-2)}${String(new Date(a.createdAt).getMonth()+1).padStart(2,'0')}-${String(i+1).padStart(3,'0')}`,
+      invoice: `INV-${new Date(a.createdAt).getFullYear().toString().slice(-2)}${String(new Date(a.createdAt).getMonth() + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
       total: 100000 + Math.floor(Math.random() * 50000),
       visitEarned: 1
     }));
@@ -159,7 +159,7 @@ export async function getRewardsAdmin() {
 
 export async function saveReward(data: { id: string, name: string, desc: string, visitsRequired: number, status: string, expiryDate?: string | null }) {
   await checkAdmin();
-  
+
   const expiry = data.expiryDate ? new Date(data.expiryDate) : null;
 
   if (data.id.startsWith('rw')) {
@@ -199,10 +199,10 @@ export async function redeemRewardAdmin(memberId: string, rewardTemplateId: stri
   await checkAdmin();
   const member = await prisma.member.findUnique({ where: { id: memberId } });
   const template = await prisma.rewardTemplate.findUnique({ where: { id: rewardTemplateId } });
-  
+
   if (!member || !template) throw new Error('Not found');
   if (member.totalVisits < template.visitsRequired) throw new Error('Not enough visits');
-  
+
   await prisma.$transaction([
     prisma.member.update({
       where: { id: memberId },
@@ -230,7 +230,7 @@ export async function getHistoryAdmin() {
     include: { member: true },
     orderBy: { redeemedAt: 'desc' }
   });
-  
+
   return rewards.map(r => ({
     id: r.id,
     memberName: r.member.name,
@@ -245,40 +245,32 @@ export async function getHistoryAdmin() {
 
 export async function getReferralsAdmin() {
   await checkAdmin();
-  const referrals = await prisma.referral.findMany({
-    include: {
-      member: {
-        include: {
-          referredFriends: true
-        }
-      }
-    },
+  const friends = await prisma.referredFriend.findMany({
+    include: { referrer: true },
     orderBy: { createdAt: 'desc' }
   });
 
   const flatList: any[] = [];
-  for (const r of referrals) {
-    for (const f of r.member.referredFriends) {
-      // Find if friend registered (matching by name since phone is not stored in ReferredFriend schema)
-      const friendMember = await prisma.member.findFirst({ where: { name: f.friendName } });
-      
-      flatList.push({
-        id: f.id,
-        referralId: r.id,
-        referrerName: r.member.name,
-        referrerKey: r.member.id,
-        referrerJoinDate: r.member.createdAt.toISOString().slice(0, 10),
-        referrerWa: r.member.phone,
-        referrerMemberId: r.member.referralCode,
-        referredName: f.friendName,
-        referredRegisterDate: friendMember ? friendMember.createdAt.toISOString().slice(0, 10) : '-',
-        referredMemberId: friendMember ? friendMember.referralCode : '-',
-        referredVisitDone: friendMember ? friendMember.totalVisits > 0 : false,
-        date: f.date || f.createdAt.toISOString().slice(0, 10),
-        status: f.status,
-        rewardName: 'Gratis 5 Kunjungan' // Hardcoded proxy for now
-      });
-    }
+  for (const f of friends) {
+    // Find if friend registered (matching by name since phone is not stored in ReferredFriend schema)
+    const friendMember = await prisma.member.findFirst({ where: { name: f.friendName } });
+
+    flatList.push({
+      id: f.id,
+      referralId: f.id,
+      referrerName: f.referrer.name,
+      referrerKey: f.referrer.id,
+      referrerJoinDate: f.referrer.createdAt.toISOString().slice(0, 10),
+      referrerWa: f.referrer.phone,
+      referrerMemberId: f.referrer.referralCode,
+      referredName: f.friendName,
+      referredRegisterDate: friendMember ? friendMember.createdAt.toISOString().slice(0, 10) : '-',
+      referredMemberId: friendMember ? friendMember.referralCode : '-',
+      referredVisitDone: friendMember ? friendMember.totalVisits > 0 : false,
+      date: f.date || f.createdAt.toISOString().slice(0, 10),
+      status: f.status,
+      rewardName: 'Free Garlic Cream Cheese'
+    });
   }
   return flatList;
 }
@@ -287,7 +279,7 @@ export async function approveReferralAdmin(friendId: string) {
   await checkAdmin();
   const f = await prisma.referredFriend.findUnique({ where: { id: friendId }, include: { referrer: true } });
   if (!f) throw new Error('Not found');
-  
+
   await prisma.$transaction([
     prisma.referredFriend.update({
       where: { id: friendId },

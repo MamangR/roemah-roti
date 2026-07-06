@@ -7,7 +7,6 @@ import { useMember } from '@/context/MemberContext';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const WEEKDAYS = ['S','M','T','W','T','F','S'];
-const REFERRAL_CODES = ['ROTI2026', 'SALT10', 'FRIEND50'];
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -23,6 +22,7 @@ export default function RegisterPage() {
   const [calMonth, setCalMonth] = useState(6);
   const [calYear, setCalYear] = useState(1995);
   const [referral, setReferral] = useState('');
+  const [referralStatus, setReferralStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState('');
@@ -73,8 +73,8 @@ export default function RegisterPage() {
 
   const referralTrim = referral.trim().toUpperCase();
   const referralEmpty = referralTrim.length === 0;
-  const referralValid = !referralEmpty && REFERRAL_CODES.includes(referralTrim);
-  const referralNotFound = !referralEmpty && !referralValid;
+  const referralValid = referralStatus === 'valid';
+  const referralNotFound = referralStatus === 'invalid';
 
   const passwordValid = password.length >= 6;
   const canSubmit = nameValid && waValid && birthdayValid && passwordValid && !loading;
@@ -85,6 +85,22 @@ export default function RegisterPage() {
 
   const waBorder = waFocused ? '1px solid var(--accent-primary)' : (waHasError ? '1px solid var(--mist)' : '1px solid var(--border-hairline)');
   const waShadow = waFocused ? '0 0 0 3px var(--focus-ring)' : 'none';
+
+  const checkReferralCode = async () => {
+    if (referralEmpty) return;
+    setReferralStatus('checking');
+    try {
+      const res = await fetch(`/api/referral/check?code=${encodeURIComponent(referralTrim)}`);
+      const data = await res.json();
+      if (data.valid) {
+        setReferralStatus('valid');
+      } else {
+        setReferralStatus('invalid');
+      }
+    } catch {
+      setReferralStatus('invalid');
+    }
+  };
 
   const submitForm = async () => {
     if (!canSubmit) return;
@@ -276,19 +292,28 @@ export default function RegisterPage() {
                 <span style={{ fontSize: 'var(--text-label)', fontWeight: 600, letterSpacing: 'var(--tracking-label)', color: 'var(--text-label)' }}>REFERRAL CODE</span>
                 <span style={{ fontSize: '11px', color: 'var(--text-label)', letterSpacing: 0, fontWeight: 500 }}>(Optional)</span>
               </div>
-              <div style={{ position: 'relative' }}>
-                <input 
-                  type="text" 
-                  placeholder="e.g. ROTI2026" 
-                  value={referral} 
-                  onChange={e => setReferral(e.target.value)} 
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: referralValid ? '1px solid var(--sage)' : '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 40px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
-                />
-                {referralValid && (
-                  <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-confirm-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ width: '8px', height: '5px', borderLeft: '1.6px solid var(--sage)', borderBottom: '1.6px solid var(--sage)', transform: 'rotate(-45deg) translate(1px,-1px)' }}></div>
-                  </div>
-                )}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. ROTI2026" 
+                    value={referral} 
+                    onChange={e => { setReferral(e.target.value); setReferralStatus('idle'); }} 
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: referralValid ? '1px solid var(--sage)' : (referralNotFound ? '1px solid var(--mist)' : '1px solid var(--border-hairline)'), borderRadius: 'var(--radius-sm)', padding: '15px 40px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
+                  />
+                  {referralValid && (
+                    <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-confirm-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ width: '8px', height: '5px', borderLeft: '1.6px solid var(--sage)', borderBottom: '1.6px solid var(--sage)', transform: 'rotate(-45deg) translate(1px,-1px)' }}></div>
+                    </div>
+                  )}
+                </div>
+                <button 
+                  onClick={checkReferralCode}
+                  disabled={referralEmpty || referralStatus === 'checking'}
+                  style={{ flex: 'none', background: 'var(--surface-secondary)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '0 16px', fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', cursor: (referralEmpty || referralStatus === 'checking') ? 'default' : 'pointer', opacity: (referralEmpty || referralStatus === 'checking') ? 0.6 : 1 }}
+                >
+                  {referralStatus === 'checking' ? '...' : 'Check'}
+                </button>
               </div>
               {referralValid && (
                 <div style={{ fontSize: '12px', color: 'var(--sage)', marginTop: '6px' }}>Code applied. You'll both earn a visit.</div>

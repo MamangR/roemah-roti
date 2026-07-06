@@ -56,8 +56,32 @@ export async function POST(req: Request) {
         }
       });
       
-      // If a referral code was provided, we could link it here (Phase 2 logic)
-      // For now, we just validate it on the frontend.
+      if (referralCode) {
+        const referrer = await prisma.member.findUnique({ where: { referralCode } });
+        if (referrer) {
+          // Ensure the referrer has a Referral record so they appear in admin panel
+          let referral = await prisma.referral.findUnique({ where: { memberId: referrer.id } });
+          if (!referral) {
+            referral = await prisma.referral.create({
+              data: {
+                memberId: referrer.id,
+                code: referrer.referralCode,
+              }
+            });
+          }
+          
+          // Add the newly registered member as a ReferredFriend
+          await prisma.referredFriend.create({
+            data: {
+              referrerId: referrer.id,
+              friendName: member.name,
+              date: new Date().toISOString().slice(0, 10),
+              status: 'Pending',
+              contribution: '+1'
+            }
+          });
+        }
+      }
 
     // Create session
     const session = await prisma.session.create({

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
 import { useMember } from '@/context/MemberContext';
+import { useRouter } from 'next/navigation';
 
 type Entry = {
   id: string;
@@ -19,6 +20,7 @@ type Entry = {
 };
 // We now use member.activities instead of rawEntries
 export default function VisitsPage() {
+  const router = useRouter();
   const { member } = useMember();
   const [view, setView] = useState<'dashboard' | 'history' | 'detail'>('dashboard');
   const [selId, setSelId] = useState<string | null>(null);
@@ -87,6 +89,15 @@ export default function VisitsPage() {
               </div>
               <div style={{ position: 'relative', marginTop: '20px', fontSize: '21px', fontWeight: 600, letterSpacing: '-.02em' }}>{member?.firstName || 'User'}</div>
               <div style={{ position: 'relative', marginTop: '4px', fontSize: '12.5px', color: 'rgba(248,244,238,.6)', fontVariantNumeric: 'tabular-nums' }}>{member?.id || 'RR-00000'} · Member since {member?.since || 'Unknown'}</div>
+
+              {/* Referral Code sub-section inside Membership Card */}
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '22px', paddingTop: '18px', borderTop: '1px solid rgba(248,244,238,.12)' }}>
+                <div>
+                  <div style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.14em', color: 'rgba(248,244,238,.5)' }}>REFERRAL CODE</div>
+                  <div style={{ fontSize: '15px', fontWeight: 600, marginTop: '4px', letterSpacing: '.06em', color: '#E9C9A6', fontVariantNumeric: 'tabular-nums' }}>{member?.referralCode || 'S04217-RR'}</div>
+                </div>
+                <div onClick={() => router.push('/referral')} style={{ cursor: 'pointer', background: 'rgba(166,124,82,.9)', color: '#2A1E18', fontSize: '12px', fontWeight: 600, padding: '9px 14px', borderRadius: '12px' }}>Invite Friends</div>
+              </div>
             </div>
 
             <div style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', padding: '18px 18px 20px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
@@ -102,6 +113,18 @@ export default function VisitsPage() {
                 <div style={{ fontSize: '12.5px', color: '#7A6A5F' }}><span style={{ fontWeight: 600, color: '#3B2A22' }}>{10 - ((member?.totalVisits || 0) % 10)} more visits</span> until your next reward.</div>
                 <div onClick={() => setView('history')} style={{ fontSize: '12px', fontWeight: 600, color: '#A67C52', cursor: 'pointer', flex: 'none', paddingLeft: '10px' }}>View History</div>
               </div>
+            </div>
+
+            {/* Refer a Friend CTA Card */}
+            <div onClick={() => router.push('/referral')} style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '17px 18px', display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer', boxShadow: '0 10px 26px -22px rgba(59,42,34,.35)', transition: 'transform .14s ease' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '13px', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M3 20a6 6 0 0 1 12 0"></path><path d="M17 6a3 3 0 0 1 0 6 M21 20a6 6 0 0 0-4-5.6"></path></svg>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '15px', fontWeight: 600 }}>Refer a Friend</div>
+                <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>Share something you trust.</div>
+              </div>
+              <div style={{ fontSize: '18px', color: '#C4B6A9' }}>→</div>
             </div>
           </div>
         )}
