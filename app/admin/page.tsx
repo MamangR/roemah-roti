@@ -396,17 +396,6 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
               )}
-
-              {/* Burger button — shown on mobile only */}
-              <button
-                onClick={() => setMobileNavOpen(true)}
-                className="md:hidden"
-                style={{ background: '#F1EBE1', border: 'none', borderRadius: '10px', width: '38px', height: '38px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px', cursor: 'pointer', flex: 'none' }}
-              >
-                <span style={{ width: '16px', height: '1.8px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
-                <span style={{ width: '16px', height: '1.8px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
-                <span style={{ width: '16px', height: '1.8px', background: '#3B2A22', borderRadius: '1px', display: 'block' }} />
-              </button>
             </div>
           </div>
         </div>
