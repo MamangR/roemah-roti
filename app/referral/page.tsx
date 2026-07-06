@@ -87,7 +87,7 @@ export default function ReferralPage() {
 
   return (
     <PhoneLayout>
-      <div className="rf-scroll" key={view + (selFriendId || '')} style={{ position: 'absolute', top: 46, left: 0, right: 0, bottom: 0, overflowY: 'auto', animation: 'rslide .3s cubic-bezier(.22,1,.36,1)' }}>
+      <div className="rf-scroll" key={view + (selFriendId || '')} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'rslide .3s cubic-bezier(.22,1,.36,1)' }}>
         
         {view === 'referral' && (
           <div style={{ padding: '8px 20px 40px' }}>
@@ -263,8 +263,8 @@ export default function ReferralPage() {
       {/* SHARE SHEET OVERLAY */}
       {shareOpen && (
         <>
-          <div onClick={() => setShareOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(43,30,24,.5)', animation: 'rfade .2s ease' }}></div>
-          <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 21, background: '#FCFBF8', borderRadius: '24px 24px 0 0', padding: '10px 20px 30px', boxShadow: '0 -20px 50px -20px rgba(0,0,0,.3)', animation: 'rsheetup .32s cubic-bezier(.22,1,.36,1)' }}>
+          <div onClick={() => setShareOpen(false)} style={{ position: 'absolute', inset: 0, zIndex: 20, background: 'rgba(43,30,24,.5)', animation: 'rfade .2s ease' }}></div>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 21, background: '#FCFBF8', borderRadius: '24px 24px 0 0', padding: '10px 20px 30px', boxShadow: '0 -20px 50px -20px rgba(0,0,0,.3)', animation: 'rsheetup .32s cubic-bezier(.22,1,.36,1)' }}>
             <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#E0D5C6', margin: '6px auto 16px' }}></div>
             <div style={{ fontSize: '15px', fontWeight: 600, textAlign: 'center', marginBottom: '4px' }}>Share Referral Link</div>
             <div style={{ fontSize: '12px', color: '#8A7A6E', textAlign: 'center', marginBottom: '16px' }}>Invite a friend to Roemah Roti.</div>

@@ -126,7 +126,7 @@ export default function RegisterPage() {
 
     <PhoneLayout>
       {step === 'form' && (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', padding: '22px 28px 26px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2px', flex: 'none' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'var(--espresso)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--wheat)', fontWeight: 700, fontSize: '18px', letterSpacing: '-0.03em' }}>RR</div>
             <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.26em', color: 'var(--caramel)', marginTop: '10px' }}>ROEMAH ROTI</div>
@@ -334,7 +334,7 @@ export default function RegisterPage() {
       )}
 
       {step === 'otp' && (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', padding: '22px 28px 26px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2px', flex: 'none' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'var(--espresso)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--wheat)', fontWeight: 700, fontSize: '18px', letterSpacing: '-0.03em' }}>RR</div>
             <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.26em', color: 'var(--caramel)', marginTop: '10px' }}>ROEMAH ROTI</div>
@@ -381,7 +381,7 @@ export default function RegisterPage() {
       )}
 
       {step === 'handoff' && (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '0 6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '22px 28px 26px' }}>
           <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 26px -12px rgba(59,42,34,.4)' }}>
             <div style={{ width: '22px', height: '16px', border: '2px solid #fff', borderRadius: '3px' }}></div>
           </div>

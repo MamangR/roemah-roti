@@ -258,7 +258,7 @@ export default function RewardsPage() {
 
   return (
     <PhoneLayout>
-      <div className="rr-scroll" style={{ position: 'absolute', top: 46, left: 0, right: 0, bottom: 0, overflowY: 'auto', animation: 'rrslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
+      <div className="rr-scroll" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'rrslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
         
         {view === 'list' && (
           <div style={{ padding: '6px 20px 96px' }}>

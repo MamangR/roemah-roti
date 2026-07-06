@@ -100,7 +100,7 @@ export default function LoginPage() {
 
   return (
     <PhoneLayout>
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', color: '#3B2A22' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', color: '#3B2A22', overflowY: 'auto', padding: '22px 28px 26px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
           <div style={{ width: '60px', height: '60px', borderRadius: '20px', background: '#3B2A22', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 26px -12px rgba(59,42,34,.6)' }}>
             <span style={{ fontSize: '22px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>

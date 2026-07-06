@@ -56,7 +56,7 @@ export default function ProfilePage() {
 
   return (
     <PhoneLayout>
-      <div className="p-scroll" key={view} style={{ position: 'absolute', top: 46, left: 0, right: 0, bottom: 0, overflowY: 'auto', animation: 'pslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
+      <div className="p-scroll" key={view} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'pslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
         
         {/* ============ PROFILE MAIN ============ */}
         {view === 'main' && (
@@ -176,8 +176,8 @@ export default function ProfilePage() {
       {/* LOGOUT SHEET */}
       {logoutSheetOpen && (
         <>
-          <div onClick={() => setLogoutSheetOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 20, background: 'rgba(43,30,24,.5)', animation: 'pfade .2s ease' }}></div>
-          <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 21, background: '#FCFBF8', borderRadius: '24px 24px 0 0', padding: '10px 20px 30px', boxShadow: '0 -20px 50px -20px rgba(0,0,0,.3)', animation: 'psheetup .32s cubic-bezier(.22,1,.36,1)' }}>
+          <div onClick={() => setLogoutSheetOpen(false)} style={{ position: 'absolute', inset: 0, zIndex: 20, background: 'rgba(43,30,24,.5)', animation: 'pfade .2s ease' }}></div>
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 21, background: '#FCFBF8', borderRadius: '24px 24px 0 0', padding: '10px 20px 30px', boxShadow: '0 -20px 50px -20px rgba(0,0,0,.3)', animation: 'psheetup .32s cubic-bezier(.22,1,.36,1)' }}>
             <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#E0D5C6', margin: '6px auto 18px' }}></div>
             <div style={{ fontSize: '15px', fontWeight: 600, textAlign: 'center' }}>Log out of your Roemah Roti account?</div>
             <div style={{ fontSize: '12.5px', color: '#8A7A6E', textAlign: 'center', marginTop: '6px' }}>You can log back in anytime.</div>

@@ -147,7 +147,7 @@ export default function UpdatesPage() {
   return (
     <PhoneLayout>
       <style>{`@keyframes skpulse { 0%,100%{opacity:1} 50%{opacity:.45} } @keyframes uslide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} } @keyframes ufade { from{opacity:0} to{opacity:1} }`}</style>
-      <div className="u-scroll" key={view} style={{ position: 'absolute', top: 46, left: 0, right: 0, bottom: 0, overflowY: 'auto', animation: 'uslide .3s cubic-bezier(.22,1,.36,1)' }}>
+      <div className="u-scroll" key={view} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'uslide .3s cubic-bezier(.22,1,.36,1)' }}>
 
         {view === 'updates' && (
           <div style={{ padding: '8px 20px 40px' }}>

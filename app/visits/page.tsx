@@ -65,7 +65,7 @@ export default function VisitsPage() {
 
   return (
     <PhoneLayout>
-      <div key={viewKey} className="v-scroll" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflowY: 'auto', animation: 'vslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
+      <div key={viewKey} className="v-scroll" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'vslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
         
         {/* DASHBOARD */}
         {isDashboard && (
