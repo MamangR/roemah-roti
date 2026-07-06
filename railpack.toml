@@ -1,0 +1,6 @@
+# Force the builder to treat this as a Node.js / Next.js app
+[build]
+builder = "node"
+
+[run]
+command = "npm run start"
