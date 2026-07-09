@@ -206,11 +206,13 @@ export default function ReferralPage() {
                     <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '3px' }}>{rewardDesc}</div>
                   </div>
                 </div>
-                <div style={{ margin: '0 18px', background: rm.bg, borderRadius: '14px', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: rm.dot, flex: 'none' }}></span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: rm.color }}>{rm.line}</span>
-                </div>
-                <div style={{ padding: '16px 18px 18px' }}>
+                {baseRewardState !== 'locked' && (
+                  <div style={{ margin: '0 18px', background: rm.bg, borderRadius: '14px', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: rm.dot, flex: 'none' }}></span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: rm.color }}>{rm.line}</span>
+                  </div>
+                )}
+                <div style={{ padding: baseRewardState === 'locked' ? '6px 18px 18px' : '16px 18px 18px' }}>
                   {rm.ready ? (
                     <div onClick={claimReward} style={{ textAlign: 'center', background: '#A67C52', color: '#FFFCF7', padding: '15px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>Claim Reward</div>
                   ) : (
