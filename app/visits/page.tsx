@@ -26,7 +26,7 @@ export default function VisitsPage() {
   const [view, setView] = useState<'dashboard' | 'history' | 'detail'>('dashboard');
   const [selId, setSelId] = useState<string | null>(null);
   const [goal, setGoal] = useState(10);
-  const [rewardName, setRewardName] = useState('Free Garlic Cream Cheese');
+  const [rewardName, setRewardName] = useState('Loading...');
   const [rewardImageUrl, setRewardImageUrl] = useState<string | null>(null);
 
   React.useEffect(() => {

@@ -21,8 +21,8 @@ export default function ReferralPage() {
   const [revealed, setRevealed] = useState(false);
 
   const [goalCount, setGoalCount] = useState(1);
-  const [rewardName, setRewardName] = useState('Free Garlic Cream Cheese');
-  const [rewardDesc, setRewardDesc] = useState('Our thanks for a friend who joined.');
+  const [rewardName, setRewardName] = useState('Loading...');
+  const [rewardDesc, setRewardDesc] = useState('Loading reward details...');
   const [rewardImageUrl, setRewardImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
