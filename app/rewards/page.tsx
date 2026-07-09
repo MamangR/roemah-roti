@@ -132,7 +132,7 @@ export default function RewardsPage() {
 
   // Build visit-based reward cards, excluding already-redeemed templates entirely
   const rawRewardsList: RewardItem[] = templates
-    .filter((t: any) => !redeemedTemplateIds.has(t.id))
+    .filter((t: any) => !redeemedTemplateIds.has(t.id) && !t.id.startsWith('SYSTEM_'))
     .map((t: any) => ({
       id: t.id,
       cat: 'Visit Reward',
@@ -202,11 +202,12 @@ export default function RewardsPage() {
     }
   }
 
+  const sysBdayTemplate = templates.find((t: any) => t.id === 'SYSTEM_BIRTHDAY');
   const rawBirthdayItem: RewardItem = {
     id: 'birthday',
     cat: 'Birthday Reward',
-    name: bdayDb?.title ?? 'Birthday Treat Box',
-    desc: bdayDb?.description ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.',
+    name: bdayDb?.title ?? sysBdayTemplate?.name ?? 'Birthday Treat Box',
+    desc: bdayDb?.description ?? sysBdayTemplate?.desc ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.',
     base: bdayBase,
     need: bdayNeed,
     expirationDate: bdayBase === 'unlocked' ? lastDayOfBirthMonth : undefined,
