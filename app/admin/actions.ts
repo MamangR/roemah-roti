@@ -108,8 +108,8 @@ export async function getSystemReward(id: string, defaultName: string, defaultDe
   if (config) {
     return {
       ...config,
-      resolvedName: config.menuItem?.name || config.name || defaultName,
-      resolvedDesc: config.menuItem?.shortDesc || config.desc || defaultDesc,
+      resolvedName: config.name || config.menuItem?.name || defaultName,
+      resolvedDesc: config.desc || config.menuItem?.shortDesc || defaultDesc,
       imageUrl: config.menuItem?.imageUrl
     };
   }
@@ -297,9 +297,9 @@ export async function redeemRewardAdmin(memberId: string, rewardTemplateId: stri
       data: {
         memberId: member.id,
         rewardType: template.id + '_' + Date.now(), // unique type so multiple can be issued
-        title: template.menuItem?.name || template.name || 'Reward',
+        title: template.name || template.menuItem?.name || 'Reward',
         type: 'Admin Redeemed',
-        description: template.menuItem?.shortDesc || template.desc || '',
+        description: template.desc || template.menuItem?.shortDesc || '',
         redeemedAt: new Date(),
         isAvailable: false
       }

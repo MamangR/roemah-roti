@@ -140,8 +140,8 @@ export default function RewardsPage() {
     .map((t: any) => ({
       id: t.id,
       cat: 'Visit Reward',
-      name: t.menuItem?.name || t.name,
-      desc: t.menuItem?.shortDesc || t.desc,
+      name: t.name || t.menuItem?.name || 'Reward',
+      desc: t.desc || t.menuItem?.shortDesc || '',
       imageUrl: t.menuItem?.imageUrl || null,
       base: visits >= t.visitsRequired ? 'unlocked' : 'locked',
       progress: `${Math.min(visits, t.visitsRequired)} / ${t.visitsRequired} visits`,
@@ -212,8 +212,8 @@ export default function RewardsPage() {
   const rawBirthdayItem: RewardItem = {
     id: 'birthday',
     cat: 'Birthday Reward',
-    name: loading ? 'Loading...' : (bdayDb?.title ?? sysBdayTemplate?.menuItem?.name ?? sysBdayTemplate?.name ?? 'Birthday Treat Box'),
-    desc: loading ? 'Loading birthday reward details...' : (bdayDb?.description ?? sysBdayTemplate?.menuItem?.shortDesc ?? sysBdayTemplate?.desc ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.'),
+    name: loading ? 'Loading...' : (bdayDb?.title ?? sysBdayTemplate?.name ?? sysBdayTemplate?.menuItem?.name ?? 'Birthday Treat Box'),
+    desc: loading ? 'Loading birthday reward details...' : (bdayDb?.description ?? sysBdayTemplate?.desc ?? sysBdayTemplate?.menuItem?.shortDesc ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.'),
     imageUrl: sysBdayTemplate?.menuItem?.imageUrl || null,
     base: bdayBase,
     need: bdayNeed,

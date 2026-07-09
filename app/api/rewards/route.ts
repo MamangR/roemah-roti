@@ -89,8 +89,8 @@ export async function POST(request: NextRequest) {
 
       // Fetch SYSTEM_BIRTHDAY config if available
       const bdayConfig = await prisma.rewardTemplate.findUnique({ where: { id: 'SYSTEM_BIRTHDAY' }, include: { menuItem: true } });
-      const bdayName = bdayConfig?.menuItem?.name || bdayConfig?.name || 'Birthday Treat Box';
-      const bdayDesc = bdayConfig?.menuItem?.shortDesc || bdayConfig?.desc || 'A curated box of four seasonal pastries, our gift to you this birthday month.';
+      const bdayName = bdayConfig?.name || bdayConfig?.menuItem?.name || 'Birthday Treat Box';
+      const bdayDesc = bdayConfig?.desc || bdayConfig?.menuItem?.shortDesc || 'A curated box of four seasonal pastries, our gift to you this birthday month.';
 
       // Upsert: create the row on first redemption, or update if it exists but was not yet redeemed
       await prisma.$transaction(async (tx) => {
@@ -202,8 +202,8 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "Reward not found" }, { status: 404 });
     }
 
-    const rewardName = template.menuItem?.name || template.name || 'Reward';
-    const rewardDesc = template.menuItem?.shortDesc || template.desc || '';
+    const rewardName = template.name || template.menuItem?.name || 'Reward';
+    const rewardDesc = template.desc || template.menuItem?.shortDesc || '';
 
     const member = await prisma.member.findUnique({
       where: { id: memberId },
