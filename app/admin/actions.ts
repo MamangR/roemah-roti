@@ -273,7 +273,7 @@ export async function saveReward(data: { id: string, name: string | null, desc: 
 
 export async function deleteReward(id: string) {
   await checkAdmin();
-  await prisma.rewardTemplate.delete({ where: { id } });
+  await prisma.rewardTemplate.deleteMany({ where: { id } });
   return { success: true };
 }
 
