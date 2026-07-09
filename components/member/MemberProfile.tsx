@@ -82,7 +82,7 @@ export function MemberProfile() {
             </div>
             <div className="rp-progress-bar-wrap">
               <div className="rp-progress-label">
-                <span>{referral.joinedFriends} of {referral.requiredFriends} friends joined</span>
+                <span>{referral.joinedFriends} of {referral.requiredFriends} friends joined & visited</span>
                 <span className="rp-progress-accent">{referral.requiredFriends - referral.joinedFriends} more to go</span>
               </div>
               <div className="rp-bar">
@@ -114,25 +114,25 @@ export function MemberProfile() {
                 <div className="rp-profile-since">Insider Member - Since {member.since}</div>
               </div>
             </div>
-            <div className="rp-stat-grid">
-              <ProfileStat num={String(member.totalVisits)} label="Total visits" />
-              <ProfileStat num={String(member.rewardsEarned)} label="Rewards earned" />
-              <ProfileStat num={member.memberDurationLabel} label="Member" />
-            </div>
-            <div className="rp-info-card">
-              <InfoRow icon={<User size={15} />} label="Name" value={member.name} />
-              <InfoRow label="WhatsApp" value={member.phone} />
-              <InfoRow icon={<Gift size={15} />} label="Birthday" value={member.birthday} />
-            </div>
-            <div className="rp-fav-title">Favorite products</div>
-            <div className="rp-fav-chips">
-              {member.favorites.map((favorite) => (
-                <div className="rp-fav-chip" key={favorite}>{favorite}</div>
-              ))}
-            </div>
-            <div className="rp-member-actions">
-              <Link className="rr-btn-primary" href="/reward">Redeem reward</Link>
-            </div>
+              <div className="rp-stat-grid">
+                <ProfileStat num={String(member.totalVisits)} label="Total visits" />
+                <ProfileStat num={String(member.rewardsEarned)} label="Rewards earned" />
+                <ProfileStat num={member.memberDurationLabel} label="Member" />
+              </div>
+              <div className="rp-info-card">
+                <InfoRow icon={<User size={15} />} label="Name" value={member.name} />
+                <InfoRow label="WhatsApp" value={member.phone} />
+                <InfoRow icon={<Gift size={15} />} label="Birthday" value={member.birthday} />
+              </div>
+              <div className="rp-fav-title">Favorite products</div>
+              <div className="rp-fav-chips">
+                {member.favorites.map((favorite) => (
+                  <div className="rp-fav-chip" key={favorite}>{favorite}</div>
+                ))}
+              </div>
+              <div className="rp-member-actions">
+                <Link className="rr-btn-primary" href="/reward">Redeem reward</Link>
+              </div>
             </> : <div className="rp-header"><h2>No profile found</h2><p>Register first so this browser can remember your phone number.</p></div>}
           </div>
         )}

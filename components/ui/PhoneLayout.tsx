@@ -14,7 +14,7 @@ export default function PhoneLayout({ children }: PhoneLayoutProps) {
         className="flex flex-col sm:hidden"
         style={{
           width: '100%',
-          minHeight: '100dvh',
+          height: '100dvh',
           background: 'var(--surface-page)',
           color: 'var(--text-primary)',
           boxSizing: 'border-box',

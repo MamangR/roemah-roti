@@ -107,6 +107,19 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
     try {
+      let finalReferralValid = referralValid;
+      if (!referralEmpty && referralStatus !== 'valid') {
+        const res = await fetch(`/api/referral/check?code=${encodeURIComponent(referralTrim)}`);
+        const data = await res.json();
+        if (data.valid) {
+          setReferralStatus('valid');
+          finalReferralValid = true;
+        } else {
+          setReferralStatus('invalid');
+          throw new Error('Invalid referral code. Please check or leave it empty.');
+        }
+      }
+
       const birthdayInput = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(birthday!.d).padStart(2, '0')}`;
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -116,7 +129,7 @@ export default function RegisterPage() {
           name, 
           birthdayInput, 
           password,
-          referralCode: referralValid ? referralTrim : '' 
+          referralCode: finalReferralValid ? referralTrim : '' 
         })
       });
       const data = await res.json();
@@ -126,7 +139,7 @@ export default function RegisterPage() {
       setStep('handoff');
       setTimeout(() => {
         router.push('/visits');
-      }, 1500);
+      }, 2000);
     } catch(err: any) {
       setError(err.message);
     } finally {
@@ -299,7 +312,7 @@ export default function RegisterPage() {
                     placeholder="e.g. ROTI2026" 
                     value={referral} 
                     onChange={e => { setReferral(e.target.value); setReferralStatus('idle'); }} 
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: referralValid ? '1px solid var(--sage)' : (referralNotFound ? '1px solid var(--mist)' : '1px solid var(--border-hairline)'), borderRadius: 'var(--radius-sm)', padding: '15px 40px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: referralValid ? '1px solid var(--sage)' : (referralNotFound ? '1px solid #D32F2F' : '1px solid var(--border-hairline)'), borderRadius: 'var(--radius-sm)', padding: '15px 40px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
                   />
                   {referralValid && (
                     <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-confirm-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -319,7 +332,7 @@ export default function RegisterPage() {
                 <div style={{ fontSize: '12px', color: 'var(--sage)', marginTop: '6px' }}>Code applied. You'll both earn a visit.</div>
               )}
               {referralNotFound && (
-                <div style={{ fontSize: '12px', color: 'var(--text-label)', marginTop: '6px' }}>Code not found — you can still continue without it.</div>
+                <div style={{ fontSize: '12px', color: '#D32F2F', marginTop: '6px' }}>Code not found — please check or leave it empty.</div>
               )}
               {referralEmpty && (
                 <div style={{ fontSize: '12px', color: 'var(--text-label)', marginTop: '6px', lineHeight: 1.5 }}>Share with a friend — you both earn a visit.</div>
@@ -352,7 +365,7 @@ export default function RegisterPage() {
             </button>
 
             <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '13px', color: 'var(--text-label)' }}>
-              Already have an account? <span onClick={() => router.push('/')} style={{ color: 'var(--caramel)', fontWeight: 600, cursor: 'pointer' }}>Login</span>
+              Already have an account? <span onClick={() => router.push('/signin')} style={{ color: 'var(--caramel)', fontWeight: 600, cursor: 'pointer' }}>Login</span>
             </div>
           </div>
         </div>
@@ -407,11 +420,18 @@ export default function RegisterPage() {
 
       {step === 'handoff' && (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '22px 28px 26px' }}>
-          <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 26px -12px rgba(59,42,34,.4)' }}>
-            <div style={{ width: '22px', height: '16px', border: '2px solid #fff', borderRadius: '3px' }}></div>
+          <style>{`
+            @keyframes rr-success-pop {
+              0% { transform: scale(0.8); opacity: 0; }
+              50% { transform: scale(1.1); opacity: 1; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+          `}</style>
+          <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 26px -12px rgba(59,42,34,.4)', animation: 'rr-success-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' }}>
+            <div style={{ width: '20px', height: '11px', borderBottom: '3px solid #fff', borderLeft: '3px solid #fff', transform: 'rotate(-45deg) translate(2px, -2px)' }}></div>
           </div>
-          <div style={{ fontSize: 'var(--text-title)', fontWeight: 600, letterSpacing: 'var(--tracking-title)', marginTop: '22px' }}>Registration Complete!</div>
-          <div style={{ fontSize: '14px', lineHeight: 1.6, color: 'var(--text-label)', marginTop: '10px', maxWidth: '260px' }}>
+          <div style={{ fontSize: 'var(--text-title)', fontWeight: 600, letterSpacing: 'var(--tracking-title)', marginTop: '22px', animation: 'rr-success-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', animationDelay: '0.1s', opacity: 0 }}>Registration Complete!</div>
+          <div style={{ fontSize: '14px', lineHeight: 1.6, color: 'var(--text-label)', marginTop: '10px', maxWidth: '260px', animation: 'rr-success-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', animationDelay: '0.2s', opacity: 0 }}>
             Your account is verified and ready to use. Redirecting to your dashboard...
           </div>
         </div>

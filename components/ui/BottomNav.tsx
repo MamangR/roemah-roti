@@ -7,7 +7,7 @@ export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isDash = pathname === '/visits'; // Let's use /visits as dashboard for now, or /dashboard
+  const isDash = pathname === '/visits' || pathname === '/referral';
   const isRewards = pathname === '/rewards';
   const isProfile = pathname === '/profile';
 
@@ -17,7 +17,7 @@ export default function BottomNav() {
   return (
     <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 6, display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '10px 24px 24px', background: 'rgba(252,251,248,.94)', borderTop: '1px solid #EFE8DE', backdropFilter: 'blur(10px)' }}>
       {/* Dashboard */}
-      <div onClick={() => router.push('/visits')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: isDash ? navActive : navIdle }}>
+      <div onClick={() => router.push('/visits')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: isDash ? navActive : navIdle, transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', transform: isDash ? 'scale(1.1)' : 'scale(1)', filter: isDash ? 'drop-shadow(0px 2px 4px rgba(166,124,82,0.3))' : 'none' }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="3" width="7" height="8" rx="1.5"/>
           <rect x="14" y="3" width="7" height="5" rx="1.5"/>
@@ -28,7 +28,7 @@ export default function BottomNav() {
       </div>
 
       {/* Rewards */}
-      <div onClick={() => router.push('/rewards')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: isRewards ? navActive : navIdle }}>
+      <div onClick={() => router.push('/rewards')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: isRewards ? navActive : navIdle, transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', transform: isRewards ? 'scale(1.1)' : 'scale(1)', filter: isRewards ? 'drop-shadow(0px 2px 4px rgba(166,124,82,0.3))' : 'none' }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           {/* box body */}
           <rect x="3" y="11" width="18" height="11" rx="1.5"/>
@@ -45,7 +45,7 @@ export default function BottomNav() {
       </div>
 
       {/* Profile */}
-      <div onClick={() => router.push('/profile')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: isProfile ? navActive : navIdle }}>
+      <div onClick={() => router.push('/profile')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer', color: isProfile ? navActive : navIdle, transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)', transform: isProfile ? 'scale(1.1)' : 'scale(1)', filter: isProfile ? 'drop-shadow(0px 2px 4px rgba(166,124,82,0.3))' : 'none' }}>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
           {/* head */}
           <circle cx="12" cy="8" r="3.5"/>

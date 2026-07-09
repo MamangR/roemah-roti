@@ -31,8 +31,28 @@ export async function GET() {
       return NextResponse.json({ error: 'Session expired or invalid' }, { status: 401 });
     }
 
-    // Return the member profile (include birthdayInput for birthday reward logic)
-    return NextResponse.json({ member: session.member });
+    // Check and update referred friends' status dynamically
+    const mappedFriends = await Promise.all(
+      session.member.referredFriends.map(async (f) => {
+        if (f.status === 'Pending') {
+          const friendMember = await prisma.member.findFirst({ where: { name: f.friendName } });
+          if (friendMember && friendMember.totalVisits > 0) {
+            // Optionally update DB
+            await prisma.referredFriend.update({ where: { id: f.id }, data: { status: 'Approved' } });
+            return { ...f, status: 'Approved' };
+          }
+        }
+        return f;
+      })
+    );
+
+    // Return the member profile
+    return NextResponse.json({ 
+      member: { 
+        ...session.member, 
+        referredFriends: mappedFriends 
+      } 
+    });
   } catch (error) {
     console.error('API /user/me Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

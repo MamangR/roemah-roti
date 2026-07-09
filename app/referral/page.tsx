@@ -35,7 +35,7 @@ export default function ReferralPage() {
   const link = 'roemahroti.id/join/' + code;
   const goalCount = 1;
   const rawFriends = member?.referredFriends || [];
-  const qualifying = rawFriends.filter((f: any) => f.status !== 'Rejected').length;
+  const qualifying = rawFriends.filter((f: any) => f.status === 'Approved').length;
   
   const hasClaimed = member?.rewards?.some((r: any) => r.type === 'Referral' && r.title.includes('Garlic Cream Cheese'));
   const baseRewardState = locallyClaimed || hasClaimed ? 'claimed' : (qualifying >= goalCount ? 'ready' : 'locked');
@@ -45,7 +45,7 @@ export default function ReferralPage() {
 
   const friends = rawFriends.map((f: any) => {
     // Basic color mapping based on status
-    const isQual = f.status !== 'Rejected';
+    const isQual = f.status === 'Approved';
     const color = isQual ? '#5C7B5A' : '#A08A7B';
     const dot = isQual ? '#5C7B5A' : '#C9B7A6';
     return {
@@ -67,8 +67,8 @@ export default function ReferralPage() {
   const rm = rewardMap[baseRewardState];
 
   const progressLine = remaining > 0
-    ? qualifying + ' of ' + goalCount + ' friends joined · ' + remaining + ' more to unlock your next reward.'
-    : 'All set — ' + goalCount + ' of ' + goalCount + ' friends joined for this reward cycle.';
+    ? qualifying + ' of ' + goalCount + ' friends joined & visited · ' + remaining + ' more to unlock your next reward.'
+    : 'All set — ' + goalCount + ' of ' + goalCount + ' friends joined & visited for this reward cycle.';
 
   const terms = [
     'Reward is granted after your friend completes their first qualifying visit.',

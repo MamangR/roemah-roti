@@ -67,7 +67,7 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (err) {}
     setMember(null);
-    router.push('/');
+    router.push('/signin');
   };
 
   useEffect(() => {
@@ -77,9 +77,10 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
   // Simple auth guard for internal pages
   useEffect(() => {
     if (!loading) {
-      const isAuthPage = pathname === '/' || pathname === '/register';
-      if (!member && !isAuthPage) {
-        router.push('/');
+      const isAuthPage = pathname === '/signin' || pathname === '/register';
+      const isLandingPage = pathname === '/';
+      if (!member && !isAuthPage && !isLandingPage) {
+        router.push('/signin');
       } else if (member && isAuthPage) {
         router.push('/visits');
       }

@@ -20,8 +20,8 @@ export async function POST(req: Request) {
 
     const member = session.member;
 
-    // Check if they have at least 1 referred friend
-    const qualifyingFriends = member.referredFriends.filter(f => f.status !== 'Rejected');
+    // Check if they have at least 1 Approved referred friend
+    const qualifyingFriends = member.referredFriends.filter(f => f.status === 'Approved');
     if (qualifyingFriends.length === 0) {
       return NextResponse.json({ error: 'No qualifying friends' }, { status: 400 });
     }

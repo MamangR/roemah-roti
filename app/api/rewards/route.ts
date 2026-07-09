@@ -135,10 +135,14 @@ export async function POST(request: NextRequest) {
 
     // ─── 1. Try to find if this is a pre-existing MemberReward record ─────────
     const existingReward = await prisma.memberReward.findUnique({
-      where: { memberId_rewardType: { memberId, rewardType: rewardId } },
+      where: { id: rewardId },
     });
 
     if (existingReward) {
+      if (existingReward.memberId !== memberId) {
+        return Response.json({ error: "Unauthorized reward redemption" }, { status: 403 });
+      }
+
       if (!existingReward.isAvailable || existingReward.redeemedAt) {
         return Response.json({ error: "Reward already redeemed" }, { status: 400 });
       }

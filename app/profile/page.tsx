@@ -165,7 +165,7 @@ export default function ProfilePage() {
             <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: '#A67C52' }}>RR</div>
             <div style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '20px' }}>You've been logged out</div>
             <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px' }}>See you soon.</div>
-            <div onClick={() => router.push('/')} style={{ marginTop: '26px', width: '100%', boxSizing: 'border-box', background: '#A67C52', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: '16px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>Log In Again</div>
+            <div onClick={() => router.push('/signin')} style={{ marginTop: '26px', width: '100%', boxSizing: 'border-box', background: '#A67C52', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: '16px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>Log In Again</div>
           </div>
         )}
 

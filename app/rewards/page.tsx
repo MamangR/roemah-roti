@@ -203,7 +203,7 @@ export default function RewardsPage() {
   }
 
   const rawBirthdayItem: RewardItem = {
-    id: bdayDb?.id ?? 'birthday',
+    id: 'birthday',
     cat: 'Birthday Reward',
     name: bdayDb?.title ?? 'Birthday Treat Box',
     desc: bdayDb?.description ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.',
