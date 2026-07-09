@@ -84,7 +84,7 @@ export default function MemberManagementPage() {
       try {
         const data = await getMembers();
         setMembers(data);
-      } catch(e) { console.error(e); }
+      } catch (e) { console.error(e); }
     }
     fetchM();
   }, []);
@@ -94,7 +94,7 @@ export default function MemberManagementPage() {
   const [sortDir, setSortDir] = useState('asc');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cameFrom, setCameFrom] = useState<'list' | 'search'>('list');
-  
+
   const [draft, setDraft] = useState<any>(null);
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
@@ -114,11 +114,11 @@ export default function MemberManagementPage() {
   };
 
   const openMemberFrom = (id: string, from: 'list' | 'search') => { setScreen('detail'); setSelectedId(id); setCameFrom(from); };
-  
+
   const q = searchQuery.trim().toLowerCase();
   const qDigits = normalizeDigits(searchQuery);
   const searchResults = q ? members.filter(m => m.memberId.toLowerCase().includes(q) || (qDigits && normalizeDigits(m.wa).includes(qDigits)))
-                                   .map(m => buildDisplayMember(m, () => openMemberFrom(m.id, 'search'))) : [];
+    .map(m => buildDisplayMember(m, () => openMemberFrom(m.id, 'search'))) : [];
 
   const filtered = members.filter(m => listFilter === 'all' || m.status === listFilter);
   const dir = sortDir === 'asc' ? 1 : -1;
@@ -154,12 +154,12 @@ export default function MemberManagementPage() {
                 <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div>
               </div>
             </div>
-             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
               <div onClick={() => { setScreen('search'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen === 'search' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen === 'search' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
                 <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}>
                   <div style={{ position: 'absolute', width: '6px', height: '1.6px', background: 'currentColor', transform: 'rotate(45deg)', right: '-4px', bottom: '1px' }}></div>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Cari Anggota</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Cari Member</span>
               </div>
               <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen === 'list' || screen === 'detail' || screen === 'edit' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen === 'list' || screen === 'detail' || screen === 'edit' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
                 <div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -167,11 +167,11 @@ export default function MemberManagementPage() {
                   <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
                   <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Anggota</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Member</span>
               </div>
             </div>
             <div style={{ flex: 1 }}></div>
-            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>{members.length} anggota terdaftar</div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br />{members.length} Member terdaftar</div>
           </div>
         </div>
       )}
@@ -192,7 +192,7 @@ export default function MemberManagementPage() {
             <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}>
               <div style={{ position: 'absolute', width: '6px', height: '1.6px', background: 'currentColor', transform: 'rotate(45deg)', right: '-4px', bottom: '1px' }}></div>
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>Cari Anggota</span>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Cari Member</span>
           </div>
           <div onClick={() => setScreen('list')} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen === 'list' || screen === 'detail' || screen === 'edit' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen === 'list' || screen === 'detail' || screen === 'edit' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
             <div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -200,11 +200,11 @@ export default function MemberManagementPage() {
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Anggota</span>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Member</span>
           </div>
         </div>
         <div style={{ flex: 1 }}></div>
-        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>{members.length} anggota terdaftar</div>
+        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br />{members.length} Member terdaftar</div>
       </div>
 
       {/* Main content area with mobile top bar */}
@@ -220,212 +220,212 @@ export default function MemberManagementPage() {
             <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
           </button>
           <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Manajemen Anggota</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Manajemen Member</div>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
-        
-        {screen === 'search' && (
-          <div style={{ maxWidth: '760px', margin: '0 auto', padding: '52px 40px 60px' }}>
-            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Cari Anggota</div>
-            <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Cari berdasarkan Nomor WhatsApp atau ID Anggota.</div>
-            <div style={{ marginTop: '26px' }}>
-              <Input label="NOMOR WHATSAPP ATAU ID ANGGOTA" placeholder="Contoh: 0812-3456-7801 atau RR-01042" value={searchQuery} onChange={(e: any) => setSearchQuery(e.target.value)} />
-            </div>
-            {q.length > 0 ? (
-              <div style={{ marginTop: '22px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '2px' }}>{searchResults.length} hasil ditemukan</div>
-                {searchResults.map(m => (
-                  <div key={m.id} onClick={m.onClick} style={{ display: 'flex', alignItems: 'center', gap: '18px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '16px 18px', cursor: 'pointer', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
-                    <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#F8F4EE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 600, color: '#A67C52', flex: 'none' }}>{m.initials}</div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '15px', fontWeight: 600, color: '#3B2A22' }}>{m.name}</div>
-                      <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '2px', fontVariantNumeric: 'tabular-nums' }}>{m.memberId} · {m.wa}</div>
+
+          {screen === 'search' && (
+            <div style={{ maxWidth: '760px', margin: '0 auto', padding: '52px 40px 60px' }}>
+              <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Cari Member</div>
+              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Cari berdasarkan Nomor WhatsApp atau ID Member.</div>
+              <div style={{ marginTop: '26px' }}>
+                <Input label="NOMOR WHATSAPP ATAU ID Member" placeholder="Contoh: 0812-3456-7801 atau RR-01042" value={searchQuery} onChange={(e: any) => setSearchQuery(e.target.value)} />
+              </div>
+              {q.length > 0 ? (
+                <div style={{ marginTop: '22px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '2px' }}>{searchResults.length} hasil ditemukan</div>
+                  {searchResults.map(m => (
+                    <div key={m.id} onClick={m.onClick} style={{ display: 'flex', alignItems: 'center', gap: '18px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '16px 18px', cursor: 'pointer', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
+                      <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#F8F4EE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 600, color: '#A67C52', flex: 'none' }}>{m.initials}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '15px', fontWeight: 600, color: '#3B2A22' }}>{m.name}</div>
+                        <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '2px', fontVariantNumeric: 'tabular-nums' }}>{m.memberId} · {m.wa}</div>
+                      </div>
+                      <StatusPill bg={m.pillBg} color={m.pillColor} label={m.statusLabel} />
                     </div>
-                    <StatusPill bg={m.pillBg} color={m.pillColor} label={m.statusLabel} />
-                  </div>
-                ))}
-                {searchResults.length === 0 && <div style={{ textAlign: 'center', padding: '40px 20px', color: '#7A6A5F', fontSize: '14px' }}>Tidak ada anggota yang cocok dengan “{searchQuery}”.</div>}
-              </div>
-            ) : (
-              <div style={{ marginTop: '40px', textAlign: 'center', padding: '48px 30px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#3B2A22' }}>Ketik nomor WhatsApp atau ID Anggota untuk mulai mencari</div>
-                <div style={{ fontSize: '14px', color: '#7A6A5F', marginTop: '8px', lineHeight: 1.6 }}>Atau lihat semua anggota yang terdaftar di Daftar Anggota.</div>
-                <div style={{ marginTop: '22px', display: 'flex', justifyContent: 'center' }}><Button variant="outline" onClick={() => setScreen('list')} style={{ padding: '14px 26px' }}>Buka Daftar Anggota</Button></div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {screen === 'list' && (
-          <div style={{ padding: '52px 40px 60px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Anggota</div>
-                <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{sortedMembers.length} dari {members.length} anggota</div>
-              </div>
-              <div style={{ display: 'flex', gap: '10px', width: '100%', flex: '1 1 auto', justifyContent: 'flex-start' }}>
-                <div style={{ flex: '1 1 50%', maxWidth: '220px' }}><Button variant="outline" onClick={() => setScreen('search')} style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}>Cari Anggota</Button></div>
-                <div style={{ flex: '1 1 50%', maxWidth: '180px' }}><Button variant="primary" onClick={() => setAddMemberOpen(true)} style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}>+ Tambah Anggota</Button></div>
-              </div>
-            </div>
-            <div style={{ marginTop: '22px', maxWidth: '520px' }}>
-              <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Active', label: 'Aktif' }, { value: 'Suspended', label: 'Ditangguhkan' }, { value: 'Archived', label: 'Diarsipkan' }]} value={listFilter} onChange={setListFilter} />
-            </div>
-            <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1.3fr .9fr .7fr 1fr 1fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                <div style={{ cursor: 'pointer' }} onClick={() => { setSortKey('name'); setSortDir(sortDir==='asc'?'desc':'asc')}}>Nama</div>
-                <div>ID Anggota</div><div>No. WhatsApp</div><div>Status</div>
-                <div style={{ cursor: 'pointer' }} onClick={() => { setSortKey('visits'); setSortDir(sortDir==='asc'?'desc':'asc')}}>Visit</div>
-                <div style={{ cursor: 'pointer' }} onClick={() => { setSortKey('spending'); setSortDir(sortDir==='asc'?'desc':'asc')}}>Belanja</div>
-                <div>Aktivitas Terakhir</div><div>Bergabung</div>
-              </div>
-              {sortedMembers.map(m => (
-                <div key={m.id} onClick={m.onClick} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1.3fr .9fr .7fr 1fr 1fr 1fr', gap: '10px', padding: '15px 20px', cursor: 'pointer', borderTop: '1px solid #EAE1D5', alignItems: 'center', fontSize: '13px', color: '#4A3830' }}>
-                  <div style={{ fontWeight: 600, color: '#3B2A22' }}>{m.name}</div>
-                  <div style={{ fontVariantNumeric: 'tabular-nums', color: '#7A6A5F' }}>{m.memberId}</div>
-                  <div style={{ fontVariantNumeric: 'tabular-nums', color: '#7A6A5F' }}>{m.wa}</div>
-                  <div><StatusPill bg={m.pillBg} color={m.pillColor} label={m.statusLabel} /></div>
-                  <div style={{ fontVariantNumeric: 'tabular-nums' }}>{m.visits}/{m.goal}</div>
-                  <div style={{ fontVariantNumeric: 'tabular-nums' }}>{m.spendingLabel}</div>
-                  <div style={{ color: '#7A6A5F' }}>{m.lastActivityLabel}</div>
-                  <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{m.joinDateLabel}</div>
+                  ))}
+                  {searchResults.length === 0 && <div style={{ textAlign: 'center', padding: '40px 20px', color: '#7A6A5F', fontSize: '14px' }}>Tidak ada Member yang cocok dengan “{searchQuery}”.</div>}
                 </div>
-              ))}
+              ) : (
+                <div style={{ marginTop: '40px', textAlign: 'center', padding: '48px 30px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#3B2A22' }}>Ketik nomor WhatsApp atau ID Member untuk mulai mencari</div>
+                  <div style={{ fontSize: '14px', color: '#7A6A5F', marginTop: '8px', lineHeight: 1.6 }}>Atau lihat semua Member yang terdaftar di Daftar Member.</div>
+                  <div style={{ marginTop: '22px', display: 'flex', justifyContent: 'center' }}><Button variant="outline" onClick={() => setScreen('list')} style={{ padding: '14px 26px' }}>Buka Daftar Member</Button></div>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {screen === 'detail' && (
-          <div style={{ maxWidth: '920px', margin: '0 auto', padding: '52px 40px 60px' }}>
-            <div onClick={() => setScreen(cameFrom)} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', cursor: 'pointer', color: '#7A6A5F', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>
-              <span style={{ fontSize: '15px' }}>←</span> Kembali ke {cameFrom === 'search' ? 'hasil pencarian' : 'Daftar Member'}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div style={{ width: '58px', height: '58px', borderRadius: '50%', background: '#F8F4EE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '19px', fontWeight: 600, color: '#A67C52', flex: 'none' }}>{selectedMember.initials}</div>
+          {screen === 'list' && (
+            <div style={{ padding: '52px 40px 60px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>{selectedMember.name}</div>
-                    <StatusPill bg={selectedMember.pillBg} color={selectedMember.pillColor} label={selectedMember.statusLabel} />
-                  </div>
-                  <div style={{ fontSize: '13.5px', color: '#7A6A5F', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember.memberId} · {selectedMember.wa}</div>
+                  <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Member</div>
+                  <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{sortedMembers.length} dari {members.length} Member</div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', width: '100%', flex: '1 1 auto', justifyContent: 'flex-start' }}>
+                  <div style={{ flex: '1 1 50%', maxWidth: '220px' }}><Button variant="outline" onClick={() => setScreen('search')} style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}>Cari Member</Button></div>
+                  <div style={{ flex: '1 1 50%', maxWidth: '180px' }}><Button variant="primary" onClick={() => setAddMemberOpen(true)} style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}>+ Tambah Member</Button></div>
                 </div>
               </div>
-              <div style={{ width: '140px' }}><Button variant="primary" onClick={() => { setDraft({ ...selectedMember, goal: GOAL }); setScreen('edit'); }}>Edit</Button></div>
-            </div>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '18px', marginTop: '26px', alignItems: 'start' }}>
-              <VisitProgressCard visits={selectedMember!.visits} goal={selectedMember!.goal} reward={selectedMember!.reward} />
-              <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '20px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div>
-                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Reward Status</div>
-                  <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px' }}>{selectedMember!.rewardStatusLabel}</div>
-                </div>
-                <div style={{ height: '1px', background: '#EAE1D5' }}></div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Total Belanja</div>
-                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember!.spendingLabel}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Aktivitas Terakhir</div>
-                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px' }}>{selectedMember!.lastActivityLabel}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Tanggal Bergabung</div>
-                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember!.joinDateLabel}</div>
-                  </div>
-                </div>
+              <div style={{ marginTop: '22px', maxWidth: '520px' }}>
+                <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Active', label: 'Aktif' }, { value: 'Suspended', label: 'Ditangguhkan' }, { value: 'Archived', label: 'Diarsipkan' }]} value={listFilter} onChange={setListFilter} />
               </div>
-            </div>
-
-            <div style={{ marginTop: '26px' }}>
-              <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22', marginBottom: '12px' }}>Riwayat Transaksi</div>
-              <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr 1fr', gap: '10px', padding: '13px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                  <div>Tanggal</div><div>Invoice</div><div>Total Belanja</div><div>Visit Earned</div>
+              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1.3fr .9fr .7fr 1fr 1fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                  <div style={{ cursor: 'pointer' }} onClick={() => { setSortKey('name'); setSortDir(sortDir === 'asc' ? 'desc' : 'asc') }}>Nama</div>
+                  <div>ID Member</div><div>No. WhatsApp</div><div>Status</div>
+                  <div style={{ cursor: 'pointer' }} onClick={() => { setSortKey('visits'); setSortDir(sortDir === 'asc' ? 'desc' : 'asc') }}>Visit</div>
+                  <div style={{ cursor: 'pointer' }} onClick={() => { setSortKey('spending'); setSortDir(sortDir === 'asc' ? 'desc' : 'asc') }}>Belanja</div>
+                  <div>Aktivitas Terakhir</div><div>Bergabung</div>
                 </div>
-                {selectedMemberTransactions.map((t: any, i: number) => (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr 1fr', gap: '10px', padding: '14px 20px', borderTop: '1px solid #EAE1D5', fontSize: '13.5px', color: '#4A3830' }}>
-                    <div style={{ fontVariantNumeric: 'tabular-nums' }}>{t.dateLabel}</div>
-                    <div style={{ fontVariantNumeric: 'tabular-nums', color: '#7A6A5F' }}>{t.invoice}</div>
-                    <div style={{ fontVariantNumeric: 'tabular-nums' }}>{t.totalLabel}</div>
-                    <div style={{ color: '#A67C52', fontWeight: 600 }}>+{t.visitEarned}</div>
+                {sortedMembers.map(m => (
+                  <div key={m.id} onClick={m.onClick} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1.3fr .9fr .7fr 1fr 1fr 1fr', gap: '10px', padding: '15px 20px', cursor: 'pointer', borderTop: '1px solid #EAE1D5', alignItems: 'center', fontSize: '13px', color: '#4A3830' }}>
+                    <div style={{ fontWeight: 600, color: '#3B2A22' }}>{m.name}</div>
+                    <div style={{ fontVariantNumeric: 'tabular-nums', color: '#7A6A5F' }}>{m.memberId}</div>
+                    <div style={{ fontVariantNumeric: 'tabular-nums', color: '#7A6A5F' }}>{m.wa}</div>
+                    <div><StatusPill bg={m.pillBg} color={m.pillColor} label={m.statusLabel} /></div>
+                    <div style={{ fontVariantNumeric: 'tabular-nums' }}>{m.visits}/{m.goal}</div>
+                    <div style={{ fontVariantNumeric: 'tabular-nums' }}>{m.spendingLabel}</div>
+                    <div style={{ color: '#7A6A5F' }}>{m.lastActivityLabel}</div>
+                    <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{m.joinDateLabel}</div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {screen === 'edit' && draft && (
-          <div style={{ maxWidth: '640px', margin: '0 auto', padding: '52px 40px 60px' }}>
-            <div onClick={() => setScreen('detail')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', cursor: 'pointer', color: '#7A6A5F', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>
-              <span style={{ fontSize: '15px' }}>←</span> Batal, kembali ke Member Detail
-            </div>
-            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Edit Member</div>
-            <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{draft.memberId} · {draft.wa}</div>
-            
-            <div style={{ marginTop: '28px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Data Pribadi</div>
-              <Input label="NAMA" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
-              <Input label="NO. HP / WHATSAPP" value={draft.wa} onChange={(e: any) => setDraft({ ...draft, wa: e.target.value })} />
-              <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Status Anggota</div>
-              <SegmentedToggle options={[{ value: 'Active', label: 'Aktif' }, { value: 'Suspended', label: 'Ditangguhkan' }, { value: 'Archived', label: 'Diarsipkan' }]} value={draft.status} onChange={(v: any) => setDraft({ ...draft, status: v })} />
-              <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Koreksi Visit</div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
-                <div>
-                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Visit saat ini</div>
-                  <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {draft.goal}</div>
+          {screen === 'detail' && (
+            <div style={{ maxWidth: '920px', margin: '0 auto', padding: '52px 40px 60px' }}>
+              <div onClick={() => setScreen(cameFrom)} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', cursor: 'pointer', color: '#7A6A5F', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>
+                <span style={{ fontSize: '15px' }}>←</span> Kembali ke {cameFrom === 'search' ? 'hasil pencarian' : 'Daftar Member'}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ width: '58px', height: '58px', borderRadius: '50%', background: '#F8F4EE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '19px', fontWeight: 600, color: '#A67C52', flex: 'none' }}>{selectedMember.initials}</div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>{selectedMember.name}</div>
+                      <StatusPill bg={selectedMember.pillBg} color={selectedMember.pillColor} label={selectedMember.statusLabel} />
+                    </div>
+                    <div style={{ fontSize: '13.5px', color: '#7A6A5F', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember.memberId} · {selectedMember.wa}</div>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <div onClick={() => setDraft({ ...draft, visits: Math.max(0, draft.visits - 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>−</div>
-                  <div onClick={() => setDraft({ ...draft, visits: Math.min(GOAL, draft.visits + 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>+</div>
+                <div style={{ width: '140px' }}><Button variant="primary" onClick={() => { setDraft({ ...selectedMember, goal: GOAL }); setScreen('edit'); }}>Edit</Button></div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '18px', marginTop: '26px', alignItems: 'start' }}>
+                <VisitProgressCard visits={selectedMember!.visits} goal={selectedMember!.goal} reward={selectedMember!.reward} />
+                <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '20px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Reward Status</div>
+                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px' }}>{selectedMember!.rewardStatusLabel}</div>
+                  </div>
+                  <div style={{ height: '1px', background: '#EAE1D5' }}></div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Total Belanja</div>
+                      <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember!.spendingLabel}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Aktivitas Terakhir</div>
+                      <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px' }}>{selectedMember!.lastActivityLabel}</div>
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Tanggal Bergabung</div>
+                      <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', marginTop: '4px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember!.joinDateLabel}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '26px' }}>
+                <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22', marginBottom: '12px' }}>Riwayat Transaksi</div>
+                <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr 1fr', gap: '10px', padding: '13px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                    <div>Tanggal</div><div>Invoice</div><div>Total Belanja</div><div>Visit Earned</div>
+                  </div>
+                  {selectedMemberTransactions.map((t: any, i: number) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr 1fr 1fr', gap: '10px', padding: '14px 20px', borderTop: '1px solid #EAE1D5', fontSize: '13.5px', color: '#4A3830' }}>
+                      <div style={{ fontVariantNumeric: 'tabular-nums' }}>{t.dateLabel}</div>
+                      <div style={{ fontVariantNumeric: 'tabular-nums', color: '#7A6A5F' }}>{t.invoice}</div>
+                      <div style={{ fontVariantNumeric: 'tabular-nums' }}>{t.totalLabel}</div>
+                      <div style={{ color: '#A67C52', fontWeight: 600 }}>+{t.visitEarned}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-            
-            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-              <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setScreen('detail')}>Batal</Button></div>
-              <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
-                await saveMember(draft.id, { name: draft.name, wa: draft.wa, status: draft.status, visits: draft.visits });
-                const updated = await getMembers();
-                setMembers(updated);
-                setScreen('detail');
-              }}>Simpan</Button></div>
-            </div>
-          </div>
-        )}
+          )}
 
-      </div>{/* close overflowY:auto */}
+          {screen === 'edit' && draft && (
+            <div style={{ maxWidth: '640px', margin: '0 auto', padding: '52px 40px 60px' }}>
+              <div onClick={() => setScreen('detail')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', cursor: 'pointer', color: '#7A6A5F', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>
+                <span style={{ fontSize: '15px' }}>←</span> Batal, kembali ke Member Detail
+              </div>
+              <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Edit Member</div>
+              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{draft.memberId} · {draft.wa}</div>
+
+              <div style={{ marginTop: '28px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Data Pribadi</div>
+                <Input label="NAMA" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
+                <Input label="NO. HP / WHATSAPP" value={draft.wa} onChange={(e: any) => setDraft({ ...draft, wa: e.target.value })} />
+                <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Status Member</div>
+                <SegmentedToggle options={[{ value: 'Active', label: 'Aktif' }, { value: 'Suspended', label: 'Ditangguhkan' }, { value: 'Archived', label: 'Diarsipkan' }]} value={draft.status} onChange={(v: any) => setDraft({ ...draft, status: v })} />
+                <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Koreksi Visit</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Visit saat ini</div>
+                    <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {draft.goal}</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <div onClick={() => setDraft({ ...draft, visits: Math.max(0, draft.visits - 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>−</div>
+                    <div onClick={() => setDraft({ ...draft, visits: Math.min(GOAL, draft.visits + 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>+</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setScreen('detail')}>Batal</Button></div>
+                <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
+                  await saveMember(draft.id, { name: draft.name, wa: draft.wa, status: draft.status, visits: draft.visits });
+                  const updated = await getMembers();
+                  setMembers(updated);
+                  setScreen('detail');
+                }}>Simpan</Button></div>
+              </div>
+            </div>
+          )}
+
+        </div>{/* close overflowY:auto */}
       </div>{/* close flex flex-col main content wrapper */}
 
       {addMemberOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(43, 30, 24, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ width: '420px', background: '#FFFFFF', borderRadius: '22px', padding: '26px', boxShadow: '0 30px 60px -20px rgba(0, 0, 0, 0.5)' }}>
-            <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Tambah Anggota Baru</div>
-            <div style={{ fontSize: '13.5px', color: '#7A6A5F', marginTop: '6px' }}>Masukkan nama dan nomor WhatsApp anggota.</div>
+            <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Tambah Member Baru</div>
+            <div style={{ fontSize: '13.5px', color: '#7A6A5F', marginTop: '6px' }}>Masukkan nama dan nomor WhatsApp Member.</div>
             <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <Input label="NAMA" placeholder="Contoh: Siti Rahayu" value={newMember.name} onChange={(e: any) => setNewMember({ ...newMember, name: e.target.value })} />
               <Input label="NO. WHATSAPP" placeholder="Contoh: 0812-3456-7801" value={newMember.wa} onChange={(e: any) => setNewMember({ ...newMember, wa: e.target.value })} />
             </div>
             {addMemberError && <div style={{ marginTop: '12px', fontSize: '12.5px', color: '#B4432A' }}>{addMemberError}</div>}
-              <div style={{ display: 'flex', gap: '12px', marginTop: '22px' }}>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '22px' }}>
               <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setAddMemberOpen(false)}>Batal</Button></div>
               <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
                 const name = newMember.name.trim();
                 const wa = newMember.wa.trim();
                 if (!name || !wa) return setAddMemberError('Nama dan nomor WhatsApp wajib diisi.');
-                
+
                 try {
                   await createMemberAdmin({ name, wa });
                   const updated = await getMembers();
                   setMembers(updated);
                   setAddMemberOpen(false);
                   setNewMember({ name: '', wa: '' });
-                } catch(err: any) {
+                } catch (err: any) {
                   setAddMemberError(err.message || 'Gagal menambahkan member');
                 }
               }}>Simpan</Button></div>

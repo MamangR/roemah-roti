@@ -225,7 +225,7 @@ export default function UpdatesManagementPage() {
                   loading ? 'Memuat data...' :
                   activeTab === 'newMenu' ? newMenuItems.length + ' item tersimpan' :
                   activeTab === 'promo' ? promos.length + ' promo tersimpan' :
-                  announcements.length + ' pengumuman tersimpan'
+                  announcements.length + ' announcement tersimpan'
                 }</div>
               </div>
               <div style={{ width: '180px' }}>
@@ -237,7 +237,7 @@ export default function UpdatesManagementPage() {
               <SegmentedToggle options={[
                 { value: 'newMenu', label: 'Menu Baru' },
                 { value: 'promo', label: 'Promo' },
-                { value: 'announcement', label: 'Pengumuman' }
+                { value: 'announcement', label: 'Announcement' }
               ]} value={activeTab} onChange={setActiveTab} />
             </div>
 
@@ -323,7 +323,7 @@ export default function UpdatesManagementPage() {
                     </div>
                   </div>
                 ))}
-                {announcements.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada pengumuman.</div>}
+                {announcements.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada announcement.</div>}
               </div>
             )}
           </div>
@@ -347,7 +347,7 @@ export default function UpdatesManagementPage() {
                 <SegmentedToggle options={[
                   { value: 'newMenu', label: 'Menu Baru' },
                   { value: 'promo', label: 'Promo' },
-                  { value: 'announcement', label: 'Pengumuman' }
+                  { value: 'announcement', label: 'Announcement' }
                 ]} value={formType} onChange={(v: any) => { setFormType(v); setDraft(emptyDraft(v)); }} />
               </div>
             )}
@@ -433,7 +433,7 @@ export default function UpdatesManagementPage() {
                   <Input label="RINGKASAN" placeholder="Satu kalimat ringkasan" value={draft.summary} onChange={(e: any) => setDraft({ ...draft, summary: e.target.value })} />
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>ISI LENGKAP</div>
-                    <textarea value={draft.content} onChange={(e: any) => setDraft({ ...draft, content: e.target.value })} placeholder="Tuliskan isi lengkap pengumuman" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
+                    <textarea value={draft.content} onChange={(e: any) => setDraft({ ...draft, content: e.target.value })} placeholder="Tuliskan isi lengkap announcement" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
                   </div>
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>OUTLET</div>
@@ -447,7 +447,7 @@ export default function UpdatesManagementPage() {
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
                     <div>
                       <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Sematkan di atas</div>
-                      <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px' }}>Pengumuman ini akan selalu tampil di atas daftar.</div>
+                      <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px' }}>Announcement ini akan selalu tampil di atas daftar.</div>
                     </div>
                     <div onClick={() => setDraft({ ...draft, pinned: !draft.pinned })} style={{ width: '46px', height: '27px', borderRadius: '999px', background: draft.pinned ? '#5C7B5A' : '#E6DDD0', flex: 'none', position: 'relative', cursor: 'pointer', transition: 'background .2s ease' }}>
                       <div style={{ position: 'absolute', top: '2.5px', left: draft.pinned ? '21px' : '3px', width: '22px', height: '22px', borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(59,42,34,.3)', transition: 'left .2s cubic-bezier(.22,1,.36,1)' }}></div>

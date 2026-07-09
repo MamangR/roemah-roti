@@ -10,12 +10,12 @@ export default function AdminDashboardPage() {
 
   const DATA = {
     today: {
-      labels: ['7AM','8AM','9AM','10AM','11AM','12PM','1PM','2PM','3PM','4PM','5PM','6PM','7PM','8PM'],
-      revenue: [180000,320000,410000,380000,520000,610000,540000,430000,390000,460000,410000,350000,290000,240000],
-      visits: [8,14,18,16,22,26,24,19,17,20,18,15,12,9],
-      newMembers: [0,1,0,1,0,1,1,0,0,1,0,0,0,1],
-      memberTxn: [3,5,6,5,7,8,7,6,5,6,5,4,3,2],
-      nonMemberTxn: [2,3,3,3,4,4,4,3,3,3,3,2,2,1],
+      labels: ['7AM', '8AM', '9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM'],
+      revenue: [180000, 320000, 410000, 380000, 520000, 610000, 540000, 430000, 390000, 460000, 410000, 350000, 290000, 240000],
+      visits: [8, 14, 18, 16, 22, 26, 24, 19, 17, 20, 18, 15, 12, 9],
+      newMembers: [0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1],
+      memberTxn: [3, 5, 6, 5, 7, 8, 7, 6, 5, 6, 5, 4, 3, 2],
+      nonMemberTxn: [2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 3, 2, 2, 1],
       rewardsRedeemed: 9,
       totalMembers: 1284,
       activeMembers: 512,
@@ -30,12 +30,12 @@ export default function AdminDashboardPage() {
       growth: { revenue: 8.4, transactions: 5.1, aov: 3.1, itemsSold: 6.7, newMembers: 25.0, totalVisits: 11.2, rewardsRedeemed: -4.3, totalMembers: 1.8, activeMembers: 3.4, memberTransactions: 9.0, nonMemberTransactions: -2.2, memberRate: 2.6 }
     },
     custom: {
-      labels: ['30 Jun','1 Jul','2 Jul','3 Jul','4 Jul','5 Jul','6 Jul'],
-      revenue: [4200000,4650000,4100000,4900000,5300000,4550000,3700000],
-      visits: [118,132,110,140,155,128,119],
-      newMembers: [4,6,3,7,8,4,2],
-      memberTxn: [45,52,42,55,60,50,44],
-      nonMemberTxn: [24,28,22,29,31,27,23],
+      labels: ['30 Jun', '1 Jul', '2 Jul', '3 Jul', '4 Jul', '5 Jul', '6 Jul'],
+      revenue: [4200000, 4650000, 4100000, 4900000, 5300000, 4550000, 3700000],
+      visits: [118, 132, 110, 140, 155, 128, 119],
+      newMembers: [4, 6, 3, 7, 8, 4, 2],
+      memberTxn: [45, 52, 42, 55, 60, 50, 44],
+      nonMemberTxn: [24, 28, 22, 29, 31, 27, 23],
       rewardsRedeemed: 58,
       totalMembers: 1284,
       activeMembers: 588,
@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
   const [selEnd, setSelEnd] = useState('2026-07-06');
   const [appliedStart, setAppliedStart] = useState('2026-06-30');
   const [appliedEnd, setAppliedEnd] = useState('2026-07-06');
-  const [hover, setHover] = useState<{key: string, i: number} | null>(null);
+  const [hover, setHover] = useState<{ key: string, i: number } | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const [liveData, setLiveData] = useState<any>(null);
@@ -220,11 +220,11 @@ export default function AdminDashboardPage() {
   const nm = buildLine(d.newMembers);
   const stk = buildStacked(d.memberTxn, d.nonMemberTxn);
 
-  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const firstDow = new Date(calYear, calMonth, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
   const cells = [];
-  for (let i = 0; i < firstDow; i++) cells.push({ blank: true, filled: false, day: null, cellStyle: {}, onClick: () => {} });
+  for (let i = 0; i < firstDow; i++) cells.push({ blank: true, filled: false, day: null, cellStyle: {}, onClick: () => { } });
   const baseCellStyle: React.CSSProperties = { textAlign: 'center', padding: '7px 0', fontSize: '12px', fontWeight: 500, borderRadius: '8px', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', color: '#3B2A22' };
   const endpointCellStyle: React.CSSProperties = { textAlign: 'center', padding: '7px 0', fontSize: '12px', fontWeight: 600, borderRadius: '8px', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', background: '#A67C52', color: '#fff' };
   const inRangeCellStyle: React.CSSProperties = { textAlign: 'center', padding: '7px 0', fontSize: '12px', fontWeight: 500, borderRadius: '8px', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', background: 'rgba(122, 150, 116, 0.18)', color: '#3B2A22' };
@@ -234,11 +234,13 @@ export default function AdminDashboardPage() {
     const inRange = selStart && selEnd && ds >= selStart && ds <= selEnd;
     const isEndpoint = ds === selStart || ds === selEnd;
     const cellStyle = isEndpoint ? endpointCellStyle : inRange ? inRangeCellStyle : baseCellStyle;
-    cells.push({ blank: false, filled: true, day, cellStyle, onClick: () => {
-      if (!selStart || (selStart && selEnd)) { setSelStart(ds); setSelEnd(''); }
-      else if (ds < selStart) { setSelEnd(selStart); setSelStart(ds); }
-      else { setSelEnd(ds); }
-    } });
+    cells.push({
+      blank: false, filled: true, day, cellStyle, onClick: () => {
+        if (!selStart || (selStart && selEnd)) { setSelStart(ds); setSelEnd(''); }
+        else if (ds < selStart) { setSelEnd(selStart); setSelStart(ds); }
+        else { setSelEnd(ds); }
+      }
+    });
   }
 
 
@@ -252,7 +254,7 @@ export default function AdminDashboardPage() {
 
   const navItems = [
     { label: 'Ringkasan', path: '/admin', active: true },
-    { label: 'Anggota', path: '/admin/members', active: false },
+    { label: 'Member', path: '/admin/members', active: false },
     { label: 'Hadiah', path: '/admin/rewards', active: false },
     { label: 'Referral', path: '/admin/referrals', active: false },
     { label: 'Update', path: '/admin/updates', active: false },
@@ -381,7 +383,7 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px', marginBottom: '6px' }}>
-                    {['S','M','T','W','T','F','S'].map((wd, i) => <div key={i} style={{ fontSize: '10px', fontWeight: 600, color: '#A08A7B', textAlign: 'center', padding: '4px 0' }}>{wd}</div>)}
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((wd, i) => <div key={i} style={{ fontSize: '10px', fontWeight: 600, color: '#A08A7B', textAlign: 'center', padding: '4px 0' }}>{wd}</div>)}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '2px' }}>
                     {cells.map((cell, i) => (
@@ -402,7 +404,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 20px 0' }}>
-        
+
         {/* BUSINESS PERFORMANCE */}
         <section style={{ marginBottom: '44px' }}>
           <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Bisnis</div>
@@ -423,7 +425,7 @@ export default function AdminDashboardPage() {
 
         {/* MEMBER PERFORMANCE */}
         <section style={{ marginBottom: '44px' }}>
-          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Anggota</div>
+          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Member</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '16px', marginBottom: '16px' }}>
             {memberMetrics.map((m, i) => (
               <div key={i} style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
@@ -440,10 +442,10 @@ export default function AdminDashboardPage() {
 
           <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22' }}>Transaksi Anggota vs Non-anggota</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22' }}>Transaksi Member vs Non-Member</div>
               <div style={{ display: 'flex', gap: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#A67C52' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Anggota</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#F1EBE1', border: '1px solid #E6DDD0' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Non-anggota</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#A67C52' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Member</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#F1EBE1', border: '1px solid #E6DDD0' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Non-Member</span></div>
               </div>
             </div>
             <div style={{ position: 'relative' }}>
@@ -465,8 +467,8 @@ export default function AdminDashboardPage() {
               {hover?.key === 'stacked' && (
                 <div style={{ position: 'absolute', left: `${(stk.bars[hover.i].cx / 10)}%`, top: `${Math.min(stk.bars[hover.i].memY, stk.bars[hover.i].nonY) - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
                   <div style={{ fontWeight: 600 }}>{d.labels[hover.i]}</div>
-                  <div style={{ color: '#E9C9A6', marginTop: '3px' }}>Anggota: {fmtNum(stk.bars[hover.i].mv)}</div>
-                  <div style={{ color: 'rgba(248, 244, 238, 0.72)', marginTop: '1px' }}>Non-anggota: {fmtNum(stk.bars[hover.i].nv)}</div>
+                  <div style={{ color: '#E9C9A6', marginTop: '3px' }}>Member: {fmtNum(stk.bars[hover.i].mv)}</div>
+                  <div style={{ color: 'rgba(248, 244, 238, 0.72)', marginTop: '1px' }}>Non-Member: {fmtNum(stk.bars[hover.i].nv)}</div>
                 </div>
               )}
             </div>
