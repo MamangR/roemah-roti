@@ -175,7 +175,7 @@ export default function RewardManagementPage() {
         </div>
 
         <div style={{ flex: 1 }}></div>
-        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{rewards.filter(r=>r.status==='Aktif').length} reward aktif</div>
+        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>{rewards.filter(r=>r.status==='Aktif').length} reward aktif</div>
       </div>
 
       {/* Main content with mobile top bar */}
@@ -187,7 +187,7 @@ export default function RewardManagementPage() {
             <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
           </button>
           <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Reward Management</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Manajemen Reward</div>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
         
@@ -246,7 +246,7 @@ export default function RewardManagementPage() {
               <Input label="NAMA REWARD" placeholder="Contoh: Gratis Kouign-Amann Saltbread" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
               <Input label="DESKRIPSI SINGKAT" placeholder="Satu kalimat singkat" value={draft.desc} onChange={(e: any) => setDraft({ ...draft, desc: e.target.value })} />
               <Input label="SYARAT KUNJUNGAN" type="number" placeholder="Contoh: 10" value={draft.visitsRequired} onChange={(e: any) => setDraft({ ...draft, visitsRequired: e.target.value })} />
-              <Input label="TANGGAL KADALUARSA (EXPIRY DATE)" type="date" min={todayIso()} value={draft.expiryDate} onChange={(e: any) => setDraft({ ...draft, expiryDate: e.target.value })} />
+              <Input label="TANGGAL KADALUARSA" type="date" min={todayIso()} value={draft.expiryDate} onChange={(e: any) => setDraft({ ...draft, expiryDate: e.target.value })} />
               
               <div>
                 <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
@@ -343,7 +343,7 @@ export default function RewardManagementPage() {
                         {r.eligible ? (
                           <Button variant="primary" onClick={() => { setRedeemTarget({ memberId: redeemSelectedMember.id, memberName: redeemSelectedMember.name, rewardId: r.id, rewardName: r.name, visitsRequired: r.visitsRequired }); setRedeemConfirmOpen(true); }}>Redeem</Button>
                         ) : (
-                          <div style={{ width: '100%', height: '44px', borderRadius: '14px', background: '#F1EBE1', color: '#7A6A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600 }}>Belum eligible</div>
+                           <div style={{ width: '100%', height: '44px', borderRadius: '14px', background: '#F1EBE1', color: '#7A6A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600 }}>Belum memenuhi syarat</div>
                         )}
                       </div>
                     </div>

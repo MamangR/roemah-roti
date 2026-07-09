@@ -251,11 +251,11 @@ export default function AdminDashboardPage() {
     : fmtShort(appliedStart) + ' – ' + fmtShort(appliedEnd) + ', ' + appliedEnd.split('-')[0];
 
   const navItems = [
-    { label: 'Overview', path: '/admin', active: true },
-    { label: 'Members', path: '/admin/members', active: false },
-    { label: 'Rewards', path: '/admin/rewards', active: false },
-    { label: 'Referrals', path: '/admin/referrals', active: false },
-    { label: 'Updates', path: '/admin/updates', active: false },
+    { label: 'Ringkasan', path: '/admin', active: true },
+    { label: 'Anggota', path: '/admin/members', active: false },
+    { label: 'Hadiah', path: '/admin/rewards', active: false },
+    { label: 'Referral', path: '/admin/referrals', active: false },
+    { label: 'Update', path: '/admin/updates', active: false },
   ];
 
   return (
@@ -279,7 +279,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div>
                   <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>Roemah Roti</div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248,244,238,.92)' }}>Owner Dashboard</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248,244,238,.92)' }}>Dashboard Pemilik</div>
                 </div>
               </div>
               <button
@@ -300,7 +300,7 @@ export default function AdminDashboardPage() {
               ))}
             </div>
             <div style={{ flex: 1 }} />
-            <div style={{ fontSize: '11px', color: 'rgba(248,244,238,.35)', lineHeight: 1.5 }}>Staff tool · internal use</div>
+            <div style={{ fontSize: '11px', color: 'rgba(248,244,238,.35)', lineHeight: 1.5 }}>Alat Staf · Penggunaan Internal</div>
           </div>
         </div>
       )}
@@ -313,8 +313,8 @@ export default function AdminDashboardPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flex: '1 1 auto', minWidth: 0, width: '100%' }}>
             {/* Logo + title */}
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Roemah Roti · Owner dashboard</div>
-              <div style={{ fontSize: '22px', letterSpacing: '-0.03em', fontWeight: 600, color: '#3B2A22', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Dashboard overview</div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Roemah Roti · Dashboard Pemilik</div>
+              <div style={{ fontSize: '22px', letterSpacing: '-0.03em', fontWeight: 600, color: '#3B2A22', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Ringkasan Dashboard</div>
             </div>
 
             {/* Burger button — shown on mobile only */}
@@ -346,9 +346,9 @@ export default function AdminDashboardPage() {
             <div className="flex flex-wrap md:flex-nowrap items-start md:items-center" style={{ gap: '10px', position: 'relative' }}>
               {/* Date filter pill */}
               <div style={{ display: 'flex', background: '#F1EBE1', borderRadius: '14px', padding: '4px' }}>
-                <div onClick={() => { setFilter('today'); setCalendarOpen(false); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'today' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'today' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'today' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>Today</div>
-                <div onClick={() => { setFilter('allTime'); setCalendarOpen(false); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'allTime' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'allTime' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'allTime' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>All Time</div>
-                <div onClick={() => { setFilter('custom'); setCalendarOpen(true); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'custom' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'custom' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'custom' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>Custom</div>
+                <div onClick={() => { setFilter('today'); setCalendarOpen(false); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'today' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'today' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'today' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>Hari Ini</div>
+                <div onClick={() => { setFilter('allTime'); setCalendarOpen(false); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'allTime' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'allTime' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'allTime' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>Semua</div>
+                <div onClick={() => { setFilter('custom'); setCalendarOpen(true); }} style={{ padding: '7px 12px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: filter === 'custom' ? '#fff' : 'transparent', borderRadius: '11px', color: filter === 'custom' ? '#3B2A22' : '#A08A7B', boxShadow: filter === 'custom' ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none', whiteSpace: 'nowrap' }}>Kustom</div>
               </div>
 
               {filter === 'custom' && (
@@ -391,8 +391,8 @@ export default function AdminDashboardPage() {
                     ))}
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                    <div onClick={() => { setCalendarOpen(false); setSelStart(appliedStart); setSelEnd(appliedEnd); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', border: '1px solid #E0D5C6', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer' }}>Cancel</div>
-                    <div onClick={() => { setCalendarOpen(false); setAppliedStart(selStart); setAppliedEnd(selEnd || selStart); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', background: '#A67C52', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#fff', cursor: 'pointer', boxShadow: '0 14px 26px -14px rgba(166,124,82,.9)' }}>Apply</div>
+                    <div onClick={() => { setCalendarOpen(false); setSelStart(appliedStart); setSelEnd(appliedEnd); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', border: '1px solid #E0D5C6', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer' }}>Batal</div>
+                    <div onClick={() => { setCalendarOpen(false); setAppliedStart(selStart); setAppliedEnd(selEnd || selStart); }} style={{ flex: 1, textAlign: 'center', padding: '10px 0', background: '#A67C52', borderRadius: '14px', fontSize: '13px', fontWeight: 600, color: '#fff', cursor: 'pointer', boxShadow: '0 14px 26px -14px rgba(166,124,82,.9)' }}>Terapkan</div>
                   </div>
                 </div>
               )}
@@ -405,7 +405,7 @@ export default function AdminDashboardPage() {
         
         {/* BUSINESS PERFORMANCE */}
         <section style={{ marginBottom: '44px' }}>
-          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Business performance</div>
+          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Bisnis</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '16px' }}>
             {businessMetrics.map((m, i) => (
               <div key={i} style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
@@ -414,7 +414,7 @@ export default function AdminDashboardPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
                   <div style={m.arrowStyle as any}></div>
                   <span style={{ fontSize: '12px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.growthColor }}>{m.growthText}</span>
-                  <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs previous</span>
+                  <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs sebelumnya</span>
                 </div>
               </div>
             ))}
@@ -423,7 +423,7 @@ export default function AdminDashboardPage() {
 
         {/* MEMBER PERFORMANCE */}
         <section style={{ marginBottom: '44px' }}>
-          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Member performance</div>
+          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Anggota</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '16px', marginBottom: '16px' }}>
             {memberMetrics.map((m, i) => (
               <div key={i} style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
@@ -432,7 +432,7 @@ export default function AdminDashboardPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
                   <div style={m.arrowStyle as any}></div>
                   <span style={{ fontSize: '12px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.growthColor }}>{m.growthText}</span>
-                  <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs previous</span>
+                  <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs sebelumnya</span>
                 </div>
               </div>
             ))}
@@ -440,10 +440,10 @@ export default function AdminDashboardPage() {
 
           <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22' }}>Member vs non-member transactions</div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22' }}>Transaksi Anggota vs Non-anggota</div>
               <div style={{ display: 'flex', gap: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#A67C52' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Member</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#F1EBE1', border: '1px solid #E6DDD0' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Non-member</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#A67C52' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Anggota</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#F1EBE1', border: '1px solid #E6DDD0' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Non-anggota</span></div>
               </div>
             </div>
             <div style={{ position: 'relative' }}>
@@ -465,8 +465,8 @@ export default function AdminDashboardPage() {
               {hover?.key === 'stacked' && (
                 <div style={{ position: 'absolute', left: `${(stk.bars[hover.i].cx / 10)}%`, top: `${Math.min(stk.bars[hover.i].memY, stk.bars[hover.i].nonY) - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
                   <div style={{ fontWeight: 600 }}>{d.labels[hover.i]}</div>
-                  <div style={{ color: '#E9C9A6', marginTop: '3px' }}>Member: {fmtNum(stk.bars[hover.i].mv)}</div>
-                  <div style={{ color: 'rgba(248, 244, 238, 0.72)', marginTop: '1px' }}>Non-member: {fmtNum(stk.bars[hover.i].nv)}</div>
+                  <div style={{ color: '#E9C9A6', marginTop: '3px' }}>Anggota: {fmtNum(stk.bars[hover.i].mv)}</div>
+                  <div style={{ color: 'rgba(248, 244, 238, 0.72)', marginTop: '1px' }}>Non-anggota: {fmtNum(stk.bars[hover.i].nv)}</div>
                 </div>
               )}
             </div>
@@ -475,13 +475,13 @@ export default function AdminDashboardPage() {
 
         {/* PRODUCT PERFORMANCE */}
         <section style={{ marginBottom: '44px' }}>
-          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Product performance</div>
+          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Produk</div>
           <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', overflow: 'hidden' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '2.4fr 1fr 1.2fr 1.4fr', padding: '14px 22px', borderBottom: '1px solid #EAE1D5' }}>
-              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Top selling products</div>
-              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right' }}>Qty sold</div>
-              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right' }}>Revenue</div>
-              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right', paddingLeft: '16px' }}>Contribution</div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Produk Terlaris</div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right' }}>Jumlah Terjual</div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right' }}>Pendapatan</div>
+              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right', paddingLeft: '16px' }}>Kontribusi</div>
             </div>
             {products.map((p, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2.4fr 1fr 1.2fr 1.4fr', padding: '16px 22px', alignItems: 'center', borderBottom: '1px solid #EAE1D5' }}>
@@ -501,7 +501,7 @@ export default function AdminDashboardPage() {
 
         {/* REVENUE TREND */}
         <section style={{ marginBottom: '44px' }}>
-          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Revenue trend</div>
+          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Tren Pendapatan</div>
           <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
             <div style={{ position: 'relative' }}>
               <svg viewBox="0 0 1000 280" preserveAspectRatio="none" style={{ width: '100%', height: '280px', display: 'block' }}>

@@ -4,21 +4,21 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const PERMISSIONS = [
-  { id: 'view_dashboard', label: 'View dashboard & reports', cashierDefault: false },
-  { id: 'manage_members', label: 'Manage members', cashierDefault: false },
-  { id: 'add_visits', label: 'Add visits', cashierDefault: true },
-  { id: 'redeem_rewards', label: 'Redeem rewards', cashierDefault: true },
-  { id: 'manage_rewards', label: 'Create/edit/delete rewards', cashierDefault: false },
-  { id: 'manage_referral', label: 'Manage referral program', cashierDefault: false },
-  { id: 'manage_updates', label: 'Create/edit/delete updates', cashierDefault: false },
-  { id: 'manage_settings', label: 'Manage settings', cashierDefault: false },
-  { id: 'manage_admins', label: 'Manage admin users', cashierDefault: false },
-  { id: 'manage_pos', label: 'Manage POS integration', cashierDefault: false },
-  { id: 'manage_whatsapp', label: 'Manage WhatsApp API', cashierDefault: false },
-  { id: 'search_members', label: 'Search members', cashierDefault: true },
-  { id: 'scan_qr', label: 'Scan member QR', cashierDefault: true },
-  { id: 'view_member_info', label: 'View member information', cashierDefault: true },
-  { id: 'delete_member_data', label: 'Delete member data', cashierDefault: false },
+  { id: 'view_dashboard', label: 'Lihat dashboard & laporan', cashierDefault: false },
+  { id: 'manage_members', label: 'Kelola anggota', cashierDefault: false },
+  { id: 'add_visits', label: 'Tambah kunjungan', cashierDefault: true },
+  { id: 'redeem_rewards', label: 'Tukarkan reward', cashierDefault: true },
+  { id: 'manage_rewards', label: 'Buat/edit/hapus reward', cashierDefault: false },
+  { id: 'manage_referral', label: 'Kelola program referral', cashierDefault: false },
+  { id: 'manage_updates', label: 'Buat/edit/hapus update', cashierDefault: false },
+  { id: 'manage_settings', label: 'Kelola pengaturan', cashierDefault: false },
+  { id: 'manage_admins', label: 'Kelola pengguna admin', cashierDefault: false },
+  { id: 'manage_pos', label: 'Kelola integrasi POS', cashierDefault: false },
+  { id: 'manage_whatsapp', label: 'Kelola API WhatsApp', cashierDefault: false },
+  { id: 'search_members', label: 'Cari anggota', cashierDefault: true },
+  { id: 'scan_qr', label: 'Pindai QR anggota', cashierDefault: true },
+  { id: 'view_member_info', label: 'Lihat informasi anggota', cashierDefault: true },
+  { id: 'delete_member_data', label: 'Hapus data anggota', cashierDefault: false },
 ];
 
 function fmtLogTime(iso: string) {
@@ -99,11 +99,11 @@ export default function SettingsPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', background: 'rgba(166,124,82,.9)', color: '#2A1E18' }}>
                 <div style={{ width: '15px', height: '15px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', top: '5px', left: '2px', width: '7px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div><div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div></div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Pengaturan</span>
               </div>
             </div>
             <div style={{ flex: 1 }}></div>
-            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>Logged in as {role === 'owner' ? 'Owner' : 'Cashier'}</div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>Masuk sebagai {role === 'owner' ? 'Owner' : 'Kasir'}</div>
           </div>
         </div>
       )}
@@ -126,12 +126,12 @@ export default function SettingsPage() {
               <div style={{ position: 'absolute', top: '5px', left: '2px', width: '7px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div>
               <div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div>
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Pengaturan</span>
           </div>
         </div>
 
         <div style={{ flex: 1 }}></div>
-        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>Logged in as {role === 'owner' ? 'Owner' : 'Cashier'}</div>
+        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>Masuk sebagai {role === 'owner' ? 'Owner' : 'Kasir'}</div>
       </div>
 
       {/* Main content with mobile top bar */}
@@ -143,20 +143,20 @@ export default function SettingsPage() {
             <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
           </button>
           <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Settings</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Pengaturan</div>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
         <div style={{ maxWidth: '920px', margin: '0 auto', padding: '52px 40px 70px' }}>
 
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Settings</div>
-              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Permissions, POS integration and WhatsApp API.</div>
+              <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Pengaturan</div>
+              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Izin, integrasi POS, dan API WhatsApp.</div>
             </div>
             <div style={{ textAlign: 'right', flex: 'none' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>View as</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Lihat Sebagai</div>
               <div style={{ width: '220px' }}>
-                <SegmentedToggle options={[{ value: 'owner', label: 'Owner' }, { value: 'cashier', label: 'Cashier' }]} value={role} onChange={setRole} />
+                <SegmentedToggle options={[{ value: 'owner', label: 'Owner' }, { value: 'cashier', label: 'Kasir' }]} value={role} onChange={setRole} />
               </div>
             </div>
           </div>
@@ -168,8 +168,8 @@ export default function SettingsPage() {
                   <div style={{ position: 'absolute', top: '-11px', left: '2px', width: '10px', height: '11px', border: '1.8px solid #7A6A5F', borderBottom: 'none', borderRadius: '6px 6px 0 0' }}></div>
                 </div>
               </div>
-              <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Only owner can manage settings</div>
-              <div style={{ fontSize: '14px', color: '#7A6A5F', marginTop: '8px', maxWidth: '360px', lineHeight: 1.6 }}>Cashier accounts don’t have access to permissions, POS integration or WhatsApp API. Switch to Owner to view or make changes.</div>
+              <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Hanya pemilik yang dapat mengelola pengaturan</div>
+              <div style={{ fontSize: '14px', color: '#7A6A5F', marginTop: '8px', maxWidth: '360px', lineHeight: 1.6 }}>Akun kasir tidak memiliki akses ke izin, integrasi POS, atau API WhatsApp. Beralih ke Pemilik untuk melihat atau membuat perubahan.</div>
             </div>
           )}
 
@@ -178,11 +178,11 @@ export default function SettingsPage() {
               {/* Permissions */}
               <div style={{ marginTop: '32px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
                 <div style={{ padding: '20px 22px 16px' }}>
-                  <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>Admin roles & permissions</div>
-                  <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Only the owner can change what cashier accounts are allowed to do.</div>
+                  <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>Peran & izin admin</div>
+                  <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Hanya pemilik yang dapat mengubah hal-hal yang diizinkan untuk akun kasir.</div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 90px', gap: '10px', padding: '12px 22px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                  <div>Permission</div><div style={{ textAlign: 'center' }}>Owner</div><div style={{ textAlign: 'center' }}>Cashier</div>
+                  <div>Izin</div><div style={{ textAlign: 'center' }}>Pemilik</div><div style={{ textAlign: 'center' }}>Kasir</div>
                 </div>
                 {PERMISSIONS.map(p => (
                   <div key={p.id} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 90px', gap: '10px', padding: '13px 22px', borderTop: '1px solid #EAE1D5', alignItems: 'center', fontSize: '13.5px', color: '#4A3830' }}>
@@ -199,15 +199,15 @@ export default function SettingsPage() {
               <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
                   <div>
-                    <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>POS integration</div>
-                    <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Connect your point-of-sale so visits and spending sync automatically.</div>
+                    <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>Integrasi POS</div>
+                    <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Hubungkan point-of-sale Anda agar kunjungan dan pengeluaran tersinkronisasi secara otomatis.</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 'none' }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: posConnected ? 'rgba(122, 150, 116, 0.18)' : '#F1EBE1', color: posConnected ? '#5A6A54' : '#7A6A5F', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}>
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: posConnected ? '#5A6A54' : '#7A6A5F' }}></span>{posConnected ? 'Connected' : 'Disconnected'}
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: posConnected ? '#5A6A54' : '#7A6A5F' }}></span>{posConnected ? 'Terhubung' : 'Terputus'}
                     </span>
                     <div style={{ width: '120px' }}>
-                      <Button variant="outline" onClick={() => setPosConnected(!posConnected)}>{posConnected ? 'Disconnect' : 'Connect'}</Button>
+                      <Button variant="outline" onClick={() => setPosConnected(!posConnected)}>{posConnected ? 'Putuskan' : 'Hubungkan'}</Button>
                     </div>
                   </div>
                 </div>
@@ -215,7 +215,7 @@ export default function SettingsPage() {
                 <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Store / outlet mapping</div>
+                  <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Pemetaan toko / outlet</div>
                   <span onClick={() => {
                     const id = 'sm' + Date.now();
                     setStoreMappings([...storeMappings, { id, name: '', posId: '' }]);
@@ -264,18 +264,18 @@ export default function SettingsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                   <div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Transaction sync</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Sinkronisasi transaksi</div>
                     <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>Real-time</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Member matching</div>
-                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>By WhatsApp number</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Pencocokan anggota</div>
+                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>Berdasarkan nomor WhatsApp</div>
                   </div>
                 </div>
 
                 <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
-                <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '10px' }}>Sync logs</div>
+                <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '10px' }}>Log sinkronisasi</div>
                 <div style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid #E6DDD0', borderRadius: '14px' }}>
                   {syncLogs.map(lg => (
                     <div key={lg.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '10px 14px', borderTop: '1px solid #EAE1D5' }}>
@@ -292,15 +292,15 @@ export default function SettingsPage() {
               <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
                   <div>
-                    <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>WhatsApp API</div>
-                    <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Manage the connection used to reach members on WhatsApp.</div>
+                    <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>API WhatsApp</div>
+                    <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Kelola koneksi yang digunakan untuk menjangkau anggota di WhatsApp.</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 'none' }}>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: waConnected ? 'rgba(122, 150, 116, 0.18)' : '#F1EBE1', color: waConnected ? '#5A6A54' : '#7A6A5F', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}>
-                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: waConnected ? '#5A6A54' : '#7A6A5F' }}></span>{waConnected ? 'Connected' : 'Disconnected'}
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: waConnected ? '#5A6A54' : '#7A6A5F' }}></span>{waConnected ? 'Terhubung' : 'Terputus'}
                     </span>
                     <div style={{ width: '120px' }}>
-                      <Button variant="outline" onClick={() => setWaConnected(!waConnected)}>{waConnected ? 'Disconnect' : 'Connect'}</Button>
+                      <Button variant="outline" onClick={() => setWaConnected(!waConnected)}>{waConnected ? 'Putuskan' : 'Hubungkan'}</Button>
                     </div>
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export default function SettingsPage() {
                 <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Message templates</div>
+                  <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Template pesan</div>
                   <span onClick={() => { setTemplateModalMode('add'); setActiveTemplate({ name: '', body: '' }); setTemplateModalOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Tambah template</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -331,10 +331,10 @@ export default function SettingsPage() {
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px' }}>
                   <div>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Who can send broadcasts</div>
-                    <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px', maxWidth: '400px', lineHeight: 1.5 }}>Broadcasts can only be sent by the owner.</div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Siapa yang dapat mengirim siaran</div>
+                    <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px', maxWidth: '400px', lineHeight: 1.5 }}>Siaran hanya dapat dikirim oleh pemilik.</div>
                   </div>
-                  <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '12px 16px', flex: 'none' }}>Owner only</div>
+                  <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '12px 16px', flex: 'none' }}>Hanya pemilik</div>
                 </div>
               </div>
             </>

@@ -141,11 +141,11 @@ export default function ReferralManagementPage() {
               <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div></div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
-              <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={navItemStyle(screen === 'list')}><div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Referral List</span></div>
-              <div onClick={() => { setScreen('history'); setSidebarOpen(false); }} style={navItemStyle(screen === 'history')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div><div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Referral History</span></div>
+              <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={navItemStyle(screen === 'list')}><div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Referral</span></div>
+              <div onClick={() => { setScreen('history'); setSidebarOpen(false); }} style={navItemStyle(screen === 'history')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div><div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Riwayat Referral</span></div>
             </div>
             <div style={{ flex: 1 }}></div>
-            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{referrals.length} referral tersimpan</div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>{referrals.length} referral tersimpan</div>
           </div>
         </div>
       )}
@@ -169,7 +169,7 @@ export default function ReferralManagementPage() {
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>Referral List</span>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Referral</span>
           </div>
           
           {screen === 'detail' && (
@@ -178,25 +178,25 @@ export default function ReferralManagementPage() {
                 <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: '3.2px', top: '8px', width: '9.6px', height: '5px', borderRadius: '5px 5px 0 0', border: '1.6px solid currentColor', borderBottom: 'none' }}></div>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Referrer Member</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Anggota Referrer</span>
               </div>
               <div onClick={() => setActiveTab('referred')} style={navItemStyle(activeTab === 'referred')}>
                 <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: '3.2px', top: '8px', width: '9.6px', height: '5px', borderRadius: '5px 5px 0 0', border: '1.6px solid currentColor', borderBottom: 'none' }}></div>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Referred Member</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Anggota Direferensikan</span>
               </div>
               <div onClick={() => setActiveTab('status')} style={navItemStyle(activeTab === 'status')}>
                 <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: '4.5px', top: '4.5px', width: '7px', height: '7px', borderRadius: '50%', background: 'currentColor', opacity: 0.8 }}></div>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Referral Status</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Status Referral</span>
               </div>
               <div onClick={() => setActiveTab('approve')} style={navItemStyle(activeTab === 'approve')}>
                 <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: '3.4px', top: '5.5px', width: '9px', height: '5px', borderLeft: '1.6px solid currentColor', borderBottom: '1.6px solid currentColor', transform: 'rotate(-45deg)' }}></div>
                 </div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Approve Reward</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Setujui Reward</span>
               </div>
             </>
           )}
@@ -206,12 +206,12 @@ export default function ReferralManagementPage() {
               <div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div>
               <div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div>
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>Referral History</span>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Riwayat Referral</span>
           </div>
         </div>
 
         <div style={{ flex: 1 }}></div>
-        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{referrals.length} referral tersimpan</div>
+        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>{referrals.length} referral tersimpan</div>
       </div>
 
       {/* Main content with mobile top bar */}
@@ -223,13 +223,13 @@ export default function ReferralManagementPage() {
             <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
           </button>
           <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Referral Management</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Manajemen Referral</div>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
         
         {screen === 'list' && (
           <div style={{ padding: '52px 40px 60px' }}>
-            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Referral List</div>
+            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Referral</div>
             <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{filteredReferrals.length} dari {referrals.length} referral</div>
 
             <div style={{ marginTop: '22px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
@@ -237,7 +237,7 @@ export default function ReferralManagementPage() {
                 <Input label="CARI" placeholder="Cari nama referrer atau referred" value={listQuery} onChange={(e: any) => setListQuery(e.target.value)} />
               </div>
               <div style={{ width: '360px' }}>
-                <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Pending', label: 'Pending' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' }]} value={listFilter} onChange={setListFilter} />
+                <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Pending', label: 'Menunggu' }, { value: 'Approved', label: 'Disetujui' }, { value: 'Rejected', label: 'Ditolak' }]} value={listFilter} onChange={setListFilter} />
               </div>
             </div>
 
@@ -266,7 +266,7 @@ export default function ReferralManagementPage() {
         {screen === 'detail' && activeReferral && (
           <div style={{ maxWidth: '760px', margin: '0 auto', padding: '52px 40px 60px' }}>
             <div onClick={() => setScreen('list')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', cursor: 'pointer', color: '#7A6A5F', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>
-              <span style={{ fontSize: '15px' }}>←</span>Kembali ke Referral List
+              <span style={{ fontSize: '15px' }}>←</span>Kembali ke Daftar Referral
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
@@ -282,9 +282,9 @@ export default function ReferralManagementPage() {
             <div style={{ marginTop: '24px', maxWidth: '520px' }}>
               <SegmentedToggle options={[
                 { value: 'referrer', label: 'Referrer' },
-                { value: 'referred', label: 'Referred' },
+                { value: 'referred', label: 'Direferensikan' },
                 { value: 'status', label: 'Status' },
-                { value: 'approve', label: 'Approve' }
+                { value: 'approve', label: 'Persetujuan' }
               ]} value={activeTab} onChange={setActiveTab} />
             </div>
 
@@ -293,7 +293,7 @@ export default function ReferralManagementPage() {
                 <div style={{ fontSize: '16px', fontWeight: 600, color: '#3B2A22' }}>{activeReferral.referrer.name}</div>
                 <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px' }}>
                   <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>MEMBER ID</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.memberId}</div></div>
-                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>WHATSAPP NUMBER</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.wa}</div></div>
+                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>NOMOR WHATSAPP</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.wa}</div></div>
                   <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TOTAL REFERRAL SUKSES</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.totalSuccess}</div></div>
                   <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TANGGAL JOIN</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.joinDateLabel}</div></div>
                 </div>
