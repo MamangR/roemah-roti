@@ -141,7 +141,7 @@ export default function RewardsPage() {
       base: visits >= t.visitsRequired ? 'unlocked' : 'locked',
       progress: `${Math.min(visits, t.visitsRequired)} / ${t.visitsRequired} visits`,
       need: visits >= t.visitsRequired ? `Unlocked at ${t.visitsRequired} visits` : `${t.visitsRequired - visits} more visits to unlock`,
-      expirationDate: t.expiryDate ? new Date(t.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'No expiry'
+      expirationDate: t.validityDays ? `Valid for ${t.validityDays} days` : 'No expiry'
     }));
 
   // Merge any non-template, non-birthday DB rewards — but only if NOT already redeemed

@@ -6,10 +6,6 @@ export async function GET(request: NextRequest) {
     const templates = await prisma.rewardTemplate.findMany({
       where: {
         status: "Aktif",
-        OR: [
-          { expiryDate: null },
-          { expiryDate: { gt: new Date() } }
-        ]
       },
       orderBy: {
         visitsRequired: "asc"
