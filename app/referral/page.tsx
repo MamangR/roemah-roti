@@ -20,8 +20,23 @@ export default function ReferralPage() {
   const [claimRef, setClaimRef] = useState('');
   const [revealed, setRevealed] = useState(false);
 
+  const [goalCount, setGoalCount] = useState(1);
+  const [rewardName, setRewardName] = useState('Free Garlic Cream Cheese');
+  const [rewardDesc, setRewardDesc] = useState('Our thanks for a friend who joined.');
+
   useEffect(() => {
     const t = setTimeout(() => setRevealed(true), 350);
+    
+    import('@/app/admin/actions').then(m => {
+      m.getSystemReward('SYSTEM_REFERRAL', 'Free Garlic Cream Cheese', 'Our thanks for a friend who joined.', 1)
+        .then(res => {
+          setGoalCount(res.visitsRequired || 1);
+          setRewardName(res.name);
+          setRewardDesc(res.desc);
+        })
+        .catch(console.error);
+    });
+    
     return () => clearTimeout(t);
   }, []);
 
@@ -33,11 +48,10 @@ export default function ReferralPage() {
 
   const code = member?.referralCode || 'RR-CODE';
   const link = 'roemahroti.id/join/' + code;
-  const goalCount = 1;
   const rawFriends = member?.referredFriends || [];
   const qualifying = rawFriends.filter((f: any) => f.status === 'Approved').length;
   
-  const hasClaimed = member?.rewards?.some((r: any) => r.type === 'Referral' && r.title.includes('Garlic Cream Cheese'));
+  const hasClaimed = member?.rewards?.some((r: any) => r.type === 'Referral' && r.title.includes(rewardName));
   const baseRewardState = locallyClaimed || hasClaimed ? 'claimed' : (qualifying >= goalCount ? 'ready' : 'locked');
 
   const pct = Math.round((Math.min(qualifying, goalCount) / goalCount) * 100);
@@ -176,8 +190,8 @@ export default function ReferralPage() {
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3c1.8 2 2.6 3.6 2.6 5a2.6 2.6 0 1 1-5.2 0c0-1.4.8-3 2.6-5z"></path><path d="M6 13c0-1.8 2.7-3 6-3s6 1.2 6 3v4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"></path></svg>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '16px', fontWeight: 600, letterSpacing: '-.01em' }}>Free Garlic Cream Cheese</div>
-                    <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '3px' }}>Our thanks for a friend who joined.</div>
+                    <div style={{ fontSize: '16px', fontWeight: 600, letterSpacing: '-.01em' }}>{rewardName}</div>
+                    <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '3px' }}>{rewardDesc}</div>
                   </div>
                 </div>
                 <div style={{ margin: '0 18px', background: rm.bg, borderRadius: '14px', padding: '13px 15px', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -255,7 +269,7 @@ export default function ReferralPage() {
             <div style={{ fontSize: '14px', color: '#8A7A6E', marginTop: '8px', maxWidth: '250px', lineHeight: 1.55 }}>Thank you for sharing Roemah Roti with someone you trust, {member?.firstName || 'User'}.</div>
 
             <div style={{ marginTop: '24px', width: '100%', background: '#F8F4EE', borderRadius: '18px', padding: '18px 20px', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reward</span><span style={{ fontWeight: 600 }}>Free Garlic Cream Cheese</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reward</span><span style={{ fontWeight: 600 }}>{rewardName}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Date</span><span style={{ fontWeight: 600 }}>{claimDate}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reference</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{claimRef}</span></div>
             </div>

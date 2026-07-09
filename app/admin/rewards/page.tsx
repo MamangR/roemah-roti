@@ -69,7 +69,7 @@ export default function RewardManagementPage() {
   }, [screen]);
   
   const [listFilter, setListFilter] = useState('all');
-  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
+  const [formMode, setFormMode] = useState<'create' | 'edit' | 'system'>('create');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState({ name: '', desc: '', visitsRequired: '', status: 'Aktif', expiryDate: '' });
   
@@ -86,7 +86,7 @@ export default function RewardManagementPage() {
 
   const normalizeDigits = (s: string) => (s || '').replace(/\D/g, '');
 
-  const filteredRewards = rewards.filter(r => listFilter === 'all' || r.status === listFilter);
+  const filteredRewards = rewards.filter(r => (listFilter === 'all' || r.status === listFilter) && !r.id.startsWith('SYSTEM_'));
 
   const qRedeem = redeemSearchQuery.trim().toLowerCase();
   const qRedeemDigits = normalizeDigits(redeemSearchQuery);
@@ -128,9 +128,31 @@ export default function RewardManagementPage() {
               <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div></div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
-              <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={navItemStyle(screen === 'list' || screen === 'form')}><div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Reward</span></div>
-              <div onClick={() => { setScreen('redeem'); setRedeemStep('search'); setSidebarOpen(false); }} style={navItemStyle(screen === 'redeem')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '3.4px', top: '2.4px', width: '6.5px', height: '8.5px', borderRight: '1.6px solid currentColor', borderBottom: '1.6px solid currentColor', transform: 'rotate(45deg)' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Redeem Reward</span></div>
-              <div onClick={() => { setScreen('history'); setSidebarOpen(false); }} style={navItemStyle(screen === 'history')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div><div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Riwayat Redeem</span></div>
+              <div onClick={() => { setScreen('list'); setEditingId(null); setSidebarOpen(false); }} style={navItemStyle((screen === 'list' || screen === 'form') && formMode !== 'system')}><div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Reward</span></div>
+              <div onClick={() => { setScreen('redeem'); setRedeemStep('search'); setEditingId(null); setSidebarOpen(false); }} style={navItemStyle(screen === 'redeem')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '3.4px', top: '2.4px', width: '6.5px', height: '8.5px', borderRight: '1.6px solid currentColor', borderBottom: '1.6px solid currentColor', transform: 'rotate(45deg)' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Redeem Reward</span></div>
+              <div onClick={() => { setScreen('history'); setEditingId(null); setSidebarOpen(false); }} style={navItemStyle(screen === 'history')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div><div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Riwayat Redeem</span></div>
+              
+              <div style={{ marginTop: '16px', marginBottom: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '.12em', color: 'rgba(248, 244, 238, 0.4)', textTransform: 'uppercase', paddingLeft: '12px' }}>System Rewards</div>
+              
+              <div onClick={() => { 
+                const r = rewards.find(rw => rw.id === 'SYSTEM_VISIT');
+                if (r) { setDraft({...r, visitsRequired: String(r.visitsRequired), expiryDate: r.expiryDate ? new Date(r.expiryDate).toISOString().slice(0, 10) : ''}); } 
+                else { setDraft({ name: 'Free Garlic Cream Cheese', desc: 'Selamat! Kunjungan Anda telah mencapai target.', visitsRequired: '10', status: 'Aktif', expiryDate: '' }); }
+                setEditingId('SYSTEM_VISIT'); setFormMode('system'); setScreen('form'); setSidebarOpen(false); 
+              }} style={navItemStyle(editingId === 'SYSTEM_VISIT' && screen === 'form')}>
+                <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}></div>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Visits Reward</span>
+              </div>
+              
+              <div onClick={() => { 
+                const r = rewards.find(rw => rw.id === 'SYSTEM_REFERRAL');
+                if (r) { setDraft({...r, visitsRequired: String(r.visitsRequired), expiryDate: r.expiryDate ? new Date(r.expiryDate).toISOString().slice(0, 10) : ''}); } 
+                else { setDraft({ name: 'Free Garlic Cream Cheese', desc: 'Our thanks for a friend who joined.', visitsRequired: '1', status: 'Aktif', expiryDate: '' }); }
+                setEditingId('SYSTEM_REFERRAL'); setFormMode('system'); setScreen('form'); setSidebarOpen(false); 
+              }} style={navItemStyle(editingId === 'SYSTEM_REFERRAL' && screen === 'form')}>
+                <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}></div>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Referral Reward</span>
+              </div>
             </div>
             <div style={{ flex: 1 }}></div>
             <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff tool · internal use<br/>{rewards.filter(r=>r.status==='Aktif').length} reward aktif</div>
@@ -151,7 +173,7 @@ export default function RewardManagementPage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
-          <div onClick={() => setScreen('list')} style={navItemStyle(screen === 'list' || screen === 'form')}>
+          <div onClick={() => { setScreen('list'); setEditingId(null); }} style={navItemStyle((screen === 'list' || screen === 'form') && formMode !== 'system')}>
             <div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
@@ -159,18 +181,40 @@ export default function RewardManagementPage() {
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Reward</span>
           </div>
-          <div onClick={() => { setScreen('redeem'); setRedeemStep('search'); }} style={navItemStyle(screen === 'redeem')}>
+          <div onClick={() => { setScreen('redeem'); setRedeemStep('search'); setEditingId(null); }} style={navItemStyle(screen === 'redeem')}>
             <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}>
               <div style={{ position: 'absolute', left: '3.4px', top: '2.4px', width: '6.5px', height: '8.5px', borderRight: '1.6px solid currentColor', borderBottom: '1.6px solid currentColor', transform: 'rotate(45deg)' }}></div>
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Redeem Reward</span>
           </div>
-          <div onClick={() => setScreen('history')} style={navItemStyle(screen === 'history')}>
+          <div onClick={() => { setScreen('history'); setEditingId(null); }} style={navItemStyle(screen === 'history')}>
             <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}>
               <div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div>
               <div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div>
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Riwayat Redeem</span>
+          </div>
+
+          <div style={{ marginTop: '16px', marginBottom: '4px', fontSize: '11px', fontWeight: 600, letterSpacing: '.12em', color: 'rgba(248, 244, 238, 0.4)', textTransform: 'uppercase', paddingLeft: '12px' }}>System Rewards</div>
+          
+          <div onClick={() => { 
+            const r = rewards.find(rw => rw.id === 'SYSTEM_VISIT');
+            if (r) { setDraft({...r, visitsRequired: String(r.visitsRequired), expiryDate: r.expiryDate ? new Date(r.expiryDate).toISOString().slice(0, 10) : ''}); } 
+            else { setDraft({ name: 'Free Garlic Cream Cheese', desc: 'Selamat! Kunjungan Anda telah mencapai target.', visitsRequired: '10', status: 'Aktif', expiryDate: '' }); }
+            setEditingId('SYSTEM_VISIT'); setFormMode('system'); setScreen('form'); 
+          }} style={navItemStyle(editingId === 'SYSTEM_VISIT' && screen === 'form')}>
+            <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}></div>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Visits Reward</span>
+          </div>
+          
+          <div onClick={() => { 
+            const r = rewards.find(rw => rw.id === 'SYSTEM_REFERRAL');
+            if (r) { setDraft({...r, visitsRequired: String(r.visitsRequired), expiryDate: r.expiryDate ? new Date(r.expiryDate).toISOString().slice(0, 10) : ''}); } 
+            else { setDraft({ name: 'Free Garlic Cream Cheese', desc: 'Our thanks for a friend who joined.', visitsRequired: '1', status: 'Aktif', expiryDate: '' }); }
+            setEditingId('SYSTEM_REFERRAL'); setFormMode('system'); setScreen('form'); 
+          }} style={navItemStyle(editingId === 'SYSTEM_REFERRAL' && screen === 'form')}>
+            <div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}></div>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Referral Reward</span>
           </div>
         </div>
 
@@ -239,13 +283,15 @@ export default function RewardManagementPage() {
             <div onClick={() => setScreen('list')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', cursor: 'pointer', color: '#7A6A5F', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>
               <span style={{ fontSize: '15px' }}>←</span>Batal, kembali ke Daftar Reward
             </div>
-            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>{formMode === 'create' ? 'Tambah Reward Baru' : 'Edit Reward'}</div>
+            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>
+              {formMode === 'create' ? 'Tambah Reward Baru' : (formMode === 'system' ? (editingId === 'SYSTEM_VISIT' ? 'Pengaturan Visits Reward' : 'Pengaturan Referral Reward') : 'Edit Reward')}
+            </div>
             <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{formMode === 'create' ? 'Lengkapi detail reward di bawah ini.' : 'Ubah detail reward dan syaratnya.'}</div>
 
             <div style={{ marginTop: '24px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
               <Input label="NAMA REWARD" placeholder="Contoh: Gratis Kouign-Amann Saltbread" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
               <Input label="DESKRIPSI SINGKAT" placeholder="Satu kalimat singkat" value={draft.desc} onChange={(e: any) => setDraft({ ...draft, desc: e.target.value })} />
-              <Input label="SYARAT KUNJUNGAN" type="number" placeholder="Contoh: 10" value={draft.visitsRequired} onChange={(e: any) => setDraft({ ...draft, visitsRequired: e.target.value })} />
+              <Input label={editingId === 'SYSTEM_REFERRAL' ? 'SYARAT REFERRAL' : 'SYARAT KUNJUNGAN'} type="number" placeholder={editingId === 'SYSTEM_REFERRAL' ? '1' : '10'} value={draft.visitsRequired} onChange={(e: any) => setDraft({ ...draft, visitsRequired: e.target.value })} />
               <Input label="TANGGAL KADALUARSA" type="date" min={todayIso()} value={draft.expiryDate} onChange={(e: any) => setDraft({ ...draft, expiryDate: e.target.value })} />
               
               <div>
@@ -276,9 +322,11 @@ export default function RewardManagementPage() {
                   alert('Tanggal kadaluarsa tidak boleh di masa lalu!');
                   return;
                 }
-                const record = { id: formMode === 'edit' ? editingId! : 'rw' + Date.now(), name: draft.name, desc: draft.desc, visitsRequired: parseInt(draft.visitsRequired, 10) || 0, status: draft.status, expiryDate: draft.expiryDate || null };
+                const record = { id: formMode === 'create' ? 'rw' + Date.now() : editingId!, name: draft.name, desc: draft.desc, visitsRequired: parseInt(draft.visitsRequired, 10) || 0, status: draft.status, expiryDate: draft.expiryDate || null };
                 await saveReward(record);
-                setScreen('list');
+                setRewards(await getRewardsAdmin());
+                if (formMode !== 'system') setScreen('list');
+                else alert('Perubahan berhasil disimpan!');
               }}>Simpan</Button></div>
             </div>
           </div>

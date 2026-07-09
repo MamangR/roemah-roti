@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-const GOAL = 10;
-const REWARD = 'Free Original Saltbread';
+const tx = (date: string, invoice: string, total: number, visitEarned: number) => ({ date, invoice, total, visitEarned });
+
+import { getMembers, saveMember, createMemberAdmin, getSystemReward } from '../actions';
 
 function fmtRupiah(n: number) { return 'Rp' + n.toLocaleString('id-ID'); }
 function fmtDate(iso: string) {
@@ -20,10 +21,6 @@ function pillStyle(status: string) {
   return { bg: '#F1EBE1', color: '#7A6A5F' }; // Archived
 }
 function normalizeDigits(s: string) { return (s || '').replace(/\D/g, ''); }
-
-const tx = (date: string, invoice: string, total: number, visitEarned: number) => ({ date, invoice, total, visitEarned });
-
-import { getMembers, saveMember, createMemberAdmin } from '../actions';
 
 function StatusPill({ bg, color, label }: { bg: string, color: string, label: string }) {
   return (
@@ -78,12 +75,15 @@ export default function MemberManagementPage() {
   const [screen, setScreen] = useState<'list' | 'search' | 'detail' | 'edit'>('list');
   const [members, setMembers] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [goalConfig, setGoalConfig] = useState({ req: 10, name: 'Free Garlic Cream Cheese' });
 
   useEffect(() => {
     async function fetchM() {
       try {
         const data = await getMembers();
         setMembers(data);
+        const sys = await getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', '', 10);
+        setGoalConfig({ req: sys.visitsRequired || 10, name: sys.name });
       } catch (e) { console.error(e); }
     }
     fetchM();
@@ -104,11 +104,16 @@ export default function MemberManagementPage() {
   const buildDisplayMember = (m: any, onClick: any) => {
     const p = pillStyle(m.status);
     const statusLabel = m.status === 'Active' ? 'Aktif' : (m.status === 'Suspended' ? 'Ditangguhkan' : 'Diarsipkan');
+    const GOAL = goalConfig.req;
+    const REWARD = goalConfig.name;
+    const currentGoal = Math.floor(m.visits / GOAL) * GOAL + GOAL;
+    const progressInCurrentTier = m.visits % GOAL;
+    const visitsNeeded = GOAL - progressInCurrentTier;
     return {
-      ...m, goal: GOAL, reward: REWARD, initials: initials(m.name), pillBg: p.bg, pillColor: p.color,
+      ...m, goal: currentGoal, reward: REWARD, initials: initials(m.name), pillBg: p.bg, pillColor: p.color,
       statusLabel,
       spendingLabel: fmtRupiah(m.spending), joinDateLabel: fmtDate(m.joinDate), lastActivityLabel: fmtDate(m.lastActivity),
-      rewardStatusLabel: m.visits >= GOAL ? `Siap ditukar — ${REWARD}` : `${GOAL - m.visits} kunjungan lagi menuju ${REWARD}`,
+      rewardStatusLabel: progressInCurrentTier === 0 && m.visits > 0 ? `Siap ditukar — ${REWARD}` : `${visitsNeeded} kunjungan lagi menuju ${REWARD}`,
       onClick
     };
   };
@@ -311,7 +316,7 @@ export default function MemberManagementPage() {
                     <div style={{ fontSize: '13.5px', color: '#7A6A5F', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember.memberId} · {selectedMember.wa}</div>
                   </div>
                 </div>
-                <div style={{ width: '140px' }}><Button variant="primary" onClick={() => { setDraft({ ...selectedMember, goal: GOAL }); setScreen('edit'); }}>Edit</Button></div>
+                <div style={{ width: '140px' }}><Button variant="primary" onClick={() => { setDraft({ ...selectedMember }); setScreen('edit'); }}>Edit</Button></div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '18px', marginTop: '26px', alignItems: 'start' }}>
@@ -378,11 +383,11 @@ export default function MemberManagementPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Visit saat ini</div>
-                    <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {draft.goal}</div>
+                    <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {Math.floor(draft.visits / goalConfig.req) * goalConfig.req + goalConfig.req}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <div onClick={() => setDraft({ ...draft, visits: Math.max(0, draft.visits - 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>−</div>
-                    <div onClick={() => setDraft({ ...draft, visits: Math.min(GOAL, draft.visits + 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>+</div>
+                    <div onClick={() => setDraft({ ...draft, visits: draft.visits + 1 })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>+</div>
                   </div>
                 </div>
               </div>

@@ -103,8 +103,19 @@ export async function getMembers() {
   });
 }
 
+export async function getSystemReward(id: string, defaultName: string, defaultDesc: string, defaultReq: number) {
+  const config = await prisma.rewardTemplate.findUnique({ where: { id } });
+  if (config) return config;
+  return { id, name: defaultName, desc: defaultDesc, visitsRequired: defaultReq, status: 'Aktif' };
+}
+
 export async function saveMember(id: string, data: { name: string; wa: string; status: string; visits: number }) {
   await checkAdmin();
+  
+  const oldMember = await prisma.member.findUnique({ where: { id } });
+  const visitConfig = await getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', 'Selamat! Kunjungan Anda telah mencapai target.', 10);
+  const threshold = visitConfig.visitsRequired || 10;
+
   await prisma.member.update({
     where: { id },
     data: {
@@ -114,6 +125,51 @@ export async function saveMember(id: string, data: { name: string; wa: string; s
       totalVisits: data.visits
     }
   });
+
+  if (oldMember && data.visits > oldMember.totalVisits) {
+    // If this is their first visit(s), auto-approve any pending referral
+    if (oldMember.totalVisits === 0 && data.visits > 0) {
+      const pendingReferral = await prisma.referredFriend.findFirst({
+        where: { friendName: oldMember.name, status: 'Pending' }
+      });
+      if (pendingReferral) {
+        // Auto-approve! This adds the bonus to the referrer.
+        await approveReferralAdmin(pendingReferral.id);
+      }
+    }
+
+    const oldTier = Math.floor(oldMember.totalVisits / threshold);
+    const newTier = Math.floor(data.visits / threshold);
+    const rewardsEarned = newTier - oldTier;
+    
+    if (rewardsEarned > 0) {
+      for (let i = 0; i < rewardsEarned; i++) {
+        await prisma.memberReward.create({
+          data: {
+            memberId: id,
+            rewardType: 'VISIT_' + threshold + '_' + Date.now() + '_' + i,
+            title: visitConfig.name,
+            type: 'Reward',
+            description: visitConfig.desc,
+            redeemedAt: null,
+            isAvailable: true
+          }
+        });
+        
+        await prisma.activity.create({
+          data: {
+            memberId: id,
+            type: 'earned',
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            reward: visitConfig.name,
+            earnedVia: 'Visit Milestone',
+            status: 'ready'
+          }
+        });
+      }
+    }
+  }
+
   return { success: true };
 }
 
@@ -162,30 +218,25 @@ export async function saveReward(data: { id: string, name: string, desc: string,
 
   const expiry = data.expiryDate ? new Date(data.expiryDate) : null;
 
-  if (data.id.startsWith('rw')) {
-    // New
-    await prisma.rewardTemplate.create({
-      data: {
-        name: data.name,
-        desc: data.desc,
-        visitsRequired: data.visitsRequired,
-        status: data.status,
-        expiryDate: expiry
-      }
-    });
-  } else {
-    // Update
-    await prisma.rewardTemplate.update({
-      where: { id: data.id },
-      data: {
-        name: data.name,
-        desc: data.desc,
-        visitsRequired: data.visitsRequired,
-        status: data.status,
-        expiryDate: expiry
-      }
-    });
-  }
+  await prisma.rewardTemplate.upsert({
+    where: { id: data.id },
+    update: {
+      name: data.name,
+      desc: data.desc,
+      visitsRequired: data.visitsRequired,
+      status: data.status,
+      expiryDate: expiry
+    },
+    create: {
+      id: data.id,
+      name: data.name,
+      desc: data.desc,
+      visitsRequired: data.visitsRequired,
+      status: data.status,
+      expiryDate: expiry
+    }
+  });
+
   return { success: true };
 }
 
@@ -280,27 +331,10 @@ export async function approveReferralAdmin(friendId: string) {
   const f = await prisma.referredFriend.findUnique({ where: { id: friendId }, include: { referrer: true } });
   if (!f) throw new Error('Not found');
 
-  await prisma.$transaction([
-    prisma.referredFriend.update({
-      where: { id: friendId },
-      data: { status: 'Approved' }
-    }),
-    prisma.member.update({
-      where: { id: f.referrerId },
-      data: { totalVisits: { increment: 5 } } // Proxy for reward
-    }),
-    prisma.memberReward.create({
-      data: {
-        memberId: f.referrerId,
-        rewardType: 'REF_BONUS_' + Date.now(),
-        title: 'Referral Bonus',
-        type: 'Referral',
-        description: 'Gratis 5 Kunjungan (Bonus Referral)',
-        redeemedAt: new Date(),
-        isAvailable: false
-      }
-    })
-  ]);
+  await prisma.referredFriend.update({
+    where: { id: friendId },
+    data: { status: 'Approved' }
+  });
   return { success: true };
 }
 

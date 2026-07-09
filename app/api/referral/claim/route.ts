@@ -20,14 +20,19 @@ export async function POST(req: Request) {
 
     const member = session.member;
 
+    const referralConfig = await prisma.rewardTemplate.findUnique({ where: { id: 'SYSTEM_REFERRAL' } });
+    const goalCount = referralConfig ? referralConfig.visitsRequired : 1;
+    const rewardName = referralConfig ? referralConfig.name : 'Free Garlic Cream Cheese';
+    const rewardDesc = referralConfig ? referralConfig.desc : 'Our thanks for a friend who joined.';
+
     // Check if they have at least 1 Approved referred friend
     const qualifyingFriends = member.referredFriends.filter(f => f.status === 'Approved');
-    if (qualifyingFriends.length === 0) {
-      return NextResponse.json({ error: 'No qualifying friends' }, { status: 400 });
+    if (qualifyingFriends.length < goalCount) {
+      return NextResponse.json({ error: 'Not enough qualifying friends' }, { status: 400 });
     }
 
     // Check if they already claimed the referral reward
-    const hasClaimed = member.rewards.some(r => r.type === 'Referral' && r.title.includes('Garlic Cream Cheese'));
+    const hasClaimed = member.rewards.some(r => r.type === 'Referral' && r.title.includes(rewardName));
     if (hasClaimed) {
       return NextResponse.json({ error: 'Reward already claimed' }, { status: 400 });
     }
@@ -42,9 +47,9 @@ export async function POST(req: Request) {
       data: {
         memberId: member.id,
         rewardType: 'ref_garlic_cream_cheese_' + Date.now(),
-        title: 'Free Garlic Cream Cheese',
+        title: rewardName,
         type: 'Referral',
-        description: 'Our thanks for a friend who joined.',
+        description: rewardDesc,
         isAvailable: true,
         expiresAtLabel,
         isOneTimeUse: true

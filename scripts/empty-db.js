@@ -10,6 +10,11 @@ async function main() {
   await prisma.otpSession.deleteMany({});
   await prisma.referral.deleteMany({});
   await prisma.member.deleteMany({});
+  await prisma.rewardTemplate.deleteMany({});
+  await prisma.storeMapping.deleteMany({});
+  await prisma.newMenu.deleteMany({});
+  await prisma.promo.deleteMany({});
+  await prisma.announcement.deleteMany({});
   console.log("Database successfully emptied.");
 }
 
