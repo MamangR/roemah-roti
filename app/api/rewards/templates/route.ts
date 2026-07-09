@@ -7,6 +7,9 @@ export async function GET(request: NextRequest) {
       where: {
         status: "Aktif",
       },
+      include: {
+        menuItem: true,
+      },
       orderBy: {
         visitsRequired: "asc"
       }

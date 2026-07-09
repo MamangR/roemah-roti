@@ -99,7 +99,7 @@ export default function ProfilePage() {
         {view === 'personal' && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('main')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('main')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Personal Information</div>
             </div>
             <div style={{ marginTop: '22px', background: '#F8F4EE', borderRadius: '18px', padding: '6px 20px', display: 'flex', flexDirection: 'column' }}>
@@ -115,7 +115,7 @@ export default function ProfilePage() {
         {view === 'membership' && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('main')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('main')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Membership Information</div>
             </div>
             <div style={{ marginTop: '22px', background: '#F8F4EE', borderRadius: '18px', padding: '6px 20px', display: 'flex', flexDirection: 'column' }}>
@@ -132,7 +132,7 @@ export default function ProfilePage() {
         {view === 'edit' && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('main')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('main')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Edit Profile</div>
             </div>
 

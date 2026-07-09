@@ -23,6 +23,7 @@ export default function ReferralPage() {
   const [goalCount, setGoalCount] = useState(1);
   const [rewardName, setRewardName] = useState('Free Garlic Cream Cheese');
   const [rewardDesc, setRewardDesc] = useState('Our thanks for a friend who joined.');
+  const [rewardImageUrl, setRewardImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setRevealed(true), 350);
@@ -31,8 +32,9 @@ export default function ReferralPage() {
       m.getSystemReward('SYSTEM_REFERRAL', 'Free Garlic Cream Cheese', 'Our thanks for a friend who joined.', 1)
         .then(res => {
           setGoalCount(res.visitsRequired || 1);
-          setRewardName(res.name);
-          setRewardDesc(res.desc);
+          setRewardName(res.resolvedName || res.name);
+          setRewardDesc(res.resolvedDesc || res.desc);
+          setRewardImageUrl(res.imageUrl || null);
         })
         .catch(console.error);
     });
@@ -81,8 +83,8 @@ export default function ReferralPage() {
   const rm = rewardMap[baseRewardState];
 
   const progressLine = remaining > 0
-    ? qualifying + ' of ' + goalCount + ' friends joined & visited · ' + remaining + ' more to unlock your next reward.'
-    : 'All set — ' + goalCount + ' of ' + goalCount + ' friends joined & visited for this reward cycle.';
+    ? qualifying + ' of ' + goalCount + ' friends joined & visited · ' + remaining + ' more to unlock your next reward: ' + rewardName + '.'
+    : 'All set — ' + goalCount + ' of ' + goalCount + ' friends joined & visited to unlock ' + rewardName + '.';
 
   const terms = [
     'Reward is granted after your friend completes their first qualifying visit.',
@@ -114,7 +116,7 @@ export default function ReferralPage() {
         {view === 'referral' && (
           <div style={{ padding: '8px 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', flex: 'none' }}>←</div>
+              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div>
                 <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Referral Program</div>
               </div>
@@ -186,8 +188,18 @@ export default function ReferralPage() {
               <div style={{ fontSize: '15px', fontWeight: 600, marginLeft: '2px' }}>Referral Reward</div>
               <div style={{ marginTop: '12px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '22px', overflow: 'hidden', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '18px' }}>
-                  <div style={{ width: '52px', height: '52px', borderRadius: '15px', background: '#F3E9E4', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3c1.8 2 2.6 3.6 2.6 5a2.6 2.6 0 1 1-5.2 0c0-1.4.8-3 2.6-5z"></path><path d="M6 13c0-1.8 2.7-3 6-3s6 1.2 6 3v4a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"></path></svg>
+                  <div style={{ width: '52px', height: '52px', borderRadius: '15px', background: '#F3E9E4', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {rewardImageUrl ? (
+                      <img src={rewardImageUrl} alt={rewardName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="1.5"/>
+                        <rect x="2" y="7" width="20" height="4" rx="1"/>
+                        <line x1="12" y1="7" x2="12" y2="22"/>
+                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4"/>
+                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4"/>
+                      </svg>
+                    )}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '16px', fontWeight: 600, letterSpacing: '-.01em' }}>{rewardName}</div>
@@ -232,7 +244,7 @@ export default function ReferralPage() {
         {view === 'friend' && selFriend && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('referral')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('referral')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Friend Progress</div>
             </div>
 
@@ -296,7 +308,7 @@ export default function ReferralPage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5C7B5A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L4 20l1.1-4.4A8.5 8.5 0 1 1 21 11.5z"></path><path d="M9 10.5c0 3 2.5 5 5 5"></path></svg>
               </div>
               <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>WhatsApp</div>
-              <div style={{ fontSize: '16px', color: '#C4B6A9' }}>→</div>
+              <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
             </div>
             <div onClick={() => { setShareOpen(false); toast('Link copied'); }} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 6px', cursor: 'pointer', borderBottom: '1px solid #F2ECE3' }}>
               <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>

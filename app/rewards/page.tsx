@@ -15,6 +15,7 @@ type RewardItem = {
   need?: string;
   redeemedDate?: string;
   expirationDate?: string;
+  imageUrl?: string | null;
 };
 
 // Rewards are mapped dynamically in the component from member.rewards
@@ -136,8 +137,9 @@ export default function RewardsPage() {
     .map((t: any) => ({
       id: t.id,
       cat: 'Visit Reward',
-      name: t.name,
-      desc: t.desc,
+      name: t.menuItem?.name || t.name,
+      desc: t.menuItem?.shortDesc || t.desc,
+      imageUrl: t.menuItem?.imageUrl || null,
       base: visits >= t.visitsRequired ? 'unlocked' : 'locked',
       progress: `${Math.min(visits, t.visitsRequired)} / ${t.visitsRequired} visits`,
       need: visits >= t.visitsRequired ? `Unlocked at ${t.visitsRequired} visits` : `${t.visitsRequired - visits} more visits to unlock`,
@@ -157,7 +159,8 @@ export default function RewardsPage() {
         rawRewardsList.push({
           id: r.id, cat: r.type || 'Reward', name: r.title, desc: r.description,
           base: r.isAvailable ? 'unlocked' : 'expired',
-          expirationDate: r.expiresAtLabel
+          expirationDate: r.expiresAtLabel,
+          imageUrl: null // Non-template generic rewards won't have an image without a join
         });
       }
     }
@@ -206,8 +209,9 @@ export default function RewardsPage() {
   const rawBirthdayItem: RewardItem = {
     id: 'birthday',
     cat: 'Birthday Reward',
-    name: bdayDb?.title ?? sysBdayTemplate?.name ?? 'Birthday Treat Box',
-    desc: bdayDb?.description ?? sysBdayTemplate?.desc ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.',
+    name: bdayDb?.title ?? sysBdayTemplate?.menuItem?.name ?? sysBdayTemplate?.name ?? 'Birthday Treat Box',
+    desc: bdayDb?.description ?? sysBdayTemplate?.menuItem?.shortDesc ?? sysBdayTemplate?.desc ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.',
+    imageUrl: sysBdayTemplate?.menuItem?.imageUrl || null,
     base: bdayBase,
     need: bdayNeed,
     expirationDate: bdayBase === 'unlocked' ? lastDayOfBirthMonth : undefined,
@@ -280,19 +284,45 @@ export default function RewardsPage() {
                 <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.14em', color: 'rgba(248,244,238,.72)', whiteSpace: 'nowrap' }}>BIRTHDAY REWARD</div>
                 <div style={{ ...birthday.heroBadgeStyle, flex: 'none', whiteSpace: 'nowrap' }}>{birthday.statusLabel}</div>
               </div>
-              <div style={{ position: 'relative', fontSize: '17px', fontWeight: 600, marginTop: '12px', letterSpacing: '-.01em' }}>{birthday.name}</div>
-              <div style={{ position: 'relative', fontSize: '12.5px', color: 'rgba(248,244,238,.62)', marginTop: '5px', lineHeight: 1.5 }}>{birthday.desc}</div>
+              <div style={{ position: 'relative', display: 'flex', gap: '14px', marginTop: '12px' }}>
+                {birthday.imageUrl && (
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', overflow: 'hidden', flex: 'none' }}>
+                    <img src={birthday.imageUrl} alt={birthday.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                <div>
+                  <div style={{ fontSize: '17px', fontWeight: 600, letterSpacing: '-.01em' }}>{birthday.name}</div>
+                  <div style={{ fontSize: '12.5px', color: 'rgba(248,244,238,.62)', marginTop: '5px', lineHeight: 1.5 }}>{birthday.desc}</div>
+                </div>
+              </div>
             </div>
 
             {rewards.map((item, i) => (
               <div key={i} onClick={item.open} style={{ marginTop: '14px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', padding: '16px', cursor: item.cursor, boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease', opacity: item.cardOpacity }}>
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
-                  <div style={{ flex: 1, minWidth: 0, fontSize: '15px', fontWeight: 600, letterSpacing: '-.01em', lineHeight: 1.35 }}>{item.name}</div>
-                  <div style={{ ...item.cardBadgeStyle, fontSize: '10.5px', fontWeight: 600, padding: '4px 10px', borderRadius: '999px', flex: 'none', whiteSpace: 'nowrap' }}>{item.statusLabel}</div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '12px' }}>
-                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: item.reqDot }}></span>
-                  <span style={{ fontSize: '12px', fontWeight: 500, color: item.reqColor }}>{item.reqText}</span>
+                <div style={{ display: 'flex', gap: '14px' }}>
+                  <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#F3E9E4', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {item.imageUrl ? (
+                      <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="1.5"/>
+                        <rect x="2" y="7" width="20" height="4" rx="1"/>
+                        <line x1="12" y1="7" x2="12" y2="22"/>
+                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4"/>
+                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4"/>
+                      </svg>
+                    )}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
+                      <div style={{ flex: 1, minWidth: 0, fontSize: '15px', fontWeight: 600, letterSpacing: '-.01em', lineHeight: 1.35 }}>{item.name}</div>
+                      <div style={{ ...item.cardBadgeStyle, fontSize: '10.5px', fontWeight: 600, padding: '4px 10px', borderRadius: '999px', flex: 'none', whiteSpace: 'nowrap' }}>{item.statusLabel}</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '6px' }}>
+                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: item.reqDot }}></span>
+                      <span style={{ fontSize: '12px', fontWeight: 500, color: item.reqColor }}>{item.reqText}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -302,7 +332,7 @@ export default function RewardsPage() {
         {view === 'detail' && cur && (
           <div style={{ padding: '0 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '4px' }}>
-              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>{cur.name}</div>
             </div>
 
@@ -318,8 +348,27 @@ export default function RewardsPage() {
                   </div>
                 </div>
 
-                <div style={{ marginTop: '22px', fontSize: '21px', fontWeight: 600, letterSpacing: '-.02em' }}>{cur.name}</div>
-                <div style={{ fontSize: '13px', lineHeight: 1.55, color: 'rgba(248,244,238,.62)', marginTop: '7px', maxWidth: '260px' }}>{cur.long}</div>
+                <div style={{ display: 'flex', gap: '16px', marginTop: '22px', alignItems: 'flex-start' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: '21px', fontWeight: 600, letterSpacing: '-.02em' }}>{cur.name}</div>
+                    <div style={{ fontSize: '13px', lineHeight: 1.55, color: 'rgba(248,244,238,.62)', marginTop: '7px' }}>{cur.long}</div>
+                  </div>
+                  {cur.imageUrl ? (
+                    <div style={{ width: '72px', height: '72px', borderRadius: '16px', overflow: 'hidden', background: 'rgba(255,255,255,0.05)', flex: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                      <img src={cur.imageUrl} alt={cur.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  ) : (
+                    <div style={{ width: '72px', height: '72px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(248,244,238,.4)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="1.5"/>
+                        <rect x="2" y="7" width="20" height="4" rx="1"/>
+                        <line x1="12" y1="7" x2="12" y2="22"/>
+                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4"/>
+                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4"/>
+                      </svg>
+                    </div>
+                  )}
+                </div>
 
                 <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '22px', paddingTop: '18px', borderTop: '1px solid rgba(248,244,238,.12)' }}>
                   <div>
@@ -354,7 +403,7 @@ export default function RewardsPage() {
         {view === 'history' && (
           <div style={{ padding: '0 20px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '4px' }}>
-              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Redeem History</div>
             </div>
 

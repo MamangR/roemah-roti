@@ -26,10 +26,16 @@ export default function VisitsPage() {
   const [view, setView] = useState<'dashboard' | 'history' | 'detail'>('dashboard');
   const [selId, setSelId] = useState<string | null>(null);
   const [goal, setGoal] = useState(10);
+  const [rewardName, setRewardName] = useState('Free Garlic Cream Cheese');
+  const [rewardImageUrl, setRewardImageUrl] = useState<string | null>(null);
 
   React.useEffect(() => {
     getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', 'Selamat! Kunjungan Anda telah mencapai target.', 10)
-      .then(res => setGoal(res.visitsRequired || 10))
+      .then(res => {
+        setGoal(res.visitsRequired || 10);
+        setRewardName(res.resolvedName || 'Free Garlic Cream Cheese');
+        setRewardImageUrl(res.imageUrl || null);
+      })
       .catch(console.error);
   }, []);
 
@@ -109,16 +115,33 @@ export default function VisitsPage() {
             </div>
 
             <div style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', padding: '18px 18px 20px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '14px', fontWeight: 600 }}>Visit Progress</div>
-                <div style={{ fontSize: '12px', color: '#A08A7B' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{member?.totalVisits || 0}</span> / {Math.floor((member?.totalVisits || 0) / goal) * goal + goal} visits</div>
-              </div>
-              <div style={{ position: 'relative', marginTop: '14px', height: '12px', borderRadius: '999px', background: '#F1EBE1', overflow: 'hidden' }}>
-                <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(90deg,transparent 0,transparent calc(${100/goal}% - 1.5px),rgba(255,255,255,.9) calc(${100/goal}% - 1.5px),rgba(255,255,255,.9) ${100/goal}%)`, zIndex: 2 }}></div>
-                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${((member?.totalVisits || 0) % goal) * (100/goal)}%`, background: 'linear-gradient(90deg,#B98A5E,#A67C52)', borderRadius: '999px', zIndex: 1 }}></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#F3E9E4', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {rewardImageUrl ? (
+                      <img src={rewardImageUrl} alt={rewardName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="1.5"/>
+                        <rect x="2" y="7" width="20" height="4" rx="1"/>
+                        <line x1="12" y1="7" x2="12" y2="22"/>
+                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4"/>
+                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4"/>
+                      </svg>
+                    )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 600 }}>Visit Progress</div>
+                    <div style={{ fontSize: '12px', color: '#A08A7B' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{member?.totalVisits || 0}</span> / {Math.floor((member?.totalVisits || 0) / goal) * goal + goal} visits</div>
+                  </div>
+                  <div style={{ position: 'relative', marginTop: '12px', height: '10px', borderRadius: '999px', background: '#F1EBE1', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(90deg,transparent 0,transparent calc(${100/goal}% - 1.5px),rgba(255,255,255,.9) calc(${100/goal}% - 1.5px),rgba(255,255,255,.9) ${100/goal}%)`, zIndex: 2 }}></div>
+                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${((member?.totalVisits || 0) % goal) * (100/goal)}%`, background: 'linear-gradient(90deg,#B98A5E,#A67C52)', borderRadius: '999px', zIndex: 1 }}></div>
+                  </div>
+                </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px' }}>
-                <div style={{ fontSize: '12.5px', color: '#7A6A5F' }}><span style={{ fontWeight: 600, color: '#3B2A22' }}>{goal - ((member?.totalVisits || 0) % goal)} more visits</span> until your next reward.</div>
+                <div style={{ fontSize: '12.5px', color: '#7A6A5F' }}><span style={{ fontWeight: 600, color: '#3B2A22' }}>{goal - ((member?.totalVisits || 0) % goal)} more visits</span> until your next reward: <span style={{ fontWeight: 600, color: '#3B2A22' }}>{rewardName}</span>.</div>
                 <div onClick={() => setView('history')} style={{ fontSize: '12px', fontWeight: 600, color: '#A67C52', cursor: 'pointer', flex: 'none', paddingLeft: '10px' }}>View History</div>
               </div>
             </div>
@@ -132,7 +155,7 @@ export default function VisitsPage() {
                 <div style={{ fontSize: '15px', fontWeight: 600 }}>Refer a Friend</div>
                 <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>Share something you trust.</div>
               </div>
-              <div style={{ fontSize: '18px', color: '#C4B6A9' }}>→</div>
+              <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
             </div>
           </div>
         )}
@@ -141,7 +164,7 @@ export default function VisitsPage() {
         {isHistory && (
           <div style={{ padding: '8px 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('dashboard')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', flex: 'none' }}>←</div>
+              <div onClick={() => setView('dashboard')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flex: 'none', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Visit History</div>
             </div>
             <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px', marginLeft: '2px' }}>A record of your visits and rewards.</div>
@@ -180,7 +203,7 @@ export default function VisitsPage() {
         {isVisitDetail && sel && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Visit Record</div>
             </div>
 
@@ -209,7 +232,7 @@ export default function VisitsPage() {
         {isEarnedDetail && sel && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Reward Earned</div>
             </div>
 
@@ -236,7 +259,7 @@ export default function VisitsPage() {
         {isRedeemedDetail && sel && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Redemption Record</div>
             </div>
 

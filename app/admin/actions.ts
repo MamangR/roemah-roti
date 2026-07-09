@@ -109,7 +109,8 @@ export async function getSystemReward(id: string, defaultName: string, defaultDe
     return {
       ...config,
       resolvedName: config.menuItem?.name || config.name || defaultName,
-      resolvedDesc: config.menuItem?.shortDesc || config.desc || defaultDesc
+      resolvedDesc: config.menuItem?.shortDesc || config.desc || defaultDesc,
+      imageUrl: config.menuItem?.imageUrl
     };
   }
   return { id, resolvedName: defaultName, resolvedDesc: defaultDesc, visitsRequired: defaultReq, status: 'Aktif', validityDays: 30 };

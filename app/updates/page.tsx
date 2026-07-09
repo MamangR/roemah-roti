@@ -152,7 +152,7 @@ export default function UpdatesPage() {
         {view === 'updates' && (
           <div style={{ padding: '8px 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px', flex: 'none' }}>←</div>
+              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Updates</div>
             </div>
             <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px', marginLeft: '2px' }}>Things worth knowing at Roemah Roti.</div>
@@ -257,7 +257,7 @@ export default function UpdatesPage() {
           <div style={{ paddingBottom: '60px' }}>
             <div style={{ position: 'relative', height: '230px', overflow: 'hidden' }}>
               <div style={{ width: '100%', height: '100%', background: selItem.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{selItem.iconLarge}</div>
-              <div onClick={() => setView('updates')} style={{ position: 'absolute', top: '14px', left: '16px', width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(252,251,248,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,42,34,.12)', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('updates')} style={{ position: 'absolute', top: '14px', left: '16px', width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(252,251,248,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,42,34,.12)', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
             </div>
             <div style={{ padding: '22px 22px 0' }}>
               <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.12em', color: '#A67C52' }}>{selItem.categoryUpper}</div>
@@ -272,7 +272,7 @@ export default function UpdatesPage() {
         {view === 'promoDetail' && selPromo && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Promo</div>
             </div>
             <div style={{ marginTop: '22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
@@ -301,7 +301,7 @@ export default function UpdatesPage() {
         {view === 'announcementDetail' && selAnnouncement && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '18px' }}>←</div>
+              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Announcement</div>
             </div>
             {selAnnouncement.pinned && (
