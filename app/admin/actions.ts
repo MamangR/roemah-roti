@@ -288,23 +288,44 @@ export async function redeemRewardAdmin(memberId: string, rewardTemplateId: stri
   if (!member || !template) throw new Error('Not found');
   if (member.totalVisits < template.visitsRequired) throw new Error('Not enough visits');
 
-  await prisma.$transaction([
-    prisma.member.update({
-      where: { id: memberId },
-      data: { totalVisits: member.totalVisits - template.visitsRequired }
-    }),
-    prisma.memberReward.create({
+  const redeemedAt = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    const newReward = await tx.memberReward.create({
       data: {
         memberId: member.id,
         rewardType: template.id + '_' + Date.now(), // unique type so multiple can be issued
         title: template.name || template.menuItem?.name || 'Reward',
         type: 'Admin Redeemed',
         description: template.desc || template.menuItem?.shortDesc || '',
-        redeemedAt: new Date(),
+        redeemedAt,
         isAvailable: false
       }
-    })
-  ]);
+    });
+
+    await tx.activity.create({
+      data: {
+        memberId: member.id,
+        memberRewardId: newReward.id,
+        type: 'redeemed',
+        date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        outlet: 'Roemah Roti',
+        reward: template.name || template.menuItem?.name || 'Reward',
+        ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+      }
+    });
+
+    await tx.member.update({
+      where: { id: memberId },
+      data: {
+        rewardsEarned: { increment: 1 }
+      }
+    });
+
+    await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
+  });
+
   return { success: true };
 }
 
@@ -380,5 +401,69 @@ export async function rejectReferralAdmin(friendId: string) {
     data: { status: 'Rejected' }
   });
   return { success: true };
+}
+
+export async function handleRedemptionVisit(tx: any, memberId: string, oldVisits: number, visitsDiff: number, redeemedAt: Date) {
+  const visitConfig = await tx.rewardTemplate.findUnique({
+    where: { id: 'SYSTEM_VISIT' },
+    include: { menuItem: true }
+  });
+  const threshold = visitConfig?.visitsRequired || 10;
+  const newVisits = oldVisits + visitsDiff;
+
+  await tx.member.update({
+    where: { id: memberId },
+    data: { totalVisits: newVisits }
+  });
+
+  await tx.activity.create({
+    data: {
+      memberId,
+      type: 'visit',
+      date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      outlet: 'Roemah Roti',
+      visitNo: `Visit #${newVisits}`
+    }
+  });
+
+  const baseForOldTier = visitsDiff < 0 ? oldVisits + (visitsDiff - 1) : oldVisits;
+  const oldTier = Math.floor(baseForOldTier / threshold);
+  const newTier = Math.floor(newVisits / threshold);
+  const rewardsEarned = newTier - oldTier;
+
+  if (rewardsEarned > 0 && visitConfig) {
+    const resolvedName = visitConfig.name || visitConfig.menuItem?.name || 'Free Garlic Cream Cheese';
+    const resolvedDesc = visitConfig.desc || visitConfig.menuItem?.shortDesc || 'Selamat! Kunjungan Anda telah mencapai target.';
+
+    for (let i = 0; i < rewardsEarned; i++) {
+      const reward = await tx.memberReward.create({
+        data: {
+          memberId,
+          sourceTemplateId: visitConfig.id,
+          rewardType: 'VISIT_' + threshold + '_' + Date.now() + '_' + i,
+          title: resolvedName,
+          type: 'Reward',
+          description: resolvedDesc,
+          redeemedAt: null,
+          isAvailable: true,
+          expiresAtLabel: 'Valid for ' + (visitConfig.validityDays || 30) + ' days'
+        }
+      });
+      
+      await tx.activity.create({
+        data: {
+          memberId,
+          memberRewardId: reward.id,
+          type: 'earned',
+          date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          reward: resolvedName,
+          earnedVia: 'Visit Milestone',
+          status: 'ready'
+        }
+      });
+    }
+  }
 }
 

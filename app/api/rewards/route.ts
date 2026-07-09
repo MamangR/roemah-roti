@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { NextRequest } from "next/server";
+import { handleRedemptionVisit } from "@/app/admin/actions";
 
 // ─── GET /api/rewards?memberId=...&rewardType=... ─────────────────────────────
 // Fetch a specific reward for a member by type (e.g. "birthday_treat").
@@ -120,6 +121,8 @@ export async function POST(request: NextRequest) {
           data: { rewardsEarned: { increment: 1 } },
         });
 
+        await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+
         await tx.activity.create({
           data: {
             memberId,
@@ -156,6 +159,11 @@ export async function POST(request: NextRequest) {
         return Response.json({ error: "Reward already redeemed or unavailable" }, { status: 400 });
       }
 
+      const member = await prisma.member.findUnique({ where: { id: memberId } });
+      if (!member) {
+        return Response.json({ error: "Member not found" }, { status: 404 });
+      }
+
       await prisma.$transaction(async (tx) => {
         const updatedReward = await tx.memberReward.update({
           where: { id: existingReward.id },
@@ -169,6 +177,8 @@ export async function POST(request: NextRequest) {
           where: { id: memberId },
           data: { rewardsEarned: { increment: 1 } },
         });
+
+        await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
 
         await tx.activity.create({
           data: {
@@ -222,10 +232,11 @@ export async function POST(request: NextRequest) {
       await tx.member.update({
         where: { id: memberId },
         data: {
-          totalVisits: member.totalVisits - template.visitsRequired,
           rewardsEarned: { increment: 1 }
         }
       });
+
+      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
       
       const newReward = await tx.memberReward.create({
         data: {
