@@ -113,7 +113,21 @@ export async function getSystemReward(id: string, defaultName: string, defaultDe
       imageUrl: config.menuItem?.imageUrl
     };
   }
-  return { id, resolvedName: defaultName, resolvedDesc: defaultDesc, visitsRequired: defaultReq, status: 'Aktif', validityDays: 30 };
+  return {
+    id,
+    name: defaultName,
+    desc: defaultDesc,
+    visitsRequired: defaultReq,
+    status: 'Aktif',
+    validityDays: 30,
+    menuItemId: null,
+    menuItem: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    resolvedName: defaultName,
+    resolvedDesc: defaultDesc,
+    imageUrl: null as string | null
+  };
 }
 
 export async function saveMember(id: string, data: { name: string; wa: string; status: string; visits: number }) {
@@ -266,7 +280,10 @@ export async function deleteReward(id: string) {
 export async function redeemRewardAdmin(memberId: string, rewardTemplateId: string) {
   await checkAdmin();
   const member = await prisma.member.findUnique({ where: { id: memberId } });
-  const template = await prisma.rewardTemplate.findUnique({ where: { id: rewardTemplateId } });
+  const template = await prisma.rewardTemplate.findUnique({
+    where: { id: rewardTemplateId },
+    include: { menuItem: true }
+  });
 
   if (!member || !template) throw new Error('Not found');
   if (member.totalVisits < template.visitsRequired) throw new Error('Not enough visits');
@@ -280,9 +297,9 @@ export async function redeemRewardAdmin(memberId: string, rewardTemplateId: stri
       data: {
         memberId: member.id,
         rewardType: template.id + '_' + Date.now(), // unique type so multiple can be issued
-        title: template.name,
+        title: template.menuItem?.name || template.name || 'Reward',
         type: 'Admin Redeemed',
-        description: template.desc,
+        description: template.menuItem?.shortDesc || template.desc || '',
         redeemedAt: new Date(),
         isAvailable: false
       }

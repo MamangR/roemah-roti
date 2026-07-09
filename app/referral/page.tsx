@@ -32,8 +32,8 @@ export default function ReferralPage() {
       m.getSystemReward('SYSTEM_REFERRAL', 'Free Garlic Cream Cheese', 'Our thanks for a friend who joined.', 1)
         .then(res => {
           setGoalCount(res.visitsRequired || 1);
-          setRewardName(res.resolvedName || res.name);
-          setRewardDesc(res.resolvedDesc || res.desc);
+          setRewardName(res.resolvedName);
+          setRewardDesc(res.resolvedDesc);
           setRewardImageUrl(res.imageUrl || null);
         })
         .catch(console.error);

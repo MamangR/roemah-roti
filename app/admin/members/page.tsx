@@ -83,7 +83,7 @@ export default function MemberManagementPage() {
         const data = await getMembers();
         setMembers(data);
         const sys = await getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', '', 10);
-        setGoalConfig({ req: sys.visitsRequired || 10, name: sys.name });
+        setGoalConfig({ req: sys.visitsRequired || 10, name: sys.resolvedName });
       } catch (e) { console.error(e); }
     }
     fetchM();
