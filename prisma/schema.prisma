@@ -44,6 +44,7 @@ model Member {
   rewards             MemberReward[]
   activities          Activity[]
   referredFriends     ReferredFriend[] @relation("MemberToReferredFriend")
+  registeredReferrals ReferredFriend[] @relation("MemberToRegisteredFriend")
   referral            Referral?
   sessions            Session[]
 
@@ -73,7 +74,12 @@ model MemberReward {
   updatedAt    DateTime  @updatedAt
 
   // Relations
-  member       Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  member           Member          @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  storeMappingId   String?
+  storeMapping     StoreMapping?   @relation(fields: [storeMappingId], references: [id])
+  sourceTemplateId String?
+  sourceTemplate   RewardTemplate? @relation(fields: [sourceTemplateId], references: [id])
+  activities       Activity[]
 
   // Replaces Firebase composite doc-ID pattern "memberId_rewardType"
   @@unique([memberId, rewardType])
@@ -83,11 +89,17 @@ model MemberReward {
 // ─── Reward Templates (Admin) ─────────────────────────────────────────────────
 model RewardTemplate {
   id             String   @id @default(cuid())
-  name           String
-  desc           String
+  name           String?
+  desc           String?
   visitsRequired Int
   status         String   @default("Aktif") // "Aktif" or "Nonaktif"
-  expiryDate     DateTime?
+  
+  validityDays   Int?     @default(30)
+  menuItemId     String?
+  menuItem       NewMenu? @relation(fields: [menuItemId], references: [id])
+
+  issuedRewards  MemberReward[]
+
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
@@ -116,6 +128,10 @@ model StoreMapping {
   posId     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  activities    Activity[]
+  memberRewards MemberReward[]
+  announcements Announcement[]
 }
 
 // ─── Updates ──────────────────────────────────────────────────────────────────
@@ -125,10 +141,13 @@ model NewMenu {
   category  String
   shortDesc String
   longDesc  String   @db.Text
+  imageUrl  String?
   dateAdded String
   status    String   @default("Draft")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  rewardTemplates RewardTemplate[]
 }
 
 model Promo {
@@ -136,6 +155,7 @@ model Promo {
   name        String
   shortDesc   String
   longDesc    String   @db.Text
+  imageUrl    String?
   terms       String[]
   startDate   String
   endDate     String
@@ -145,15 +165,17 @@ model Promo {
 }
 
 model Announcement {
-  id         String   @id @default(cuid())
-  title      String
-  summary    String
-  content    String   @db.Text
-  outlet     String   @default("All outlets")
-  pinned     Boolean  @default(false)
-  datePosted String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id               String   @id @default(cuid())
+  title            String
+  summary          String
+  content          String   @db.Text
+  outlet           String   @default("All outlets")
+  storeMappingId   String?
+  storeMapping     StoreMapping? @relation(fields: [storeMappingId], references: [id])
+  pinned           Boolean  @default(false)
+  datePosted       String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 // ─── Authentication ────────────────────────────────────────────────────────────
@@ -189,6 +211,12 @@ model Activity {
   status    String?  // 'ready', 'redeemed'
   ref       String?
 
+  storeMappingId   String?
+  storeMapping     StoreMapping? @relation(fields: [storeMappingId], references: [id])
+  
+  memberRewardId   String?
+  memberReward     MemberReward? @relation(fields: [memberRewardId], references: [id])
+
   createdAt DateTime @default(now())
   
   member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
@@ -202,6 +230,9 @@ model ReferredFriend {
   date         String
   status       String
   contribution String
+
+  friendId     String?
+  friend       Member?  @relation("MemberToRegisteredFriend", fields: [friendId], references: [id])
 
   createdAt    DateTime @default(now())
   

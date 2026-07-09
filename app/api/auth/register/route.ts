@@ -74,6 +74,7 @@ export async function POST(req: Request) {
           await prisma.referredFriend.create({
             data: {
               referrerId: referrer.id,
+              friendId: member.id,
               friendName: member.name,
               date: new Date().toISOString().slice(0, 10),
               status: 'Pending',

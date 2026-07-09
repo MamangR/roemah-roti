@@ -20,10 +20,11 @@ export async function POST(req: Request) {
 
     const member = session.member;
 
-    const referralConfig = await prisma.rewardTemplate.findUnique({ where: { id: 'SYSTEM_REFERRAL' } });
+    const referralConfig = await prisma.rewardTemplate.findUnique({ where: { id: 'SYSTEM_REFERRAL' }, include: { menuItem: true } });
     const goalCount = referralConfig ? referralConfig.visitsRequired : 1;
-    const rewardName = referralConfig ? referralConfig.name : 'Free Garlic Cream Cheese';
-    const rewardDesc = referralConfig ? referralConfig.desc : 'Our thanks for a friend who joined.';
+    const rewardName = referralConfig?.menuItem?.name || referralConfig?.name || 'Free Garlic Cream Cheese';
+    const rewardDesc = referralConfig?.menuItem?.shortDesc || referralConfig?.desc || 'Our thanks for a friend who joined.';
+    const validityDays = referralConfig?.validityDays || 30;
 
     // Check if they have at least 1 Approved referred friend
     const qualifyingFriends = member.referredFriends.filter(f => f.status === 'Approved');
@@ -37,16 +38,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Reward already claimed' }, { status: 400 });
     }
 
-    // Calculate expiry date (1 month from now)
+    // Calculate expiry date based on validityDays
     const expiryDate = new Date();
-    expiryDate.setMonth(expiryDate.getMonth() + 1);
+    expiryDate.setDate(expiryDate.getDate() + validityDays);
     const expiresAtLabel = 'Expires ' + expiryDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 
     // Create the reward
     await prisma.memberReward.create({
       data: {
         memberId: member.id,
-        rewardType: 'ref_garlic_cream_cheese_' + Date.now(),
+        sourceTemplateId: 'SYSTEM_REFERRAL',
+        rewardType: 'ref_' + rewardName.toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now(),
         title: rewardName,
         type: 'Referral',
         description: rewardDesc,

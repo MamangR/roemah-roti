@@ -22,8 +22,8 @@ function statusPill(kind: string, value: string) {
 }
 
 function emptyDraft(type: string) {
-  if (type === 'newMenu') return { name: '', category: 'Bread', shortDesc: '', longDesc: '', dateAdded: todayIso(), status: 'Draft' };
-  if (type === 'promo') return { name: '', shortDesc: '', longDesc: '', terms: [''], startDate: todayIso(), endDate: todayIso(), promoStatus: 'Aktif' };
+  if (type === 'newMenu') return { name: '', category: 'Bread', shortDesc: '', longDesc: '', imageUrl: '', dateAdded: todayIso(), status: 'Draft' };
+  if (type === 'promo') return { name: '', shortDesc: '', longDesc: '', imageUrl: '', terms: [''], startDate: todayIso(), endDate: todayIso(), promoStatus: 'Aktif' };
   return { title: '', summary: '', content: '', outlet: 'All outlets', pinned: false, datePosted: todayIso() };
 }
 
@@ -263,7 +263,7 @@ export default function UpdatesManagementPage() {
                         </span>
                       </div>
                       <div style={{ display: 'flex', gap: '14px' }}>
-                        <span onClick={() => { setFormMode('edit'); setFormType('newMenu'); setEditingId(it.id); setDraft({ name: it.name, category: it.category, shortDesc: it.shortDesc, longDesc: it.longDesc, dateAdded: it.dateAdded, status: it.status }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
+                        <span onClick={() => { setFormMode('edit'); setFormType('newMenu'); setEditingId(it.id); setDraft({ name: it.name, category: it.category, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', dateAdded: it.dateAdded, status: it.status }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
                         <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'newMenu' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
                       </div>
                     </div>
@@ -290,7 +290,7 @@ export default function UpdatesManagementPage() {
                         </span>
                       </div>
                       <div style={{ display: 'flex', gap: '14px' }}>
-                        <span onClick={() => { setFormMode('edit'); setFormType('promo'); setEditingId(it.id); setDraft({ name: it.name, shortDesc: it.shortDesc, longDesc: it.longDesc, terms: it.terms ?? [''], startDate: it.startDate, endDate: it.endDate, promoStatus: it.promoStatus }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
+                        <span onClick={() => { setFormMode('edit'); setFormType('promo'); setEditingId(it.id); setDraft({ name: it.name, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', terms: it.terms ?? [''], startDate: it.startDate, endDate: it.endDate, promoStatus: it.promoStatus }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
                         <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'promo' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
                       </div>
                     </div>
@@ -371,6 +371,7 @@ export default function UpdatesManagementPage() {
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>DESKRIPSI LENGKAP</div>
                     <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang item ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
                   </div>
+                  <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
                   <Input label="TANGGAL TAYANG" type="date" value={draft.dateAdded} onChange={(e: any) => setDraft({ ...draft, dateAdded: e.target.value })} />
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
@@ -390,6 +391,7 @@ export default function UpdatesManagementPage() {
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>DESKRIPSI LENGKAP</div>
                     <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang promo ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
                   </div>
+                  <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>SYARAT & KETENTUAN</div>
                     {(draft.terms ?? ['']).map((t: string, i: number) => (

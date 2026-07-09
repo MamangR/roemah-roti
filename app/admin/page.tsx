@@ -255,7 +255,7 @@ export default function AdminDashboardPage() {
   const navItems = [
     { label: 'Ringkasan', path: '/admin', active: true },
     { label: 'Member', path: '/admin/members', active: false },
-    { label: 'Hadiah', path: '/admin/rewards', active: false },
+    { label: 'Rewards', path: '/admin/rewards', active: false },
     { label: 'Referral', path: '/admin/referrals', active: false },
     { label: 'Update', path: '/admin/updates', active: false },
   ];

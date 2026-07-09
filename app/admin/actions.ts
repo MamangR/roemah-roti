@@ -104,9 +104,15 @@ export async function getMembers() {
 }
 
 export async function getSystemReward(id: string, defaultName: string, defaultDesc: string, defaultReq: number) {
-  const config = await prisma.rewardTemplate.findUnique({ where: { id } });
-  if (config) return config;
-  return { id, name: defaultName, desc: defaultDesc, visitsRequired: defaultReq, status: 'Aktif' };
+  const config = await prisma.rewardTemplate.findUnique({ where: { id }, include: { menuItem: true } });
+  if (config) {
+    return {
+      ...config,
+      resolvedName: config.menuItem?.name || config.name || defaultName,
+      resolvedDesc: config.menuItem?.shortDesc || config.desc || defaultDesc
+    };
+  }
+  return { id, resolvedName: defaultName, resolvedDesc: defaultDesc, visitsRequired: defaultReq, status: 'Aktif', validityDays: 30 };
 }
 
 export async function saveMember(id: string, data: { name: string; wa: string; status: string; visits: number }) {
@@ -143,30 +149,35 @@ export async function saveMember(id: string, data: { name: string; wa: string; s
     const rewardsEarned = newTier - oldTier;
     
     if (rewardsEarned > 0) {
-      for (let i = 0; i < rewardsEarned; i++) {
-        await prisma.memberReward.create({
-          data: {
-            memberId: id,
-            rewardType: 'VISIT_' + threshold + '_' + Date.now() + '_' + i,
-            title: visitConfig.name,
-            type: 'Reward',
-            description: visitConfig.desc,
-            redeemedAt: null,
-            isAvailable: true
-          }
-        });
-        
-        await prisma.activity.create({
-          data: {
-            memberId: id,
-            type: 'earned',
-            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-            reward: visitConfig.name,
-            earnedVia: 'Visit Milestone',
-            status: 'ready'
-          }
-        });
-      }
+      await prisma.$transaction(async (tx) => {
+        for (let i = 0; i < rewardsEarned; i++) {
+          const reward = await tx.memberReward.create({
+            data: {
+              memberId: id,
+              sourceTemplateId: visitConfig.id,
+              rewardType: 'VISIT_' + threshold + '_' + Date.now() + '_' + i,
+              title: visitConfig.resolvedName,
+              type: 'Reward',
+              description: visitConfig.resolvedDesc,
+              redeemedAt: null,
+              isAvailable: true,
+              expiresAtLabel: 'Valid for ' + (visitConfig.validityDays || 30) + ' days'
+            }
+          });
+          
+          await tx.activity.create({
+            data: {
+              memberId: id,
+              memberRewardId: reward.id,
+              type: 'earned',
+              date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              reward: visitConfig.resolvedName,
+              earnedVia: 'Visit Milestone',
+              status: 'ready'
+            }
+          });
+        }
+      });
     }
   }
 
@@ -208,15 +219,18 @@ export async function createMemberAdmin(data: { name: string; wa: string }) {
 
 // -- REWARDS ACTIONS --
 
+export async function getMenuItemsAdmin() {
+  await checkAdmin();
+  return await prisma.newMenu.findMany({ orderBy: { name: 'asc' } });
+}
+
 export async function getRewardsAdmin() {
   await checkAdmin();
   return await prisma.rewardTemplate.findMany({ orderBy: { createdAt: 'desc' } });
 }
 
-export async function saveReward(data: { id: string, name: string, desc: string, visitsRequired: number, status: string, expiryDate?: string | null }) {
+export async function saveReward(data: { id: string, name: string | null, desc: string | null, visitsRequired: number, status: string, validityDays: number | null, menuItemId: string | null }) {
   await checkAdmin();
-
-  const expiry = data.expiryDate ? new Date(data.expiryDate) : null;
 
   await prisma.rewardTemplate.upsert({
     where: { id: data.id },
@@ -225,7 +239,8 @@ export async function saveReward(data: { id: string, name: string, desc: string,
       desc: data.desc,
       visitsRequired: data.visitsRequired,
       status: data.status,
-      expiryDate: expiry
+      validityDays: data.validityDays,
+      menuItemId: data.menuItemId
     },
     create: {
       id: data.id,
@@ -233,7 +248,8 @@ export async function saveReward(data: { id: string, name: string, desc: string,
       desc: data.desc,
       visitsRequired: data.visitsRequired,
       status: data.status,
-      expiryDate: expiry
+      validityDays: data.validityDays,
+      menuItemId: data.menuItemId
     }
   });
 
@@ -296,16 +312,17 @@ export async function getHistoryAdmin() {
 
 export async function getReferralsAdmin() {
   await checkAdmin();
+  
+  // Fetch referrals with the referrer and the formally linked friend
   const friends = await prisma.referredFriend.findMany({
-    include: { referrer: true },
+    include: { referrer: true, friend: true },
     orderBy: { createdAt: 'desc' }
   });
 
+  const referralConfig = await getSystemReward('SYSTEM_REFERRAL', 'Free Garlic Cream Cheese', 'Our thanks for a friend who joined.', 1);
+
   const flatList: any[] = [];
   for (const f of friends) {
-    // Find if friend registered (matching by name since phone is not stored in ReferredFriend schema)
-    const friendMember = await prisma.member.findFirst({ where: { name: f.friendName } });
-
     flatList.push({
       id: f.id,
       referralId: f.id,
@@ -315,12 +332,12 @@ export async function getReferralsAdmin() {
       referrerWa: f.referrer.phone,
       referrerMemberId: f.referrer.referralCode,
       referredName: f.friendName,
-      referredRegisterDate: friendMember ? friendMember.createdAt.toISOString().slice(0, 10) : '-',
-      referredMemberId: friendMember ? friendMember.referralCode : '-',
-      referredVisitDone: friendMember ? friendMember.totalVisits > 0 : false,
+      referredRegisterDate: f.friend ? f.friend.createdAt.toISOString().slice(0, 10) : '-',
+      referredMemberId: f.friend ? f.friend.referralCode : '-',
+      referredVisitDone: f.friend ? f.friend.totalVisits > 0 : false,
       date: f.date || f.createdAt.toISOString().slice(0, 10),
       status: f.status,
-      rewardName: 'Free Garlic Cream Cheese'
+      rewardName: referralConfig.resolvedName
     });
   }
   return flatList;

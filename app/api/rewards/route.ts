@@ -87,16 +87,22 @@ export async function POST(request: NextRequest) {
       const expiresAtLabel = lastDayOfMonth.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 
+      // Fetch SYSTEM_BIRTHDAY config if available
+      const bdayConfig = await prisma.rewardTemplate.findUnique({ where: { id: 'SYSTEM_BIRTHDAY' }, include: { menuItem: true } });
+      const bdayName = bdayConfig?.menuItem?.name || bdayConfig?.name || 'Birthday Treat Box';
+      const bdayDesc = bdayConfig?.menuItem?.shortDesc || bdayConfig?.desc || 'A curated box of four seasonal pastries, our gift to you this birthday month.';
+
       // Upsert: create the row on first redemption, or update if it exists but was not yet redeemed
-      await prisma.$transaction([
-        prisma.memberReward.upsert({
+      await prisma.$transaction(async (tx) => {
+        const reward = await tx.memberReward.upsert({
           where: { memberId_rewardType: { memberId, rewardType: 'birthday_treat' } },
           create: {
             memberId,
+            sourceTemplateId: 'SYSTEM_BIRTHDAY',
             rewardType: 'birthday_treat',
-            title: 'Birthday Treat Box',
+            title: bdayName,
             type: 'Birthday Reward',
-            description: 'A curated box of four seasonal pastries, our gift to you this birthday month.',
+            description: bdayDesc,
             location: 'Roemah Roti',
             expiresAtLabel,
             isAvailable: false,
@@ -107,23 +113,26 @@ export async function POST(request: NextRequest) {
             redeemedAt,
             isAvailable: false,
           },
-        }),
-        prisma.member.update({
+        });
+
+        await tx.member.update({
           where: { id: memberId },
           data: { rewardsEarned: { increment: 1 } },
-        }),
-        prisma.activity.create({
+        });
+
+        await tx.activity.create({
           data: {
             memberId,
+            memberRewardId: reward.id,
             type: 'redeemed',
             date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
             time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-            outlet: 'Roemah Roti Greenville',
-            reward: 'Birthday Treat Box',
+            outlet: 'Roemah Roti',
+            reward: bdayName,
             ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
           },
-        }),
-      ]);
+        });
+      });
 
       return Response.json({
         rewardId: 'birthday_treat',
@@ -133,9 +142,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // ─── 1. Try to find if this is a pre-existing MemberReward record ─────────
+    // ─── 1. Check if it's an existing MemberReward voucher ──
     const existingReward = await prisma.memberReward.findUnique({
-      where: { id: rewardId },
+      where: { id: rewardId }
     });
 
     if (existingReward) {
@@ -144,39 +153,57 @@ export async function POST(request: NextRequest) {
       }
 
       if (!existingReward.isAvailable || existingReward.redeemedAt) {
-        return Response.json({ error: "Reward already redeemed" }, { status: 400 });
+        return Response.json({ error: "Reward already redeemed or unavailable" }, { status: 400 });
       }
 
-      const [updatedReward] = await prisma.$transaction([
-        prisma.memberReward.update({
+      await prisma.$transaction(async (tx) => {
+        const updatedReward = await tx.memberReward.update({
           where: { id: existingReward.id },
           data: {
             redeemedAt,
             isAvailable: false,
           },
-        }),
-        prisma.member.update({
+        });
+
+        await tx.member.update({
           where: { id: memberId },
           data: { rewardsEarned: { increment: 1 } },
-        }),
-      ]);
+        });
+
+        await tx.activity.create({
+          data: {
+            memberId: existingReward.memberId,
+            memberRewardId: updatedReward.id,
+            type: 'redeemed',
+            date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            outlet: existingReward.location || 'Roemah Roti',
+            reward: existingReward.title,
+            ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+          }
+        });
+      });
 
       return Response.json({
         rewardId,
         memberId,
         redeemedAt: redeemedAt.toISOString(),
-        isAvailable: updatedReward.isAvailable,
+        isAvailable: false,
       });
     }
 
     // ─── 2. Check if it matches a RewardTemplate milestone (dynamic redemption) ──
     const template = await prisma.rewardTemplate.findUnique({
       where: { id: rewardId },
+      include: { menuItem: true }
     });
 
     if (!template) {
       return Response.json({ error: "Reward not found" }, { status: 404 });
     }
+
+    const rewardName = template.menuItem?.name || template.name || 'Reward';
+    const rewardDesc = template.menuItem?.shortDesc || template.desc || '';
 
     const member = await prisma.member.findUnique({
       where: { id: memberId },
@@ -191,37 +218,41 @@ export async function POST(request: NextRequest) {
     }
 
     // Process dynamic redemption
-    await prisma.$transaction([
-      prisma.member.update({
+    await prisma.$transaction(async (tx) => {
+      await tx.member.update({
         where: { id: memberId },
         data: {
           totalVisits: member.totalVisits - template.visitsRequired,
           rewardsEarned: { increment: 1 }
         }
-      }),
-      prisma.memberReward.create({
+      });
+      
+      const newReward = await tx.memberReward.create({
         data: {
           memberId: member.id,
+          sourceTemplateId: template.id,
           rewardType: template.id + '_' + Date.now(), // unique type so multiple can be issued
-          title: template.name,
+          title: rewardName,
           type: 'Visit Reward',
-          description: template.desc,
+          description: rewardDesc,
           redeemedAt,
           isAvailable: false
         }
-      }),
-      prisma.activity.create({
+      });
+      
+      await tx.activity.create({
         data: {
           memberId: member.id,
+          memberRewardId: newReward.id,
           type: 'redeemed',
-          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-          outlet: 'Roemah Roti Greenville',
-          reward: template.name,
+          date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          outlet: 'Roemah Roti',
+          reward: rewardName,
           ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
         }
-      })
-    ]);
+      });
+    });
 
     return Response.json({
       rewardId,
