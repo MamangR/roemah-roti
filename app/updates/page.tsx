@@ -170,20 +170,18 @@ export default function UpdatesPage() {
               <div style={{ marginTop: '18px', animation: 'ufade .28s cubic-bezier(.22,1,.36,1)' }}>
                 {loading && [0, 1, 2].map(i => <Skeleton key={i} />)}
                 {!loading && newMenu.map((item, i) => (
-                  <div key={i} onClick={item.open} style={{ marginTop: '14px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', display: 'flex', gap: 0, boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease' }}>
+                  <div key={i} onClick={item.open} style={{ position: 'relative', marginTop: '14px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', display: 'flex', gap: 0, boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease' }}>
                     {item.imageUrl ? (
                       <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
                     ) : (
                       <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none', background: item.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.iconSmall}</div>
                     )}
                     <div style={{ flex: 1, minWidth: 0, padding: '13px 14px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em' }}>{item.name}</div>
-                        <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#5C7B5A', background: 'rgba(122,150,116,.14)', padding: '2px 8px', borderRadius: '999px', flex: 'none' }}>NEW</span>
-                      </div>
+                      <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em', paddingRight: '50px' }}>{item.name}</div>
                       <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '4px', lineHeight: 1.4 }}>{item.desc}</div>
                       <div style={{ fontSize: '11px', color: '#A08A7B', marginTop: '6px' }}>Added {item.date}</div>
                     </div>
+                    <span style={{ position: 'absolute', top: '14px', right: '16px', fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#5C7B5A', background: 'rgba(122,150,116,.14)', padding: '2px 8px', borderRadius: '999px' }}>NEW</span>
                   </div>
                 ))}
                 {!loading && newMenu.length === 0 && (
@@ -207,6 +205,7 @@ export default function UpdatesPage() {
                 ))}
                 {!loading && promos.map((item, i) => (
                   <div key={i} onClick={item.open} style={{
+                    position: 'relative',
                     marginTop: '14px',
                     background: '#fff',
                     border: '1px solid #EFE8DE',
@@ -220,13 +219,11 @@ export default function UpdatesPage() {
                       <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
                     )}
                     <div style={item.imageUrl ? { flex: 1, minWidth: 0, padding: '13px 14px' } : {}}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                        <div style={{ fontSize: '15.5px', fontWeight: 600, letterSpacing: '-.01em' }}>{item.name}</div>
-                        <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.02em', padding: '4px 10px', borderRadius: '999px', background: item.badgeBg, color: item.badgeColor, flex: 'none' }}>{item.badgeText}</span>
-                      </div>
+                      <div style={{ fontSize: '15.5px', fontWeight: 600, letterSpacing: '-.01em', paddingRight: '80px' }}>{item.name}</div>
                       <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.desc}</div>
                       <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>{item.validity}</div>
                     </div>
+                    <span style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '10px', fontWeight: 600, letterSpacing: '.02em', padding: '4px 10px', borderRadius: '999px', background: item.badgeBg, color: item.badgeColor }}>{item.badgeText}</span>
                   </div>
                 ))}
                 {!loading && promos.length === 0 && (
@@ -249,6 +246,7 @@ export default function UpdatesPage() {
                 ))}
                 {!loading && announcements.map((item, i) => (
                   <div key={i} onClick={item.open} style={{
+                    position: 'relative',
                     marginTop: '14px',
                     background: '#fff',
                     border: '1px solid #EFE8DE',
@@ -262,15 +260,13 @@ export default function UpdatesPage() {
                       <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none' }}><img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
                     )}
                     <div style={item.imageUrl ? { flex: 1, minWidth: 0, padding: '13px 14px' } : {}}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em' }}>{item.title}</div>
-                        {item.pinned && (
-                          <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#A67C52', background: 'rgba(166,124,82,.14)', padding: '2px 8px', borderRadius: '999px', flex: 'none' }}>PINNED</span>
-                        )}
-                      </div>
+                      <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em', paddingRight: '65px' }}>{item.title}</div>
                       <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.summary}</div>
                       <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>Posted {item.date}</div>
                     </div>
+                    {item.pinned && (
+                      <span style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#A67C52', background: 'rgba(166,124,82,.14)', padding: '2px 8px', borderRadius: '999px' }}>PINNED</span>
+                    )}
                   </div>
                 ))}
                 {!loading && announcements.length === 0 && (
