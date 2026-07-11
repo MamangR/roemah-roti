@@ -265,8 +265,11 @@ export default function ReferralManagementPage() {
 
         {screen === 'detail' && activeReferral && (
           <div style={{ maxWidth: '760px', margin: '0 auto', padding: '52px 40px 60px' }}>
-            <div onClick={() => setScreen('list')} style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', cursor: 'pointer', color: '#7A6A5F', fontSize: '13px', fontWeight: 600, marginBottom: '20px' }}>
-              <span style={{ fontSize: '15px' }}>←</span>Kembali ke Daftar Referral
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <div onClick={() => setScreen('list')} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </div>
+              <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#7A6A5F' }}>Kembali ke Daftar Referral</div>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
