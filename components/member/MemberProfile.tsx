@@ -18,6 +18,7 @@ const emptyReferral: ReferralProgress = {
 export function MemberProfile() {
   const [tab, setTab] = useState<"referral" | "updates" | "profile">("referral");
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
   const [referral, setReferral] = useState<ReferralProgress>(emptyReferral);
 
@@ -49,6 +50,22 @@ export function MemberProfile() {
     await navigator.clipboard?.writeText(displayCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  const referralLink = typeof window !== 'undefined'
+    ? `${window.location.origin}/join/${displayCode}`
+    : `https://roemahroti.id/join/${displayCode}`;
+
+  async function copyLink() {
+    if (!member) return;
+    await navigator.clipboard?.writeText(referralLink);
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  }
+
+  function shareWhatsapp() {
+    if (!member) return;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Join Roemah Roti Insider and use my referral code to earn rewards: ${referralLink}`)}`, '_blank');
   }
 
   return (
@@ -98,10 +115,10 @@ export function MemberProfile() {
                 />
               </div>
             </div>
-            <div className="rp-share-row">
-              <button className="rp-share-btn">WhatsApp</button>
-              <button className="rp-share-btn">
-                <LinkIcon size={14} /> Copy link
+             <div className="rp-share-row">
+              <button className="rp-share-btn" onClick={shareWhatsapp}>WhatsApp</button>
+              <button className="rp-share-btn" onClick={copyLink}>
+                <LinkIcon size={14} /> {linkCopied ? "Link copied!" : "Copy link"}
               </button>
             </div>
             <div className="rp-card-heading">How it works</div>

@@ -49,7 +49,13 @@ export default function ReferralPage() {
   };
 
   const code = member?.referralCode || 'RR-CODE';
-  const link = 'roemahroti.id/join/' + code;
+  const [origin, setOrigin] = useState('https://roemahroti.id');
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOrigin(window.location.origin);
+    }
+  }, []);
+  const link = `${origin}/join/${code}`;
   const rawFriends = member?.referredFriends || [];
   const qualifying = rawFriends.filter((f: any) => f.status === 'Approved').length;
   
@@ -305,14 +311,26 @@ export default function ReferralPage() {
             <div style={{ fontSize: '15px', fontWeight: 600, textAlign: 'center', marginBottom: '4px' }}>Share Referral Link</div>
             <div style={{ fontSize: '12px', color: '#8A7A6E', textAlign: 'center', marginBottom: '16px' }}>Invite a friend to Roemah Roti.</div>
 
-            <div onClick={() => { setShareOpen(false); toast('Opening WhatsApp…'); }} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 6px', cursor: 'pointer', borderBottom: '1px solid #F2ECE3' }}>
+            <div onClick={() => { 
+              setShareOpen(false); 
+              toast('Opening WhatsApp…'); 
+              if (typeof window !== 'undefined') {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Join Roemah Roti Insider and use my referral code to earn rewards: ${link}`)}`, '_blank');
+              }
+            }} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 6px', cursor: 'pointer', borderBottom: '1px solid #F2ECE3' }}>
               <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: 'rgba(122,150,116,.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5C7B5A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L4 20l1.1-4.4A8.5 8.5 0 1 1 21 11.5z"></path><path d="M9 10.5c0 3 2.5 5 5 5"></path></svg>
               </div>
               <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>WhatsApp</div>
               <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
             </div>
-            <div onClick={() => { setShareOpen(false); toast('Link copied'); }} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 6px', cursor: 'pointer', borderBottom: '1px solid #F2ECE3' }}>
+            <div onClick={() => { 
+              if (typeof navigator !== 'undefined') {
+                navigator.clipboard.writeText(link);
+              }
+              setShareOpen(false); 
+              toast('Link copied'); 
+            }} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 6px', cursor: 'pointer', borderBottom: '1px solid #F2ECE3' }}>
               <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="3"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg>
               </div>

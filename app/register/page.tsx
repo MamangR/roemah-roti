@@ -28,6 +28,30 @@ export default function RegisterPage() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const refCode = params.get('ref') || params.get('code') || '';
+      if (refCode) {
+        const uppercaseCode = refCode.toUpperCase();
+        setReferral(uppercaseCode);
+        setReferralStatus('checking');
+        fetch(`/api/referral/check?code=${encodeURIComponent(uppercaseCode)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.valid) {
+              setReferralStatus('valid');
+            } else {
+              setReferralStatus('invalid');
+            }
+          })
+          .catch(() => {
+            setReferralStatus('invalid');
+          });
+      }
+    }
+  }, []);
+
   const toggleCalendar = () => {
     setCalendarOpen(v => !v);
     setCalMode('day');
