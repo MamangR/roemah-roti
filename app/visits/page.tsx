@@ -146,6 +146,18 @@ export default function VisitsPage() {
               </div>
             </div>
 
+            {/* Updates CTA Card */}
+            <div onClick={() => router.push('/updates')} style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '17px 18px', display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer', boxShadow: '0 10px 26px -22px rgba(59,42,34,.35)', transition: 'transform .14s ease' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '13px', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 3.5 1 5.5 2 7H4c1-1.5 2-3.5 2-7z"></path><path d="M10 19a2 2 0 0 0 4 0"></path></svg>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '15px', fontWeight: 600 }}>Updates</div>
+                <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>New menu, promos, and announcements.</div>
+              </div>
+              <div style={{ fontSize: '18px', color: '#C4B6A9' }}>→</div>
+            </div>
+
             {/* Refer a Friend CTA Card */}
             <div onClick={() => router.push('/referral')} style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '17px 18px', display: 'flex', alignItems: 'center', gap: '14px', cursor: 'pointer', boxShadow: '0 10px 26px -22px rgba(59,42,34,.35)', transition: 'transform .14s ease' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '13px', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -7,6 +7,7 @@ import { getCurrentMember } from "@/services/member.service";
 import { getReferralProgress } from "@/services/referral.service";
 import type { Member } from "@/types/member";
 import type { ReferralProgress } from "@/types/referral";
+import { MemberUpdates } from "./MemberUpdates";
 
 const emptyReferral: ReferralProgress = {
   code: "",
@@ -15,7 +16,7 @@ const emptyReferral: ReferralProgress = {
 };
 
 export function MemberProfile() {
-  const [tab, setTab] = useState<"referral" | "profile">("referral");
+  const [tab, setTab] = useState<"referral" | "updates" | "profile">("referral");
   const [copied, setCopied] = useState(false);
   const [member, setMember] = useState<Member | null>(null);
   const [referral, setReferral] = useState<ReferralProgress>(emptyReferral);
@@ -57,12 +58,17 @@ export function MemberProfile() {
           <button className={`rp-tab ${tab === "referral" ? "active" : ""}`} onClick={() => setTab("referral")}>
             Referral
           </button>
+          <button className={`rp-tab ${tab === "updates" ? "active" : ""}`} onClick={() => setTab("updates")}>
+            Updates
+          </button>
           <button className={`rp-tab ${tab === "profile" ? "active" : ""}`} onClick={() => setTab("profile")}>
             My profile
           </button>
         </div>
 
-        {tab === "referral" ? (
+        {tab === "updates" && <MemberUpdates />}
+
+        {tab === "referral" && (
           <div className="rp-screen active">
             <div className="rp-header">
               <div className="rp-section-label">Refer a friend</div>
@@ -105,7 +111,9 @@ export function MemberProfile() {
               <ReferStep num="3">After <strong>3 friends join</strong>, you unlock a free Saltbread Original. No expiry.</ReferStep>
             </div> : <p className="rp-card-heading">No registered member found in this browser.</p>}
           </div>
-        ) : (
+        )}
+        
+        {tab === "profile" && (
           <div className="rp-screen active">
             {member ? <><div className="rp-profile-top">
               <div className="rp-profile-avatar">{member.initials}</div>
