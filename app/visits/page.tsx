@@ -155,7 +155,7 @@ export default function VisitsPage() {
                 <div style={{ fontSize: '15px', fontWeight: 600 }}>Updates</div>
                 <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>New menu, promos, and announcements.</div>
               </div>
-              <div style={{ fontSize: '18px', color: '#C4B6A9' }}>→</div>
+              <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
             </div>
 
             {/* Refer a Friend CTA Card */}

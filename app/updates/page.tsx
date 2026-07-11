@@ -172,9 +172,9 @@ export default function UpdatesPage() {
                 {!loading && newMenu.map((item, i) => (
                   <div key={i} onClick={item.open} style={{ marginTop: '14px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', display: 'flex', gap: 0, boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease' }}>
                     {item.imageUrl ? (
-                      <div style={{ width: '92px', height: '92px', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+                      <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
                     ) : (
-                      <div style={{ width: '92px', height: '92px', flex: 'none', background: item.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.iconSmall}</div>
+                      <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none', background: item.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.iconSmall}</div>
                     )}
                     <div style={{ flex: 1, minWidth: 0, padding: '13px 14px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -217,7 +217,7 @@ export default function UpdatesPage() {
                     ...(item.imageUrl ? { overflow: 'hidden', display: 'flex', gap: 0 } : { padding: '16px' })
                   }}>
                     {item.imageUrl && (
-                      <div style={{ width: '92px', height: '92px', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+                      <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
                     )}
                     <div style={item.imageUrl ? { flex: 1, minWidth: 0, padding: '13px 14px' } : {}}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
@@ -259,7 +259,7 @@ export default function UpdatesPage() {
                     ...(item.imageUrl ? { overflow: 'hidden', display: 'flex', gap: 0 } : { padding: '16px' })
                   }}>
                     {item.imageUrl && (
-                      <div style={{ width: '92px', height: '92px', flex: 'none' }}><img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+                      <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none' }}><img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
                     )}
                     <div style={item.imageUrl ? { flex: 1, minWidth: 0, padding: '13px 14px' } : {}}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
