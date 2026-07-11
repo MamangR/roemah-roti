@@ -137,7 +137,12 @@ export default function ReferralPage() {
               <div style={{ position: 'relative', marginTop: '14px', fontSize: '32px', fontWeight: 600, letterSpacing: '.05em', fontVariantNumeric: 'tabular-nums', color: '#E9C9A6' }}>{code}</div>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '18px', paddingTop: '16px', borderTop: '1px solid rgba(248,244,238,.12)' }}>
                 <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'rgba(248,244,238,.62)', maxWidth: '200px' }}>Give this code to a friend when they sign up.</div>
-                <div onClick={() => toast('Code copied')} style={{ cursor: 'pointer', flex: 'none', background: 'rgba(248,244,238,.1)', color: '#F8F4EE', fontSize: '12.5px', fontWeight: 600, padding: '9px 14px', borderRadius: '12px', border: '1px solid rgba(248,244,238,.18)' }}>Copy</div>
+                <div onClick={() => {
+                  if (typeof navigator !== 'undefined') {
+                    navigator.clipboard.writeText(code);
+                  }
+                  toast('Code copied');
+                }} style={{ cursor: 'pointer', flex: 'none', background: 'rgba(248,244,238,.1)', color: '#F8F4EE', fontSize: '12.5px', fontWeight: 600, padding: '9px 14px', borderRadius: '12px', border: '1px solid rgba(248,244,238,.18)' }}>Copy</div>
               </div>
             </div>
 
@@ -147,7 +152,12 @@ export default function ReferralPage() {
               <div style={{ marginTop: '12px', background: '#F8F4EE', borderRadius: '14px', padding: '13px 14px', fontSize: '13px', fontWeight: 500, color: '#4A3830', wordBreak: 'break-all', fontVariantNumeric: 'tabular-nums' }}>{link}</div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
                 <div onClick={() => setShareOpen(true)} style={{ flex: 1, textAlign: 'center', background: '#A67C52', color: '#FFFCF7', padding: '14px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>Share</div>
-                <div onClick={() => toast('Link copied')} style={{ flex: 'none', textAlign: 'center', border: '1px solid #E0D5C6', color: '#3B2A22', padding: '14px 18px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer' }}>Copy Link</div>
+                <div onClick={() => {
+                  if (typeof navigator !== 'undefined') {
+                    navigator.clipboard.writeText(link);
+                  }
+                  toast('Link copied');
+                }} style={{ flex: 'none', textAlign: 'center', border: '1px solid #E0D5C6', color: '#3B2A22', padding: '14px 18px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer' }}>Copy Link</div>
               </div>
             </div>
 
