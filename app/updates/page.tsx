@@ -206,13 +206,27 @@ export default function UpdatesPage() {
                   </div>
                 ))}
                 {!loading && promos.map((item, i) => (
-                  <div key={i} onClick={item.open} style={{ marginTop: '14px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', padding: '16px', cursor: 'pointer', boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
-                      <div style={{ fontSize: '15.5px', fontWeight: 600, letterSpacing: '-.01em' }}>{item.name}</div>
-                      <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.02em', padding: '4px 10px', borderRadius: '999px', background: item.badgeBg, color: item.badgeColor, flex: 'none' }}>{item.badgeText}</span>
+                  <div key={i} onClick={item.open} style={{
+                    marginTop: '14px',
+                    background: '#fff',
+                    border: '1px solid #EFE8DE',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)',
+                    transition: 'transform .14s ease',
+                    ...(item.imageUrl ? { overflow: 'hidden', display: 'flex', gap: 0 } : { padding: '16px' })
+                  }}>
+                    {item.imageUrl && (
+                      <div style={{ width: '92px', height: '92px', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+                    )}
+                    <div style={item.imageUrl ? { flex: 1, minWidth: 0, padding: '13px 14px' } : {}}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                        <div style={{ fontSize: '15.5px', fontWeight: 600, letterSpacing: '-.01em' }}>{item.name}</div>
+                        <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.02em', padding: '4px 10px', borderRadius: '999px', background: item.badgeBg, color: item.badgeColor, flex: 'none' }}>{item.badgeText}</span>
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.desc}</div>
+                      <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>{item.validity}</div>
                     </div>
-                    <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.desc}</div>
-                    <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>{item.validity}</div>
                   </div>
                 ))}
                 {!loading && promos.length === 0 && (
@@ -234,15 +248,29 @@ export default function UpdatesPage() {
                   </div>
                 ))}
                 {!loading && announcements.map((item, i) => (
-                  <div key={i} onClick={item.open} style={{ marginTop: '14px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', padding: '16px', cursor: 'pointer', boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {item.pinned && (
-                        <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#A67C52', background: 'rgba(166,124,82,.14)', padding: '2px 8px', borderRadius: '999px', flex: 'none' }}>PINNED</span>
-                      )}
-                      <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em' }}>{item.title}</div>
+                  <div key={i} onClick={item.open} style={{
+                    marginTop: '14px',
+                    background: '#fff',
+                    border: '1px solid #EFE8DE',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)',
+                    transition: 'transform .14s ease',
+                    ...(item.imageUrl ? { overflow: 'hidden', display: 'flex', gap: 0 } : { padding: '16px' })
+                  }}>
+                    {item.imageUrl && (
+                      <div style={{ width: '92px', height: '92px', flex: 'none' }}><img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+                    )}
+                    <div style={item.imageUrl ? { flex: 1, minWidth: 0, padding: '13px 14px' } : {}}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em' }}>{item.title}</div>
+                        {item.pinned && (
+                          <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#A67C52', background: 'rgba(166,124,82,.14)', padding: '2px 8px', borderRadius: '999px', flex: 'none' }}>PINNED</span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.summary}</div>
+                      <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>Posted {item.date}</div>
                     </div>
-                    <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.summary}</div>
-                    <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>Posted {item.date}</div>
                   </div>
                 ))}
                 {!loading && announcements.length === 0 && (
@@ -283,6 +311,11 @@ export default function UpdatesPage() {
               <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Promo</div>
             </div>
+            {selPromo.imageUrl && (
+              <div style={{ marginTop: '22px', height: '180px', borderRadius: '18px', overflow: 'hidden' }}>
+                <img src={selPromo.imageUrl} alt={selPromo.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            )}
             <div style={{ marginTop: '22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
               <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>{selPromo.name}</div>
               <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px', background: selPromo.badgeBg, color: selPromo.badgeColor, flex: 'none' }}>{selPromo.badgeText}</span>
@@ -312,6 +345,11 @@ export default function UpdatesPage() {
               <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Announcement</div>
             </div>
+            {selAnnouncement.imageUrl && (
+              <div style={{ marginTop: '22px', height: '180px', borderRadius: '18px', overflow: 'hidden' }}>
+                <img src={selAnnouncement.imageUrl} alt={selAnnouncement.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            )}
             {selAnnouncement.pinned && (
               <div style={{ marginTop: '20px', display: 'inline-block', fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#A67C52', background: 'rgba(166,124,82,.14)', padding: '3px 9px', borderRadius: '999px' }}>PINNED</div>
             )}

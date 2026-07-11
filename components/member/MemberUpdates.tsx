@@ -107,10 +107,10 @@ export function MemberUpdates() {
           {subTab === 'announcements' && announcements.map((announcement) => (
             <div key={announcement.id} className="rp-info-card" style={{ padding: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>{announcement.title}</div>
                 {announcement.pinned && (
                   <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '0.06em', color: '#A67C52', background: 'rgba(166,124,82,0.14)', padding: '2px 6px', borderRadius: '999px' }}>PINNED</span>
                 )}
-                <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>{announcement.title}</div>
               </div>
               <div style={{ fontSize: '12px', color: 'rgba(59,42,34,0.6)', marginBottom: '8px', lineHeight: 1.4 }}>{announcement.summary}</div>
               <div style={{ fontSize: '11px', color: 'rgba(59,42,34,0.4)' }}>Posted {fmtDate(announcement.datePosted)}</div>
