@@ -45,11 +45,31 @@ const Input = ({ label, placeholder, value, onChange, type = 'text' }: any) => (
 
 const SegmentedToggle = ({ options, value, onChange }: any) => (
   <div style={{ display: 'flex', background: '#F1EBE1', borderRadius: '14px', padding: '4px' }}>
-    {options.map((o: any) => (
-      <div key={o.value} onClick={() => onChange(o.value)} style={{ flex: 1, textAlign: 'center', padding: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', background: value === o.value ? '#fff' : 'transparent', borderRadius: '11px', color: value === o.value ? '#3B2A22' : '#A08A7B', boxShadow: value === o.value ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none' }}>
-        {o.label}
-      </div>
-    ))}
+    {options.map((o: any) => {
+      const isSel = value === o.value;
+      const isDis = o.disabled;
+      return (
+        <div 
+          key={o.value} 
+          onClick={isDis ? undefined : () => onChange(o.value)} 
+          style={{ 
+            flex: 1, 
+            textAlign: 'center', 
+            padding: '8px', 
+            fontSize: '13px', 
+            fontWeight: 600, 
+            cursor: isDis ? 'not-allowed' : 'pointer', 
+            background: isSel ? '#fff' : 'transparent', 
+            borderRadius: '11px', 
+            color: isSel ? '#3B2A22' : (isDis ? 'rgba(59,42,34,0.3)' : '#A08A7B'), 
+            boxShadow: isSel ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none',
+            opacity: isDis ? 0.5 : 1
+          }}
+        >
+          {o.label}
+        </div>
+      );
+    })}
   </div>
 );
 
@@ -95,6 +115,32 @@ export default function UpdatesManagementPage() {
     loadAll();
   }, []);
 
+  // Enforce promo status rules dynamically when end date changes in draft
+  useEffect(() => {
+    if (formType === 'promo' && draft && draft.endDate) {
+      const now = new Date();
+      const todayStr = now.toISOString().slice(0, 10);
+      const end = new Date(draft.endDate + 'T23:59:59');
+      const today = new Date(todayStr + 'T00:00:00');
+      const diffTime = end.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        if (draft.promoStatus !== 'Berakhir') {
+          setDraft((d: any) => ({ ...d, promoStatus: 'Berakhir' }));
+        }
+      } else if (diffDays <= 3) {
+        if (draft.promoStatus !== 'Segera Berakhir') {
+          setDraft((d: any) => ({ ...d, promoStatus: 'Segera Berakhir' }));
+        }
+      } else {
+        if (draft.promoStatus !== 'Aktif') {
+          setDraft((d: any) => ({ ...d, promoStatus: 'Aktif' }));
+        }
+      }
+    }
+  }, [draft?.endDate, formType]);
+
   // ─── Refresh a single list ───────────────────────────────────────────────────
   async function refreshList(type: string) {
     const res = await fetch(`/api/updates?type=${type}`);
@@ -109,7 +155,29 @@ export default function UpdatesManagementPage() {
     setSaving(true);
     try {
       const isEdit = formMode === 'edit';
-      const payload = { type: formType, ...(isEdit ? { id: editingId } : {}), ...draft };
+      let finalPromoStatus = draft.promoStatus;
+      if (formType === 'promo' && draft.endDate) {
+        const now = new Date();
+        const todayStr = now.toISOString().slice(0, 10);
+        const end = new Date(draft.endDate + 'T23:59:59');
+        const today = new Date(todayStr + 'T00:00:00');
+        const diffTime = end.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 0) {
+          finalPromoStatus = 'Berakhir';
+        } else if (diffDays <= 3) {
+          finalPromoStatus = 'Segera Berakhir';
+        } else {
+          finalPromoStatus = 'Aktif';
+        }
+      }
+      const payload = { 
+        type: formType, 
+        ...(isEdit ? { id: editingId } : {}), 
+        ...draft,
+        ...(formType === 'promo' ? { promoStatus: finalPromoStatus } : {})
+      };
       const method = isEdit ? 'PUT' : 'POST';
       const res = await fetch('/api/updates', {
         method,
@@ -421,14 +489,27 @@ export default function UpdatesManagementPage() {
                     <Input label="TANGGAL MULAI" type="date" value={draft.startDate} onChange={(e: any) => setDraft({ ...draft, startDate: e.target.value })} />
                     <Input label="TANGGAL BERAKHIR" type="date" value={draft.endDate} onChange={(e: any) => setDraft({ ...draft, endDate: e.target.value })} />
                   </div>
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
-                    <SegmentedToggle options={[
-                      { value: 'Aktif', label: 'Aktif' },
-                      { value: 'Segera Berakhir', label: 'Segera Berakhir' },
-                      { value: 'Berakhir', label: 'Berakhir' }
-                    ]} value={draft.promoStatus} onChange={(v: any) => setDraft({ ...draft, promoStatus: v })} />
-                  </div>
+                  {(() => {
+                    let diffDays = 999;
+                    if (draft.endDate) {
+                      const now = new Date();
+                      const todayStr = now.toISOString().slice(0, 10);
+                      const end = new Date(draft.endDate + 'T23:59:59');
+                      const today = new Date(todayStr + 'T00:00:00');
+                      const diffTime = end.getTime() - today.getTime();
+                      diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    }
+                    return (
+                      <div>
+                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
+                        <SegmentedToggle options={[
+                          { value: 'Aktif', label: 'Aktif', disabled: diffDays <= 3 },
+                          { value: 'Segera Berakhir', label: 'Segera Berakhir', disabled: diffDays > 3 || diffDays < 0 },
+                          { value: 'Berakhir', label: 'Berakhir', disabled: diffDays >= 0 }
+                        ]} value={draft.promoStatus} onChange={(v: any) => setDraft({ ...draft, promoStatus: v })} />
+                      </div>
+                    );
+                  })()}
                 </>
               )}
 
