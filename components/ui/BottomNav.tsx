@@ -7,7 +7,7 @@ export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const isDash = pathname === '/visits' || pathname === '/referral';
+  const isDash = pathname === '/visits' || pathname === '/referral' || pathname === '/updates';
   const isRewards = pathname === '/rewards';
   const isProfile = pathname === '/profile';
 

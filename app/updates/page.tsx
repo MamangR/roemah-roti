@@ -171,7 +171,11 @@ export default function UpdatesPage() {
                 {loading && [0, 1, 2].map(i => <Skeleton key={i} />)}
                 {!loading && newMenu.map((item, i) => (
                   <div key={i} onClick={item.open} style={{ marginTop: '14px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer', display: 'flex', gap: 0, boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease' }}>
-                    <div style={{ width: '92px', height: '92px', flex: 'none', background: item.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.iconSmall}</div>
+                    {item.imageUrl ? (
+                      <div style={{ width: '92px', height: '92px', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+                    ) : (
+                      <div style={{ width: '92px', height: '92px', flex: 'none', background: item.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.iconSmall}</div>
+                    )}
                     <div style={{ flex: 1, minWidth: 0, padding: '13px 14px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em' }}>{item.name}</div>
@@ -256,7 +260,11 @@ export default function UpdatesPage() {
         {view === 'newMenuDetail' && selItem && (
           <div style={{ paddingBottom: '60px' }}>
             <div style={{ position: 'relative', height: '230px', overflow: 'hidden' }}>
-              <div style={{ width: '100%', height: '100%', background: selItem.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{selItem.iconLarge}</div>
+              {selItem.imageUrl ? (
+                <img src={selItem.imageUrl} alt={selItem.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', background: selItem.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{selItem.iconLarge}</div>
+              )}
               <div onClick={() => setView('updates')} style={{ position: 'absolute', top: '14px', left: '16px', width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(252,251,248,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,42,34,.12)', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
             </div>
             <div style={{ padding: '22px 22px 0' }}>
