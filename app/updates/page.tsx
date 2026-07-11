@@ -12,15 +12,33 @@ function fmtDateDisplay(iso: string) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-function derivePromoStatus(promoStatus: string): 'active' | 'ending' | 'ended' {
-  if (promoStatus === 'Aktif') return 'active';
-  if (promoStatus === 'Segera Berakhir') return 'ending';
-  return 'ended';
+function derivePromoStatus(startDate: string, endDate: string, databaseStatus: string): 'active' | 'ending' | 'ended' {
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+
+  if (endDate && todayStr > endDate) {
+    return 'ended';
+  }
+
+  if (endDate) {
+    const end = new Date(endDate + 'T23:59:59');
+    const today = new Date(todayStr + 'T00:00:00');
+    const diffTime = end.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays >= 0 && diffDays <= 3) {
+      return 'ending';
+    }
+  }
+
+  if (databaseStatus === 'Segera Berakhir') return 'ending';
+  if (databaseStatus === 'Berakhir') return 'ended';
+
+  return 'active';
 }
 
-function promoValidity(startDate: string, endDate: string, promoStatus: string): string {
-  const status = derivePromoStatus(promoStatus);
-  if (status === 'ended') return `Ended ${fmtDateDisplay(endDate)}`;
+function promoValidity(startDate: string, endDate: string, statusKey: 'active' | 'ending' | 'ended'): string {
+  if (statusKey === 'ended') return `Ended ${fmtDateDisplay(endDate)}`;
   return `Valid until ${fmtDateDisplay(endDate)}`;
 }
 
@@ -46,8 +64,8 @@ function iconEl(cat: string, size = 34) {
 
 const badgeMap: Record<string, { text: string; bg: string; color: string }> = {
   active: { text: 'Active', bg: 'rgba(122,150,116,.14)', color: '#5C7B5A' },
-  ending: { text: 'Ending soon', bg: '#F5EFE6', color: '#A08A7B' },
-  ended: { text: 'Ended', bg: '#F1EBE1', color: '#B0A290' },
+  ending: { text: 'Ending soon', bg: '#FEF9C3', color: '#854D0E' },
+  ended: { text: 'Ended', bg: '#F3F4F6', color: '#6B7280' },
 };
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -90,27 +108,42 @@ export default function UpdatesPage() {
   // Only Published items visible to members
   const newMenu = rawNewMenu
     .filter(it => it.status === 'Published')
-    .map(it => ({
-      ...it,
-      date: fmtDateDisplay(it.dateAdded),
-      desc: it.shortDesc,
-      long: it.longDesc,
-      category: it.category,
-      categoryUpper: (it.category || '').toUpperCase(),
-      tileBg: tileBg(it.category),
-      iconSmall: iconEl(it.category, 34),
-      iconLarge: iconEl(it.category, 64),
-      open: () => { setSelNewMenuId(it.id); setView('newMenuDetail'); },
-    }));
+    .map(it => {
+      let showNewBadge = true;
+      if (it.dateAdded) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const added = new Date(it.dateAdded + 'T00:00:00');
+        const diffTime = today.getTime() - added.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays > 30) {
+          showNewBadge = false;
+        }
+      }
+      return {
+        ...it,
+        date: fmtDateDisplay(it.dateAdded),
+        desc: it.shortDesc,
+        long: it.longDesc,
+        category: it.category,
+        categoryUpper: (it.category || '').toUpperCase(),
+        tileBg: tileBg(it.category),
+        iconSmall: iconEl(it.category, 34),
+        iconLarge: iconEl(it.category, 64),
+        showNewBadge,
+        open: () => { setSelNewMenuId(it.id); setView('newMenuDetail'); },
+      };
+    });
 
   const promos = rawPromos.map(p => {
-    const statusKey = derivePromoStatus(p.promoStatus);
+    const statusKey = derivePromoStatus(p.startDate, p.endDate, p.promoStatus);
     const b = badgeMap[statusKey];
     return {
       ...p,
       long: p.longDesc,
       desc: p.shortDesc,
-      validity: promoValidity(p.startDate, p.endDate, p.promoStatus),
+      validity: promoValidity(p.startDate, p.endDate, statusKey),
+      statusKey,
       badgeText: b.text, badgeBg: b.bg, badgeColor: b.color,
       open: () => { setSelPromoId(p.id); setView('promoDetail'); },
     };
@@ -146,7 +179,7 @@ export default function UpdatesPage() {
 
   return (
     <PhoneLayout>
-      <style>{`@keyframes skpulse { 0%,100%{opacity:1} 50%{opacity:.45} } @keyframes uslide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} } @keyframes ufade { from{opacity:0} to{opacity:1} }`}</style>
+      <style>{`@keyframes skpulse { 0%,100%{opacity:1} 50%{opacity:.45} } @keyframes uslide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} } @keyframes ufade { from{opacity:0} to{opacity:1} } @keyframes slowflash { 0%,100%{opacity:0.6} 50%{opacity:1} }`}</style>
       <div className="u-scroll" key={view} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'uslide .3s cubic-bezier(.22,1,.36,1)' }}>
 
         {view === 'updates' && (
@@ -181,7 +214,9 @@ export default function UpdatesPage() {
                       <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '4px', lineHeight: 1.4 }}>{item.desc}</div>
                       <div style={{ fontSize: '11px', color: '#A08A7B', marginTop: '6px' }}>Added {item.date}</div>
                     </div>
-                    <span style={{ position: 'absolute', top: '14px', right: '16px', fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#5C7B5A', background: 'rgba(122,150,116,.14)', padding: '2px 8px', borderRadius: '999px' }}>NEW</span>
+                    {item.showNewBadge && (
+                      <span style={{ position: 'absolute', top: '14px', right: '16px', fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#5C7B5A', background: 'rgba(122,150,116,.14)', padding: '2px 8px', borderRadius: '999px' }}>NEW</span>
+                    )}
                   </div>
                 ))}
                 {!loading && newMenu.length === 0 && (
@@ -207,7 +242,8 @@ export default function UpdatesPage() {
                   <div key={i} onClick={item.open} style={{
                     position: 'relative',
                     marginTop: '14px',
-                    background: '#fff',
+                    background: item.statusKey === 'ended' ? '#F5F5F3' : '#fff',
+                    opacity: item.statusKey === 'ended' ? 0.82 : 1,
                     border: '1px solid #EFE8DE',
                     borderRadius: '20px',
                     cursor: 'pointer',
@@ -216,14 +252,26 @@ export default function UpdatesPage() {
                     ...(item.imageUrl ? { overflow: 'hidden', display: 'flex', gap: 0 } : { padding: '16px' })
                   }}>
                     {item.imageUrl && (
-                      <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none' }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
+                      <div style={{ width: '92px', alignSelf: 'stretch', flex: 'none', opacity: item.statusKey === 'ended' ? 0.75 : 1 }}><img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></div>
                     )}
                     <div style={item.imageUrl ? { flex: 1, minWidth: 0, padding: '13px 14px' } : {}}>
-                      <div style={{ fontSize: '15.5px', fontWeight: 600, letterSpacing: '-.01em', paddingRight: '80px' }}>{item.name}</div>
+                      <div style={{ fontSize: '15.5px', fontWeight: 600, letterSpacing: '-.01em', paddingRight: '80px', color: item.statusKey === 'ended' ? '#8E8A85' : '#3B2A22' }}>{item.name}</div>
                       <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.desc}</div>
                       <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>{item.validity}</div>
                     </div>
-                    <span style={{ position: 'absolute', top: '16px', right: '16px', fontSize: '10px', fontWeight: 600, letterSpacing: '.02em', padding: '4px 10px', borderRadius: '999px', background: item.badgeBg, color: item.badgeColor }}>{item.badgeText}</span>
+                    <span style={{ 
+                      position: 'absolute', 
+                      top: '16px', 
+                      right: '16px', 
+                      fontSize: '10px', 
+                      fontWeight: 600, 
+                      letterSpacing: '.02em', 
+                      padding: '4px 10px', 
+                      borderRadius: '999px', 
+                      background: item.badgeBg, 
+                      color: item.badgeColor,
+                      ...(item.statusKey === 'ending' ? { animation: 'slowflash 2.5s ease-in-out infinite' } : {})
+                    }}>{item.badgeText}</span>
                   </div>
                 ))}
                 {!loading && promos.length === 0 && (
