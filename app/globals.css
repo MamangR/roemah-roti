@@ -4,58 +4,81 @@
 
 :root {
   /* ---- Base palette ---- */
-  --cream:    #FCFBF8; /* lightest surface — page / card background */
-  --linen:    #F8F4EE; /* secondary surface */
-  --sand:     #F1EBE1; /* input fills, secondary surfaces, track backgrounds */
+  --cream: #FCFBF8;
+  /* lightest surface — page / card background */
+  --linen: #F8F4EE;
+  /* secondary surface */
+  --sand: #F1EBE1;
+  /* input fills, secondary surfaces, track backgrounds */
 
-  --espresso: #3B2A22; /* primary text + dark "hero" surface color */
-  --cocoa:    #4A3830; /* body text */
-  --taupe:    #7A6A5F; /* secondary text */
-  --mist:     #A08A7B; /* label / tertiary text */
+  --espresso: #3B2A22;
+  /* primary text + dark "hero" surface color */
+  --cocoa: #4A3830;
+  /* body text */
+  --taupe: #7A6A5F;
+  /* secondary text */
+  --mist: #A08A7B;
+  /* label / tertiary text */
 
-  --caramel:  #A67C52; /* single primary accent — CTAs, active states, numerics, focus */
-  --wheat:    #E9C9A6; /* accent text/values on dark espresso surfaces ONLY */
-  --sage:     #5C7B5A; /* only secondary accent — reassurance/confirmation moments */
+  --caramel: #A67C52;
+  /* single primary accent — CTAs, active states, numerics, focus */
+  --wheat: #E9C9A6;
+  /* accent text/values on dark espresso surfaces ONLY */
+  --sage: #5C7B5A;
+  /* only secondary accent — reassurance/confirmation moments */
 
-  --espresso-deep: #1A130F; /* device bezel / darkest ink */
-  --bg-page: #EBE6DD; /* canvas backdrop behind mobile frames (not app surface) */
+  --espresso-deep: #1A130F;
+  /* device bezel / darkest ink */
+  --bg-page: #EBE6DD;
+  /* canvas backdrop behind mobile frames (not app surface) */
 
   /* ---- Semantic aliases ---- */
-  --surface-page:      var(--cream);
-  --surface-card:      #FFFFFF;
+  --surface-page: var(--cream);
+  --surface-card: #FFFFFF;
   --surface-secondary: var(--linen);
-  --surface-input:     #FFFFFF;
-  --surface-track:     var(--sand);
-  --surface-hero:      var(--espresso); /* dark hero card / header surface */
+  --surface-input: #FFFFFF;
+  --surface-track: var(--sand);
+  --surface-hero: var(--espresso);
+  /* dark hero card / header surface */
 
-  --text-primary:      var(--espresso);
-  --text-body:         var(--cocoa);
-  --text-secondary:    var(--taupe);
-  --text-label:        var(--mist);
-  --text-on-hero:      rgba(248, 244, 238, 0.92); /* white-based tint, never flat white */
-  --text-on-hero-dim:   rgba(248, 244, 238, 0.72);
+  --text-primary: var(--espresso);
+  --text-body: var(--cocoa);
+  --text-secondary: var(--taupe);
+  --text-label: var(--mist);
+  --text-on-hero: rgba(248, 244, 238, 0.92);
+  /* white-based tint, never flat white */
+  --text-on-hero-dim: rgba(248, 244, 238, 0.72);
   --text-on-hero-faint: rgba(248, 244, 238, 0.5);
-  --text-on-hero-hair:  rgba(248, 244, 238, 0.12); /* hairline dividers on hero surfaces */
+  --text-on-hero-hair: rgba(248, 244, 238, 0.12);
+  /* hairline dividers on hero surfaces */
   --text-accent-on-hero: var(--wheat);
 
-  --accent-primary:    var(--caramel);
-  --accent-confirm:    var(--sage); /* reassurance/confirmation only — never generic success/error */
+  --accent-primary: var(--caramel);
+  --accent-confirm: var(--sage);
+  /* reassurance/confirmation only — never generic success/error */
   --accent-confirm-bg: rgba(122, 150, 116, 0.18);
   --accent-confirm-border: #E1E8DD;
   --accent-confirm-surface: #F3F5F1;
   --accent-confirm-text: #5A6A54;
 
-  --border-hairline:   #E6DDD0; /* inputs */
-  --border-card:       #EFE8DE; /* card outlines */
-  --border-divider:    #EAE1D5;
-  --border-outline-cta: #E0D5C6; /* secondary/outline button border */
-  --focus-ring:        rgba(166, 124, 82, 0.14); /* caramel-tinted, low opacity */
+  --border-hairline: #E6DDD0;
+  /* inputs */
+  --border-card: #EFE8DE;
+  /* card outlines */
+  --border-divider: #EAE1D5;
+  --border-outline-cta: #E0D5C6;
+  /* secondary/outline button border */
+  --focus-ring: rgba(166, 124, 82, 0.14);
+  /* caramel-tinted, low opacity */
 
-  --scrim: rgba(43, 30, 24, 0.55); /* modal overlay */
+  --scrim: rgba(43, 30, 24, 0.55);
+  /* modal overlay */
 
   /* Dark hero surface signature: dot texture + one radial caramel glow, top-right, fixed recipe */
-  --hero-dot-opacity: 0.06; /* @kind other */
-  --hero-glow: radial-gradient(circle, rgba(166, 124, 82, 0.35), transparent 68%); /* @kind color */
+  --hero-dot-opacity: 0.06;
+  /* @kind other */
+  --hero-glow: radial-gradient(circle, rgba(166, 124, 82, 0.35), transparent 68%);
+  /* @kind color */
 }
 
 /* Roemah Roti — Typography
@@ -70,19 +93,51 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 
   /* Base scale — tracked TIGHTER as size grows, WIDER as size shrinks (signature inverse relationship) */
-  --text-hero:      34px; --tracking-hero: -0.03em;   --weight-hero: 600; /* hero display heading (mobile) */
-  --text-display:   27px; --tracking-display: -0.03em; --weight-display: 600; /* e.g. "Welcome back" */
-  --text-title:     20px; --tracking-title: -0.02em;  --weight-title: 600; /* section titles */
-  --text-card-name: 23px; --tracking-card-name: -0.02em; --weight-card-name: 600; /* member name on hero card */
-  --text-body:      15px; --tracking-body: 0;         --weight-body: 500; /* body / inputs / buttons */
-  --text-subtext:   14px; --tracking-subtext: 0;      --weight-subtext: 400;
-  --text-meta:      13px; --tracking-meta: 0;         --weight-meta: 500; /* secondary metadata, toggle labels */
-  --text-small:     12px; --tracking-small: 0;        --weight-small: 500;
-  --text-label:     11px; --tracking-label: 0.1em;    --weight-label: 600; /* uppercase functional labels */
-  --text-kicker:    11px; --tracking-kicker: 0.26em;  --weight-kicker: 600; /* wordmark / kickers, widest tracking */
-  --text-micro:     9.5px; --tracking-micro: 0.14em;  --weight-micro: 600; /* card footer micro-labels */
+  --text-hero: 34px;
+  --tracking-hero: -0.03em;
+  --weight-hero: 600;
+  /* hero display heading (mobile) */
+  --text-display: 27px;
+  --tracking-display: -0.03em;
+  --weight-display: 600;
+  /* e.g. "Welcome back" */
+  --text-title: 20px;
+  --tracking-title: -0.02em;
+  --weight-title: 600;
+  /* section titles */
+  --text-card-name: 23px;
+  --tracking-card-name: -0.02em;
+  --weight-card-name: 600;
+  /* member name on hero card */
+  --text-body: 15px;
+  --tracking-body: 0;
+  --weight-body: 500;
+  /* body / inputs / buttons */
+  --text-subtext: 14px;
+  --tracking-subtext: 0;
+  --weight-subtext: 400;
+  --text-meta: 13px;
+  --tracking-meta: 0;
+  --weight-meta: 500;
+  /* secondary metadata, toggle labels */
+  --text-small: 12px;
+  --tracking-small: 0;
+  --weight-small: 500;
+  --text-label: 11px;
+  --tracking-label: 0.1em;
+  --weight-label: 600;
+  /* uppercase functional labels */
+  --text-kicker: 11px;
+  --tracking-kicker: 0.26em;
+  --weight-kicker: 600;
+  /* wordmark / kickers, widest tracking */
+  --text-micro: 9.5px;
+  --tracking-micro: 0.14em;
+  --weight-micro: 600;
+  /* card footer micro-labels */
 
-  --numeric-variant: tabular-nums; /* @kind other */
+  --numeric-variant: tabular-nums;
+  /* @kind other */
 }
 
 :root {
@@ -90,26 +145,34 @@
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 18px;  /* card internal padding, low end */
+  --space-5: 18px;
+  /* card internal padding, low end */
   --space-6: 20px;
-  --space-7: 22px;  /* card internal padding, high end */
+  --space-7: 22px;
+  /* card internal padding, high end */
   --space-8: 26px;
   --space-9: 30px;
   --space-10: 44px;
 
-  --card-padding: var(--space-7); /* generous internal padding: 18–22px */
+  --card-padding: var(--space-7);
+  /* generous internal padding: 18–22px */
   --gap-tight: 5px;
   --gap-default: 10px;
   --gap-loose: 16px;
 }
 
 :root {
-  --radius-sm:   14px; /* inputs, small controls, toggle track */
-  --radius-md:   18px;
-  --radius-lg:   22px; /* cards, panels */
-  --radius-hero: 26px; /* hero / membership card — largest radius, one per screen */
-  --radius-pill: 999px; /* segmented indicators, status pills, progress bar */
-  --radius-full: 50%;   /* avatars, icon dots */
+  --radius-sm: 14px;
+  /* inputs, small controls, toggle track */
+  --radius-md: 18px;
+  --radius-lg: 22px;
+  /* cards, panels */
+  --radius-hero: 26px;
+  /* hero / membership card — largest radius, one per screen */
+  --radius-pill: 999px;
+  /* segmented indicators, status pills, progress bar */
+  --radius-full: 50%;
+  /* avatars, icon dots */
 }
 
 /* Three-tier shadow system — soft, diffused, directional-downward only.
@@ -118,16 +181,21 @@
   --shadow-card: 0 10px 26px -20px rgba(59, 42, 34, 0.35);
   --shadow-hero: 0 18px 40px -18px rgba(59, 42, 34, 0.55), 0 2px 6px rgba(59, 42, 34, 0.12);
   --shadow-hero-hover: 0 26px 54px -20px rgba(59, 42, 34, 0.6), 0 3px 8px rgba(59, 42, 34, 0.14);
-  --shadow-cta: 0 14px 26px -14px rgba(166, 124, 82, 0.9); /* colored w/ accent, primary buttons only */
+  --shadow-cta: 0 14px 26px -14px rgba(166, 124, 82, 0.9);
+  /* colored w/ accent, primary buttons only */
   --shadow-cta-active: 0 8px 16px -12px rgba(166, 124, 82, 0.9);
   --shadow-modal: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
   --shadow-device: 0 40px 80px -30px rgba(59, 42, 34, 0.6);
   --shadow-qr-tile: 0 3px 10px rgba(0, 0, 0, 0.18);
 
-  --ease-standard: cubic-bezier(.22, 1, .36, 1); /* @kind other */
-  --duration-reveal: 320ms; /* @kind other */
-  --duration-fill: 1000ms; /* @kind other */
-  --duration-press: 120ms; /* @kind other */
+  --ease-standard: cubic-bezier(.22, 1, .36, 1);
+  /* @kind other */
+  --duration-reveal: 320ms;
+  /* @kind other */
+  --duration-fill: 1000ms;
+  /* @kind other */
+  --duration-press: 120ms;
+  /* @kind other */
 }
 
 /* Roemah Roti — Color System
@@ -136,58 +204,81 @@
 
 :root {
   /* ---- Base palette ---- */
-  --cream:    #FCFBF8; /* lightest surface — page / card background */
-  --linen:    #F8F4EE; /* secondary surface */
-  --sand:     #F1EBE1; /* input fills, secondary surfaces, track backgrounds */
+  --cream: #FCFBF8;
+  /* lightest surface — page / card background */
+  --linen: #F8F4EE;
+  /* secondary surface */
+  --sand: #F1EBE1;
+  /* input fills, secondary surfaces, track backgrounds */
 
-  --espresso: #3B2A22; /* primary text + dark "hero" surface color */
-  --cocoa:    #4A3830; /* body text */
-  --taupe:    #7A6A5F; /* secondary text */
-  --mist:     #A08A7B; /* label / tertiary text */
+  --espresso: #3B2A22;
+  /* primary text + dark "hero" surface color */
+  --cocoa: #4A3830;
+  /* body text */
+  --taupe: #7A6A5F;
+  /* secondary text */
+  --mist: #A08A7B;
+  /* label / tertiary text */
 
-  --caramel:  #A67C52; /* single primary accent — CTAs, active states, numerics, focus */
-  --wheat:    #E9C9A6; /* accent text/values on dark espresso surfaces ONLY */
-  --sage:     #5C7B5A; /* only secondary accent — reassurance/confirmation moments */
+  --caramel: #A67C52;
+  /* single primary accent — CTAs, active states, numerics, focus */
+  --wheat: #E9C9A6;
+  /* accent text/values on dark espresso surfaces ONLY */
+  --sage: #5C7B5A;
+  /* only secondary accent — reassurance/confirmation moments */
 
-  --espresso-deep: #1A130F; /* device bezel / darkest ink */
-  --bg-page: #EBE6DD; /* canvas backdrop behind mobile frames (not app surface) */
+  --espresso-deep: #1A130F;
+  /* device bezel / darkest ink */
+  --bg-page: #EBE6DD;
+  /* canvas backdrop behind mobile frames (not app surface) */
 
   /* ---- Semantic aliases ---- */
-  --surface-page:      var(--cream);
-  --surface-card:      #FFFFFF;
+  --surface-page: var(--cream);
+  --surface-card: #FFFFFF;
   --surface-secondary: var(--linen);
-  --surface-input:     #FFFFFF;
-  --surface-track:     var(--sand);
-  --surface-hero:      var(--espresso); /* dark hero card / header surface */
+  --surface-input: #FFFFFF;
+  --surface-track: var(--sand);
+  --surface-hero: var(--espresso);
+  /* dark hero card / header surface */
 
-  --text-primary:      var(--espresso);
-  --text-body:         var(--cocoa);
-  --text-secondary:    var(--taupe);
-  --text-label:        var(--mist);
-  --text-on-hero:      rgba(248, 244, 238, 0.92); /* white-based tint, never flat white */
-  --text-on-hero-dim:   rgba(248, 244, 238, 0.72);
+  --text-primary: var(--espresso);
+  --text-body: var(--cocoa);
+  --text-secondary: var(--taupe);
+  --text-label: var(--mist);
+  --text-on-hero: rgba(248, 244, 238, 0.92);
+  /* white-based tint, never flat white */
+  --text-on-hero-dim: rgba(248, 244, 238, 0.72);
   --text-on-hero-faint: rgba(248, 244, 238, 0.5);
-  --text-on-hero-hair:  rgba(248, 244, 238, 0.12); /* hairline dividers on hero surfaces */
+  --text-on-hero-hair: rgba(248, 244, 238, 0.12);
+  /* hairline dividers on hero surfaces */
   --text-accent-on-hero: var(--wheat);
 
-  --accent-primary:    var(--caramel);
-  --accent-confirm:    var(--sage); /* reassurance/confirmation only — never generic success/error */
+  --accent-primary: var(--caramel);
+  --accent-confirm: var(--sage);
+  /* reassurance/confirmation only — never generic success/error */
   --accent-confirm-bg: rgba(122, 150, 116, 0.18);
   --accent-confirm-border: #E1E8DD;
   --accent-confirm-surface: #F3F5F1;
   --accent-confirm-text: #5A6A54;
 
-  --border-hairline:   #E6DDD0; /* inputs */
-  --border-card:       #EFE8DE; /* card outlines */
-  --border-divider:    #EAE1D5;
-  --border-outline-cta: #E0D5C6; /* secondary/outline button border */
-  --focus-ring:        rgba(166, 124, 82, 0.14); /* caramel-tinted, low opacity */
+  --border-hairline: #E6DDD0;
+  /* inputs */
+  --border-card: #EFE8DE;
+  /* card outlines */
+  --border-divider: #EAE1D5;
+  --border-outline-cta: #E0D5C6;
+  /* secondary/outline button border */
+  --focus-ring: rgba(166, 124, 82, 0.14);
+  /* caramel-tinted, low opacity */
 
-  --scrim: rgba(43, 30, 24, 0.55); /* modal overlay */
+  --scrim: rgba(43, 30, 24, 0.55);
+  /* modal overlay */
 
   /* Dark hero surface signature: dot texture + one radial caramel glow, top-right, fixed recipe */
-  --hero-dot-opacity: 0.06; /* @kind other */
-  --hero-glow: radial-gradient(circle, rgba(166, 124, 82, 0.35), transparent 68%); /* @kind color */
+  --hero-dot-opacity: 0.06;
+  /* @kind other */
+  --hero-glow: radial-gradient(circle, rgba(166, 124, 82, 0.35), transparent 68%);
+  /* @kind color */
 }
 
 /* Roemah Roti — Typography
@@ -202,19 +293,51 @@
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
 
   /* Base scale — tracked TIGHTER as size grows, WIDER as size shrinks (signature inverse relationship) */
-  --text-hero:      34px; --tracking-hero: -0.03em;   --weight-hero: 600; /* hero display heading (mobile) */
-  --text-display:   27px; --tracking-display: -0.03em; --weight-display: 600; /* e.g. "Welcome back" */
-  --text-title:     20px; --tracking-title: -0.02em;  --weight-title: 600; /* section titles */
-  --text-card-name: 23px; --tracking-card-name: -0.02em; --weight-card-name: 600; /* member name on hero card */
-  --text-body:      15px; --tracking-body: 0;         --weight-body: 500; /* body / inputs / buttons */
-  --text-subtext:   14px; --tracking-subtext: 0;      --weight-subtext: 400;
-  --text-meta:      13px; --tracking-meta: 0;         --weight-meta: 500; /* secondary metadata, toggle labels */
-  --text-small:     12px; --tracking-small: 0;        --weight-small: 500;
-  --text-label:     11px; --tracking-label: 0.1em;    --weight-label: 600; /* uppercase functional labels */
-  --text-kicker:    11px; --tracking-kicker: 0.26em;  --weight-kicker: 600; /* wordmark / kickers, widest tracking */
-  --text-micro:     9.5px; --tracking-micro: 0.14em;  --weight-micro: 600; /* card footer micro-labels */
+  --text-hero: 34px;
+  --tracking-hero: -0.03em;
+  --weight-hero: 600;
+  /* hero display heading (mobile) */
+  --text-display: 27px;
+  --tracking-display: -0.03em;
+  --weight-display: 600;
+  /* e.g. "Welcome back" */
+  --text-title: 20px;
+  --tracking-title: -0.02em;
+  --weight-title: 600;
+  /* section titles */
+  --text-card-name: 23px;
+  --tracking-card-name: -0.02em;
+  --weight-card-name: 600;
+  /* member name on hero card */
+  --text-body: 15px;
+  --tracking-body: 0;
+  --weight-body: 500;
+  /* body / inputs / buttons */
+  --text-subtext: 14px;
+  --tracking-subtext: 0;
+  --weight-subtext: 400;
+  --text-meta: 13px;
+  --tracking-meta: 0;
+  --weight-meta: 500;
+  /* secondary metadata, toggle labels */
+  --text-small: 12px;
+  --tracking-small: 0;
+  --weight-small: 500;
+  --text-label: 11px;
+  --tracking-label: 0.1em;
+  --weight-label: 600;
+  /* uppercase functional labels */
+  --text-kicker: 11px;
+  --tracking-kicker: 0.26em;
+  --weight-kicker: 600;
+  /* wordmark / kickers, widest tracking */
+  --text-micro: 9.5px;
+  --tracking-micro: 0.14em;
+  --weight-micro: 600;
+  /* card footer micro-labels */
 
-  --numeric-variant: tabular-nums; /* @kind other */
+  --numeric-variant: tabular-nums;
+  /* @kind other */
 }
 
 :root {
@@ -222,26 +345,34 @@
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 18px;  /* card internal padding, low end */
+  --space-5: 18px;
+  /* card internal padding, low end */
   --space-6: 20px;
-  --space-7: 22px;  /* card internal padding, high end */
+  --space-7: 22px;
+  /* card internal padding, high end */
   --space-8: 26px;
   --space-9: 30px;
   --space-10: 44px;
 
-  --card-padding: var(--space-7); /* generous internal padding: 18–22px */
+  --card-padding: var(--space-7);
+  /* generous internal padding: 18–22px */
   --gap-tight: 5px;
   --gap-default: 10px;
   --gap-loose: 16px;
 }
 
 :root {
-  --radius-sm:   14px; /* inputs, small controls, toggle track */
-  --radius-md:   18px;
-  --radius-lg:   22px; /* cards, panels */
-  --radius-hero: 26px; /* hero / membership card — largest radius, one per screen */
-  --radius-pill: 999px; /* segmented indicators, status pills, progress bar */
-  --radius-full: 50%;   /* avatars, icon dots */
+  --radius-sm: 14px;
+  /* inputs, small controls, toggle track */
+  --radius-md: 18px;
+  --radius-lg: 22px;
+  /* cards, panels */
+  --radius-hero: 26px;
+  /* hero / membership card — largest radius, one per screen */
+  --radius-pill: 999px;
+  /* segmented indicators, status pills, progress bar */
+  --radius-full: 50%;
+  /* avatars, icon dots */
 }
 
 /* Three-tier shadow system — soft, diffused, directional-downward only.
@@ -250,72 +381,133 @@
   --shadow-card: 0 10px 26px -20px rgba(59, 42, 34, 0.35);
   --shadow-hero: 0 18px 40px -18px rgba(59, 42, 34, 0.55), 0 2px 6px rgba(59, 42, 34, 0.12);
   --shadow-hero-hover: 0 26px 54px -20px rgba(59, 42, 34, 0.6), 0 3px 8px rgba(59, 42, 34, 0.14);
-  --shadow-cta: 0 14px 26px -14px rgba(166, 124, 82, 0.9); /* colored w/ accent, primary buttons only */
+  --shadow-cta: 0 14px 26px -14px rgba(166, 124, 82, 0.9);
+  /* colored w/ accent, primary buttons only */
   --shadow-cta-active: 0 8px 16px -12px rgba(166, 124, 82, 0.9);
   --shadow-modal: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
   --shadow-device: 0 40px 80px -30px rgba(59, 42, 34, 0.6);
   --shadow-qr-tile: 0 3px 10px rgba(0, 0, 0, 0.18);
 
-  --ease-standard: cubic-bezier(.22, 1, .36, 1); /* @kind other */
-  --duration-reveal: 320ms; /* @kind other */
-  --duration-fill: 1000ms; /* @kind other */
-  --duration-press: 120ms; /* @kind other */
+  --ease-standard: cubic-bezier(.22, 1, .36, 1);
+  /* @kind other */
+  --duration-reveal: 320ms;
+  /* @kind other */
+  --duration-fill: 1000ms;
+  /* @kind other */
+  --duration-press: 120ms;
+  /* @kind other */
 }
 
 
 
-    body{margin:0;background:var(--bg-page);font-family:var(--font-sans)}
-    @keyframes rr-spin{to{transform:rotate(360deg)}}
-  
+body {
+  margin: 0;
+  background: var(--bg-page);
+  font-family: var(--font-sans)
+}
+
+@keyframes rr-spin {
+  to {
+    transform: rotate(360deg)
+  }
+}
+
 
 @import "tailwindcss";
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    background: #FCFBF8;
-    color: #3B2A22;
-    font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #FCFBF8;
+  color: #3B2A22;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 /* Responsive visibility utilities used in admin layouts */
-.hidden { display: none !important; }
-.flex { display: flex !important; }
-.flex-col { flex-direction: column !important; }
-.flex-wrap { flex-wrap: wrap !important; }
-.items-start { align-items: flex-start !important; }
-.chart-label { font-size: 8px !important; letter-spacing: -0.05em; }
+.hidden {
+  display: none !important;
+}
 
-.text-responsive-heading { font-size: 8px !important; }
-.text-responsive-row { font-size: 11px !important; }
+.flex {
+  display: flex !important;
+}
+
+.flex-col {
+  flex-direction: column !important;
+}
+
+.flex-wrap {
+  flex-wrap: wrap !important;
+}
+
+.items-start {
+  align-items: flex-start !important;
+}
+
+.chart-label {
+  font-size: 8px !important;
+  letter-spacing: -0.05em;
+}
+
+.text-responsive-heading {
+  font-size: 8px !important;
+}
+
+.text-responsive-row {
+  font-size: 11px !important;
+}
 
 @media (min-width: 768px) {
-    .md\:hidden { display: none !important; }
-    .md\:flex { display: flex !important; }
-    .md\:flex-row { flex-direction: row !important; }
-    .md\:items-center { align-items: center !important; }
-    .md\:flex-nowrap { flex-wrap: nowrap !important; }
-    .chart-label { font-size: 11px !important; letter-spacing: normal; }
-    .text-responsive-heading { font-size: 11px !important; }
-    .text-responsive-row { font-size: 13.5px !important; }
+  .md\:hidden {
+    display: none !important;
+  }
+
+  .md\:flex {
+    display: flex !important;
+  }
+
+  .md\:flex-row {
+    flex-direction: row !important;
+  }
+
+  .md\:items-center {
+    align-items: center !important;
+  }
+
+  .md\:flex-nowrap {
+    flex-wrap: nowrap !important;
+  }
+
+  .chart-label {
+    font-size: 11px !important;
+    letter-spacing: normal;
+  }
+
+  .text-responsive-heading {
+    font-size: 11px !important;
+  }
+
+  .text-responsive-row {
+    font-size: 13.5px !important;
+  }
 }

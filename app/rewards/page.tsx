@@ -88,7 +88,7 @@ export default function RewardsPage() {
     const reqText = isLocked ? r.need : (isRedeemed ? ('Redeemed on ' + (r.redeemedDate || 'Jun 2, 2026')) : (isExpired ? 'No longer available' : (r.progress || 'Ready to redeem')));
     const footerLabel = isLocked ? 'PROGRESS' : (isRedeemed ? 'REDEEMED' : (isExpired ? 'EXPIRED' : 'EXPIRATION DATE'));
     const footerValue = isLocked ? (r.progress || '') : (isRedeemed ? (r.redeemedDate || '') : (r.expirationDate || 'Dec 31, 2026'));
-    
+
     return {
       ...r,
       catLabelUpper: r.cat.toUpperCase(),
@@ -98,12 +98,12 @@ export default function RewardsPage() {
       heroBadgeStyle: heroBadge(status),
       cardBadgeStyle: cardBadge(status),
       reqDot: tone[0], reqColor: tone[1], reqText,
-      cardOpacity: isLocked ? '.62' : '1', 
+      cardOpacity: isLocked ? '.62' : '1',
       cursor: (isLocked || isRedeemed) ? 'default' : 'pointer',
       activeStyle: (isLocked || isRedeemed) ? {} : { transform: 'scale(.985)' },
       footerLabel, footerValue,
-      qrOpacity: isUnlocked ? '1' : '.5', 
-      qrCursor: isUnlocked ? 'pointer' : 'not-allowed', 
+      qrOpacity: isUnlocked ? '1' : '.5',
+      qrCursor: isUnlocked ? 'pointer' : 'not-allowed',
       qrActiveStyle: isUnlocked ? { transform: 'scale(.96)' } : {},
       qrTileLabel: isUnlocked ? 'TAP TO SCAN' : (isRedeemed ? 'USED' : (isExpired ? 'EXPIRED' : 'LOCKED')),
       lockedLine: r.need ? (r.need + '. See you soon.') : 'Keep visiting to unlock this reward.',
@@ -115,7 +115,7 @@ export default function RewardsPage() {
   };
 
   const dbRewards = member?.rewards || [];
-  
+
   // Visit logic
   const visits = member?.totalVisits || 0;
 
@@ -203,7 +203,7 @@ export default function RewardsPage() {
     if (!birthdayInput) {
       bdayNeed = 'Add your birthday to unlock this reward';
     } else {
-      const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       bdayNeed = `Unlocks in ${monthNames[birthMonth]}`;
     }
   }
@@ -224,17 +224,17 @@ export default function RewardsPage() {
 
   const rewards = rawRewardsList.map(r => enrich(r));
   const birthday = enrich(rawBirthdayItem);
-  
+
   // Create 'all' map for fast lookup
   const all: Record<string, any> = { birthday };
   rewards.forEach(r => all[r.id] = r);
-  
+
   const cur = sel ? all[sel] : rewards[0];
 
   const simulateScan = async () => {
     if (!sel || !all[sel]) return;
     const item = all[sel];
-    
+
     if (member?.id) {
       try {
         const res = await fetch('/api/rewards', {
@@ -267,7 +267,7 @@ export default function RewardsPage() {
   return (
     <PhoneLayout>
       <div className="rr-scroll" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'rrslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
-        
+
         {view === 'list' && (
           <div style={{ padding: '6px 20px 96px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -308,11 +308,11 @@ export default function RewardsPage() {
                       <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="1.5"/>
-                        <rect x="2" y="7" width="20" height="4" rx="1"/>
-                        <line x1="12" y1="7" x2="12" y2="22"/>
-                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4"/>
-                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4"/>
+                        <rect x="3" y="11" width="18" height="11" rx="1.5" />
+                        <rect x="2" y="7" width="20" height="4" rx="1" />
+                        <line x1="12" y1="7" x2="12" y2="22" />
+                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4" />
+                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4" />
                       </svg>
                     )}
                   </div>
@@ -335,7 +335,7 @@ export default function RewardsPage() {
         {view === 'detail' && cur && (
           <div style={{ padding: '0 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '4px' }}>
-              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>{cur.name}</div>
             </div>
 
@@ -363,11 +363,11 @@ export default function RewardsPage() {
                   ) : (
                     <div style={{ width: '72px', height: '72px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(248,244,238,.4)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="1.5"/>
-                        <rect x="2" y="7" width="20" height="4" rx="1"/>
-                        <line x1="12" y1="7" x2="12" y2="22"/>
-                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4"/>
-                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4"/>
+                        <rect x="3" y="11" width="18" height="11" rx="1.5" />
+                        <rect x="2" y="7" width="20" height="4" rx="1" />
+                        <line x1="12" y1="7" x2="12" y2="22" />
+                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4" />
+                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4" />
                       </svg>
                     </div>
                   )}
@@ -406,7 +406,7 @@ export default function RewardsPage() {
         {view === 'history' && (
           <div style={{ padding: '0 20px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingTop: '4px' }}>
-              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => setView('list')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Redeem History</div>
             </div>
 

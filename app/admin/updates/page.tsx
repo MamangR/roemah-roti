@@ -22,7 +22,7 @@ function statusPill(kind: string, value: string) {
 }
 
 function emptyDraft(type: string) {
-  if (type === 'newMenu') return { name: '', category: 'Bread', shortDesc: '', longDesc: '', imageUrl: '', dateAdded: todayIso(), status: 'Draft' };
+  if (type === 'newMenu') return { name: '', category: 'Bread', shortDesc: '', longDesc: '', imageUrl: '', price: '', dateAdded: todayIso(), status: 'Draft' };
   if (type === 'promo') return { name: '', shortDesc: '', longDesc: '', imageUrl: '', terms: [''], startDate: todayIso(), endDate: todayIso(), promoStatus: 'Aktif' };
   return { title: '', summary: '', content: '', outlet: 'All outlets', pinned: false, datePosted: todayIso() };
 }
@@ -49,19 +49,19 @@ const SegmentedToggle = ({ options, value, onChange }: any) => (
       const isSel = value === o.value;
       const isDis = o.disabled;
       return (
-        <div 
-          key={o.value} 
-          onClick={isDis ? undefined : () => onChange(o.value)} 
-          style={{ 
-            flex: 1, 
-            textAlign: 'center', 
-            padding: '8px', 
-            fontSize: '13px', 
-            fontWeight: 600, 
-            cursor: isDis ? 'not-allowed' : 'pointer', 
-            background: isSel ? '#fff' : 'transparent', 
-            borderRadius: '11px', 
-            color: isSel ? '#3B2A22' : (isDis ? 'rgba(59,42,34,0.3)' : '#A08A7B'), 
+        <div
+          key={o.value}
+          onClick={isDis ? undefined : () => onChange(o.value)}
+          style={{
+            flex: 1,
+            textAlign: 'center',
+            padding: '8px',
+            fontSize: '13px',
+            fontWeight: 600,
+            cursor: isDis ? 'not-allowed' : 'pointer',
+            background: isSel ? '#fff' : 'transparent',
+            borderRadius: '11px',
+            color: isSel ? '#3B2A22' : (isDis ? 'rgba(59,42,34,0.3)' : '#A08A7B'),
             boxShadow: isSel ? '0 4px 12px -4px rgba(59,42,34,.25)' : 'none',
             opacity: isDis ? 0.5 : 1
           }}
@@ -163,7 +163,7 @@ export default function UpdatesManagementPage() {
         const today = new Date(todayStr + 'T00:00:00');
         const diffTime = end.getTime() - today.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
+
         if (diffDays < 0) {
           finalPromoStatus = 'Berakhir';
         } else if (diffDays <= 3) {
@@ -172,9 +172,9 @@ export default function UpdatesManagementPage() {
           finalPromoStatus = 'Aktif';
         }
       }
-      const payload = { 
-        type: formType, 
-        ...(isEdit ? { id: editingId } : {}), 
+      const payload = {
+        type: formType,
+        ...(isEdit ? { id: editingId } : {}),
         ...draft,
         ...(formType === 'promo' ? { promoStatus: finalPromoStatus } : {})
       };
@@ -284,288 +284,289 @@ export default function UpdatesManagementPage() {
         </div>
         <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
 
-        {screen === 'list' && (
-          <div style={{ padding: '52px 40px 60px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Update</div>
-                <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{
-                  loading ? 'Memuat data...' :
-                  activeTab === 'newMenu' ? newMenuItems.length + ' item tersimpan' :
-                  activeTab === 'promo' ? promos.length + ' promo tersimpan' :
-                  announcements.length + ' announcement tersimpan'
-                }</div>
-              </div>
-              <div style={{ width: '180px' }}>
-                <Button variant="primary" onClick={() => { setFormMode('add'); setFormType(activeTab); setDraft(emptyDraft(activeTab)); setScreen('form'); }}>+ Tambah Update</Button>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '22px', maxWidth: '480px' }}>
-              <SegmentedToggle options={[
-                { value: 'newMenu', label: 'Menu Baru' },
-                { value: 'promo', label: 'Promo' },
-                { value: 'announcement', label: 'Announcement' }
-              ]} value={activeTab} onChange={setActiveTab} />
-            </div>
-
-            {loading && (
-              <div style={{ marginTop: '40px', textAlign: 'center', color: '#A08A7B', fontSize: '14px' }}>Memuat data...</div>
-            )}
-
-            {!loading && activeTab === 'newMenu' && (
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-                <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr .9fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                  <div>Nama</div><div>Kategori</div><div>Tanggal Ditambahkan</div><div>Status</div><div>Aksi</div>
+          {screen === 'list' && (
+            <div style={{ padding: '52px 40px 60px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Update</div>
+                  <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{
+                    loading ? 'Memuat data...' :
+                      activeTab === 'newMenu' ? newMenuItems.length + ' item tersimpan' :
+                        activeTab === 'promo' ? promos.length + ' promo tersimpan' :
+                          announcements.length + ' announcement tersimpan'
+                  }</div>
                 </div>
-                {newMenuItems.map(it => {
-                  const p = statusPill('newMenu', it.status);
-                  return (
-                    <div key={it.id} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr .9fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
-                      <div style={{ fontWeight: 600, color: '#3B2A22' }}>{it.name}</div>
-                      <div style={{ color: '#7A6A5F' }}>{it.category}</div>
-                      <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(it.dateAdded)}</div>
-                      <div>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: p.bg, color: p.color, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: p.color }}></span>{it.status}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '14px' }}>
-                        <span onClick={() => { setFormMode('edit'); setFormType('newMenu'); setEditingId(it.id); setDraft({ name: it.name, category: it.category, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', dateAdded: it.dateAdded, status: it.status }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
-                        <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'newMenu' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
-                      </div>
-                    </div>
-                  );
-                })}
-                {newMenuItems.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada menu baru.</div>}
-              </div>
-            )}
-
-            {!loading && activeTab === 'promo' && (
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-                <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.4fr .9fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                  <div>Nama</div><div>Masa Berlaku</div><div>Status</div><div>Aksi</div>
+                <div style={{ width: '180px' }}>
+                  <Button variant="primary" onClick={() => { setFormMode('add'); setFormType(activeTab); setDraft(emptyDraft(activeTab)); setScreen('form'); }}>+ Tambah Update</Button>
                 </div>
-                {promos.map(it => {
-                  const p = statusPill('promo', it.promoStatus);
-                  return (
-                    <div key={it.id} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.4fr .9fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
-                      <div style={{ fontWeight: 600, color: '#3B2A22' }}>{it.name}</div>
-                      <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(it.startDate)} – {fmtDate(it.endDate)}</div>
-                      <div>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: p.bg, color: p.color, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: p.color }}></span>{it.promoStatus}
-                        </span>
-                      </div>
-                      <div style={{ display: 'flex', gap: '14px' }}>
-                        <span onClick={() => { setFormMode('edit'); setFormType('promo'); setEditingId(it.id); setDraft({ name: it.name, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', terms: it.terms ?? [''], startDate: it.startDate, endDate: it.endDate, promoStatus: it.promoStatus }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
-                        <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'promo' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
-                      </div>
-                    </div>
-                  );
-                })}
-                {promos.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada promo.</div>}
               </div>
-            )}
 
-            {!loading && activeTab === 'announcement' && (
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-                <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr .8fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                  <div>Judul</div><div>Outlet</div><div>Tanggal Posting</div><div>Pinned</div><div>Aksi</div>
-                </div>
-                {announcements.map(it => (
-                  <div key={it.id} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr .8fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
-                    <div style={{ fontWeight: 600, color: '#3B2A22' }}>{it.title}</div>
-                    <div style={{ color: '#7A6A5F' }}>{it.outlet}</div>
-                    <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(it.datePosted)}</div>
-                    <div>
-                      {it.pinned ? (
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(166,124,82,.14)', color: '#A67C52', fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>Ya</span>
-                      ) : (
-                        <span style={{ color: '#7A6A5F' }}>Tidak</span>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', gap: '14px' }}>
-                      <span onClick={() => { setFormMode('edit'); setFormType('announcement'); setEditingId(it.id); setDraft({ title: it.title, summary: it.summary, content: it.content, outlet: it.outlet, pinned: it.pinned, datePosted: it.datePosted }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
-                      <span onClick={() => { setDeleteTarget({ id: it.id, name: it.title, type: 'announcement' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
-                    </div>
-                  </div>
-                ))}
-                {announcements.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada announcement.</div>}
-              </div>
-            )}
-          </div>
-        )}
-
-        {screen === 'form' && (
-          <div style={{ maxWidth: '640px', margin: '0 auto', padding: '52px 40px 60px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-              <div onClick={() => setScreen('list')} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              </div>
-              <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#7A6A5F' }}>Batal, kembali ke Daftar Update</div>
-            </div>
-
-            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>
-              {formMode === 'add' ? 'Tambah Update Baru' : 'Edit Update'}
-            </div>
-            <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>
-              {formMode === 'add' ? 'Pilih jenis konten dan lengkapi detailnya.' : 'Ubah detail konten dan simpan.'}
-            </div>
-
-            {formMode === 'add' && (
               <div style={{ marginTop: '22px', maxWidth: '480px' }}>
                 <SegmentedToggle options={[
                   { value: 'newMenu', label: 'Menu Baru' },
                   { value: 'promo', label: 'Promo' },
                   { value: 'announcement', label: 'Announcement' }
-                ]} value={formType} onChange={(v: any) => { setFormType(v); setDraft(emptyDraft(v)); }} />
+                ]} value={activeTab} onChange={setActiveTab} />
               </div>
-            )}
 
-            <div style={{ marginTop: '24px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-              {formType === 'newMenu' && (
-                <>
-                  <Input label="NAMA ITEM" placeholder="Contoh: Kouign-Amann Saltbread" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>KATEGORI</div>
-                    <SegmentedToggle options={[
-                      { value: 'Bread', label: 'Bread' },
-                      { value: 'Pastry', label: 'Pastry' },
-                      { value: 'Cake', label: 'Cake' },
-                      { value: 'Coffee', label: 'Coffee' },
-                      { value: 'Beverage', label: 'Beverage' }
-                    ]} value={draft.category} onChange={(v: any) => setDraft({ ...draft, category: v })} />
-                  </div>
-                  <Input label="DESKRIPSI SINGKAT" placeholder="Satu kalimat singkat" value={draft.shortDesc} onChange={(e: any) => setDraft({ ...draft, shortDesc: e.target.value })} />
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>DESKRIPSI LENGKAP</div>
-                    <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang item ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
-                  </div>
-                  <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
-                  <Input label="TANGGAL TAYANG" type="date" value={draft.dateAdded} onChange={(e: any) => setDraft({ ...draft, dateAdded: e.target.value })} />
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
-                    <SegmentedToggle options={[
-                      { value: 'Published', label: 'Published' },
-                      { value: 'Draft', label: 'Draft' }
-                    ]} value={draft.status} onChange={(v: any) => setDraft({ ...draft, status: v })} />
-                  </div>
-                </>
+              {loading && (
+                <div style={{ marginTop: '40px', textAlign: 'center', color: '#A08A7B', fontSize: '14px' }}>Memuat data...</div>
               )}
 
-              {formType === 'promo' && (
-                <>
-                  <Input label="NAMA PROMO" placeholder="Contoh: Weekday Morning Set" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
-                  <Input label="DESKRIPSI SINGKAT" placeholder="Satu kalimat singkat" value={draft.shortDesc} onChange={(e: any) => setDraft({ ...draft, shortDesc: e.target.value })} />
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>DESKRIPSI LENGKAP</div>
-                    <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang promo ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
+              {!loading && activeTab === 'newMenu' && (
+                <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                  <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr .9fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                    <div>Nama</div><div>Kategori</div><div>Tanggal Ditambahkan</div><div>Status</div><div>Aksi</div>
                   </div>
-                  <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>SYARAT & KETENTUAN</div>
-                    {(draft.terms ?? ['']).map((t: string, i: number) => (
-                      <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
-                        <input
-                          type="text"
-                          value={t}
-                          onChange={(e: any) => {
-                            const terms = [...(draft.terms ?? [''])];
-                            terms[i] = e.target.value;
-                            setDraft({ ...draft, terms });
-                          }}
-                          placeholder={`Syarat ${i + 1}`}
-                          style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '12px', padding: '10px 13px', fontSize: '14px', color: '#3B2A22', outline: 'none', boxSizing: 'border-box' }}
-                        />
-                        {(draft.terms ?? ['']).length > 1 && (
-                          <span onClick={() => { const terms = (draft.terms ?? ['']).filter((_: any, idx: number) => idx !== i); setDraft({ ...draft, terms }); }} style={{ cursor: 'pointer', color: '#A08A7B', fontSize: '18px', lineHeight: 1, paddingBottom: '2px' }}>×</span>
-                        )}
-                      </div>
-                    ))}
-                    <span onClick={() => setDraft({ ...draft, terms: [...(draft.terms ?? ['']), ''] })} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Tambah syarat</span>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                    <Input label="TANGGAL MULAI" type="date" value={draft.startDate} onChange={(e: any) => setDraft({ ...draft, startDate: e.target.value })} />
-                    <Input label="TANGGAL BERAKHIR" type="date" value={draft.endDate} onChange={(e: any) => setDraft({ ...draft, endDate: e.target.value })} />
-                  </div>
-                  {(() => {
-                    let diffDays = 999;
-                    if (draft.endDate) {
-                      const now = new Date();
-                      const todayStr = now.toISOString().slice(0, 10);
-                      const end = new Date(draft.endDate + 'T23:59:59');
-                      const today = new Date(todayStr + 'T00:00:00');
-                      const diffTime = end.getTime() - today.getTime();
-                      diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    }
+                  {newMenuItems.map(it => {
+                    const p = statusPill('newMenu', it.status);
                     return (
-                      <div>
-                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
-                        <SegmentedToggle options={[
-                          { value: 'Aktif', label: 'Aktif', disabled: diffDays <= 3 },
-                          { value: 'Segera Berakhir', label: 'Segera Berakhir', disabled: diffDays > 3 || diffDays < 0 },
-                          { value: 'Berakhir', label: 'Berakhir', disabled: diffDays >= 0 }
-                        ]} value={draft.promoStatus} onChange={(v: any) => setDraft({ ...draft, promoStatus: v })} />
+                      <div key={it.id} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr 1fr .9fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
+                        <div style={{ fontWeight: 600, color: '#3B2A22' }}>{it.name}</div>
+                        <div style={{ color: '#7A6A5F' }}>{it.category}</div>
+                        <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(it.dateAdded)}</div>
+                        <div>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: p.bg, color: p.color, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
+                            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: p.color }}></span>{it.status}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '14px' }}>
+                          <span onClick={() => { setFormMode('edit'); setFormType('newMenu'); setEditingId(it.id); setDraft({ name: it.name, category: it.category, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', price: it.price || '', dateAdded: it.dateAdded, status: it.status }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
+                          <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'newMenu' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
+                        </div>
                       </div>
                     );
-                  })()}
-                </>
+                  })}
+                  {newMenuItems.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada menu baru.</div>}
+                </div>
               )}
 
-              {formType === 'announcement' && (
-                <>
-                  <Input label="JUDUL" placeholder="Contoh: Jam Buka Saat Libur" value={draft.title} onChange={(e: any) => setDraft({ ...draft, title: e.target.value })} />
-                  <Input label="RINGKASAN" placeholder="Satu kalimat ringkasan" value={draft.summary} onChange={(e: any) => setDraft({ ...draft, summary: e.target.value })} />
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>ISI LENGKAP</div>
-                    <textarea value={draft.content} onChange={(e: any) => setDraft({ ...draft, content: e.target.value })} placeholder="Tuliskan isi lengkap announcement" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
+              {!loading && activeTab === 'promo' && (
+                <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                  <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.4fr .9fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                    <div>Nama</div><div>Masa Berlaku</div><div>Status</div><div>Aksi</div>
                   </div>
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>OUTLET</div>
-                    <SegmentedToggle options={[
-                      { value: 'All outlets', label: 'All outlets' },
-                      { value: 'Greenville outlet', label: 'Greenville' },
-                      { value: 'Senopati outlet', label: 'Senopati' }
-                    ]} value={draft.outlet} onChange={(v: any) => setDraft({ ...draft, outlet: v })} />
-                  </div>
-                  <Input label="TANGGAL POSTING" type="date" value={draft.datePosted} onChange={(e: any) => setDraft({ ...draft, datePosted: e.target.value })} />
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Sematkan di atas</div>
-                      <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px' }}>Announcement ini akan selalu tampil di atas daftar.</div>
-                    </div>
-                    <div onClick={() => setDraft({ ...draft, pinned: !draft.pinned })} style={{ width: '46px', height: '27px', borderRadius: '999px', background: draft.pinned ? '#5C7B5A' : '#E6DDD0', flex: 'none', position: 'relative', cursor: 'pointer', transition: 'background .2s ease' }}>
-                      <div style={{ position: 'absolute', top: '2.5px', left: draft.pinned ? '21px' : '3px', width: '22px', height: '22px', borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(59,42,34,.3)', transition: 'left .2s cubic-bezier(.22,1,.36,1)' }}></div>
-                    </div>
-                  </div>
-                </>
+                  {promos.map(it => {
+                    const p = statusPill('promo', it.promoStatus);
+                    return (
+                      <div key={it.id} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.4fr .9fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
+                        <div style={{ fontWeight: 600, color: '#3B2A22' }}>{it.name}</div>
+                        <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(it.startDate)} – {fmtDate(it.endDate)}</div>
+                        <div>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: p.bg, color: p.color, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
+                            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: p.color }}></span>{it.promoStatus}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', gap: '14px' }}>
+                          <span onClick={() => { setFormMode('edit'); setFormType('promo'); setEditingId(it.id); setDraft({ name: it.name, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', terms: it.terms ?? [''], startDate: it.startDate, endDate: it.endDate, promoStatus: it.promoStatus }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
+                          <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'promo' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {promos.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada promo.</div>}
+                </div>
               )}
 
-              {formMode === 'edit' && (
-                <>
-                  <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Hapus Update</div>
-                      <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px', maxWidth: '340px', lineHeight: 1.5 }}>Update ini akan hilang dari daftar dan tidak lagi tampil untuk member.</div>
-                    </div>
-                    <div style={{ width: '150px', flex: 'none' }}>
-                      <Button variant="outline" onClick={() => { setDeleteTarget({ id: editingId, name: draft.name || draft.title, type: formType, fromForm: true }); setDeleteConfirmOpen(true); }} style={{ color: '#3B2A22' }}>Hapus</Button>
-                    </div>
+              {!loading && activeTab === 'announcement' && (
+                <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                  <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr .8fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                    <div>Judul</div><div>Outlet</div><div>Tanggal Posting</div><div>Pinned</div><div>Aksi</div>
                   </div>
-                </>
+                  {announcements.map(it => (
+                    <div key={it.id} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1fr .8fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
+                      <div style={{ fontWeight: 600, color: '#3B2A22' }}>{it.title}</div>
+                      <div style={{ color: '#7A6A5F' }}>{it.outlet}</div>
+                      <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtDate(it.datePosted)}</div>
+                      <div>
+                        {it.pinned ? (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(166,124,82,.14)', color: '#A67C52', fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>Ya</span>
+                        ) : (
+                          <span style={{ color: '#7A6A5F' }}>Tidak</span>
+                        )}
+                      </div>
+                      <div style={{ display: 'flex', gap: '14px' }}>
+                        <span onClick={() => { setFormMode('edit'); setFormType('announcement'); setEditingId(it.id); setDraft({ title: it.title, summary: it.summary, content: it.content, outlet: it.outlet, pinned: it.pinned, datePosted: it.datePosted }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
+                        <span onClick={() => { setDeleteTarget({ id: it.id, name: it.title, type: 'announcement' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
+                      </div>
+                    </div>
+                  ))}
+                  {announcements.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Belum ada announcement.</div>}
+                </div>
               )}
             </div>
+          )}
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-              <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setScreen('list')}>Batal</Button></div>
-              <div style={{ flex: 1 }}><Button variant="primary" disabled={saving} onClick={handleSave}>{saving ? 'Menyimpan...' : 'Simpan'}</Button></div>
+          {screen === 'form' && (
+            <div style={{ maxWidth: '640px', margin: '0 auto', padding: '52px 40px 60px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                <div onClick={() => setScreen('list')} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+                </div>
+                <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#7A6A5F' }}>Batal, kembali ke Daftar Update</div>
+              </div>
+
+              <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>
+                {formMode === 'add' ? 'Tambah Update Baru' : 'Edit Update'}
+              </div>
+              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>
+                {formMode === 'add' ? 'Pilih jenis konten dan lengkapi detailnya.' : 'Ubah detail konten dan simpan.'}
+              </div>
+
+              {formMode === 'add' && (
+                <div style={{ marginTop: '22px', maxWidth: '480px' }}>
+                  <SegmentedToggle options={[
+                    { value: 'newMenu', label: 'Menu Baru' },
+                    { value: 'promo', label: 'Promo' },
+                    { value: 'announcement', label: 'Announcement' }
+                  ]} value={formType} onChange={(v: any) => { setFormType(v); setDraft(emptyDraft(v)); }} />
+                </div>
+              )}
+
+              <div style={{ marginTop: '24px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                {formType === 'newMenu' && (
+                  <>
+                    <Input label="NAMA ITEM" placeholder="Contoh: Kouign-Amann Saltbread" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>KATEGORI</div>
+                      <SegmentedToggle options={[
+                        { value: 'Bread', label: 'Bread' },
+                        { value: 'Pastry', label: 'Pastry' },
+                        { value: 'Cake', label: 'Cake' },
+                        { value: 'Coffee', label: 'Coffee' },
+                        { value: 'Beverage', label: 'Beverage' }
+                      ]} value={draft.category} onChange={(v: any) => setDraft({ ...draft, category: v })} />
+                    </div>
+                    <Input label="DESKRIPSI SINGKAT" placeholder="Satu kalimat singkat" value={draft.shortDesc} onChange={(e: any) => setDraft({ ...draft, shortDesc: e.target.value })} />
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>DESKRIPSI LENGKAP</div>
+                      <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang item ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
+                    </div>
+                    <Input label="HARGA (RUPIAH - OPSIONAL)" placeholder="Contoh: 18000" type="number" value={draft.price || ''} onChange={(e: any) => setDraft({ ...draft, price: e.target.value === '' ? '' : parseInt(e.target.value) })} />
+                    <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
+                    <Input label="TANGGAL TAYANG" type="date" value={draft.dateAdded} onChange={(e: any) => setDraft({ ...draft, dateAdded: e.target.value })} />
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
+                      <SegmentedToggle options={[
+                        { value: 'Published', label: 'Published' },
+                        { value: 'Draft', label: 'Draft' }
+                      ]} value={draft.status} onChange={(v: any) => setDraft({ ...draft, status: v })} />
+                    </div>
+                  </>
+                )}
+
+                {formType === 'promo' && (
+                  <>
+                    <Input label="NAMA PROMO" placeholder="Contoh: Weekday Morning Set" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
+                    <Input label="DESKRIPSI SINGKAT" placeholder="Satu kalimat singkat" value={draft.shortDesc} onChange={(e: any) => setDraft({ ...draft, shortDesc: e.target.value })} />
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>DESKRIPSI LENGKAP</div>
+                      <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang promo ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
+                    </div>
+                    <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>SYARAT & KETENTUAN</div>
+                      {(draft.terms ?? ['']).map((t: string, i: number) => (
+                        <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '8px', alignItems: 'center' }}>
+                          <input
+                            type="text"
+                            value={t}
+                            onChange={(e: any) => {
+                              const terms = [...(draft.terms ?? [''])];
+                              terms[i] = e.target.value;
+                              setDraft({ ...draft, terms });
+                            }}
+                            placeholder={`Syarat ${i + 1}`}
+                            style={{ flex: 1, background: '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '12px', padding: '10px 13px', fontSize: '14px', color: '#3B2A22', outline: 'none', boxSizing: 'border-box' }}
+                          />
+                          {(draft.terms ?? ['']).length > 1 && (
+                            <span onClick={() => { const terms = (draft.terms ?? ['']).filter((_: any, idx: number) => idx !== i); setDraft({ ...draft, terms }); }} style={{ cursor: 'pointer', color: '#A08A7B', fontSize: '18px', lineHeight: 1, paddingBottom: '2px' }}>×</span>
+                          )}
+                        </div>
+                      ))}
+                      <span onClick={() => setDraft({ ...draft, terms: [...(draft.terms ?? ['']), ''] })} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Tambah syarat</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                      <Input label="TANGGAL MULAI" type="date" value={draft.startDate} onChange={(e: any) => setDraft({ ...draft, startDate: e.target.value })} />
+                      <Input label="TANGGAL BERAKHIR" type="date" value={draft.endDate} onChange={(e: any) => setDraft({ ...draft, endDate: e.target.value })} />
+                    </div>
+                    {(() => {
+                      let diffDays = 999;
+                      if (draft.endDate) {
+                        const now = new Date();
+                        const todayStr = now.toISOString().slice(0, 10);
+                        const end = new Date(draft.endDate + 'T23:59:59');
+                        const today = new Date(todayStr + 'T00:00:00');
+                        const diffTime = end.getTime() - today.getTime();
+                        diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                      }
+                      return (
+                        <div>
+                          <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
+                          <SegmentedToggle options={[
+                            { value: 'Aktif', label: 'Aktif', disabled: diffDays <= 3 },
+                            { value: 'Segera Berakhir', label: 'Segera Berakhir', disabled: diffDays > 3 || diffDays < 0 },
+                            { value: 'Berakhir', label: 'Berakhir', disabled: diffDays >= 0 }
+                          ]} value={draft.promoStatus} onChange={(v: any) => setDraft({ ...draft, promoStatus: v })} />
+                        </div>
+                      );
+                    })()}
+                  </>
+                )}
+
+                {formType === 'announcement' && (
+                  <>
+                    <Input label="JUDUL" placeholder="Contoh: Jam Buka Saat Libur" value={draft.title} onChange={(e: any) => setDraft({ ...draft, title: e.target.value })} />
+                    <Input label="RINGKASAN" placeholder="Satu kalimat ringkasan" value={draft.summary} onChange={(e: any) => setDraft({ ...draft, summary: e.target.value })} />
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>ISI LENGKAP</div>
+                      <textarea value={draft.content} onChange={(e: any) => setDraft({ ...draft, content: e.target.value })} placeholder="Tuliskan isi lengkap announcement" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>OUTLET</div>
+                      <SegmentedToggle options={[
+                        { value: 'All outlets', label: 'All outlets' },
+                        { value: 'Greenville outlet', label: 'Greenville' },
+                        { value: 'Senopati outlet', label: 'Senopati' }
+                      ]} value={draft.outlet} onChange={(v: any) => setDraft({ ...draft, outlet: v })} />
+                    </div>
+                    <Input label="TANGGAL POSTING" type="date" value={draft.datePosted} onChange={(e: any) => setDraft({ ...draft, datePosted: e.target.value })} />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Sematkan di atas</div>
+                        <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px' }}>Announcement ini akan selalu tampil di atas daftar.</div>
+                      </div>
+                      <div onClick={() => setDraft({ ...draft, pinned: !draft.pinned })} style={{ width: '46px', height: '27px', borderRadius: '999px', background: draft.pinned ? '#5C7B5A' : '#E6DDD0', flex: 'none', position: 'relative', cursor: 'pointer', transition: 'background .2s ease' }}>
+                        <div style={{ position: 'absolute', top: '2.5px', left: draft.pinned ? '21px' : '3px', width: '22px', height: '22px', borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(59,42,34,.3)', transition: 'left .2s cubic-bezier(.22,1,.36,1)' }}></div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {formMode === 'edit' && (
+                  <>
+                    <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Hapus Update</div>
+                        <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px', maxWidth: '340px', lineHeight: 1.5 }}>Update ini akan hilang dari daftar dan tidak lagi tampil untuk member.</div>
+                      </div>
+                      <div style={{ width: '150px', flex: 'none' }}>
+                        <Button variant="outline" onClick={() => { setDeleteTarget({ id: editingId, name: draft.name || draft.title, type: formType, fromForm: true }); setDeleteConfirmOpen(true); }} style={{ color: '#3B2A22' }}>Hapus</Button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+                <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setScreen('list')}>Batal</Button></div>
+                <div style={{ flex: 1 }}><Button variant="primary" disabled={saving} onClick={handleSave}>{saving ? 'Menyimpan...' : 'Simpan'}</Button></div>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-      </div>{/* close overflowY:auto */}
+        </div>{/* close overflowY:auto */}
       </div>{/* close flex flex-col main wrapper */}
 
       {deleteConfirmOpen && deleteTarget && (

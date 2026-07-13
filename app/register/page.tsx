@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import { useMember } from '@/context/MemberContext';
+import { Eye, EyeOff } from 'lucide-react';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const WEEKDAYS = ['S','M','T','W','T','F','S'];
@@ -24,6 +25,7 @@ export default function RegisterPage() {
   const [referral, setReferral] = useState('');
   const [referralStatus, setReferralStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -367,13 +369,34 @@ export default function RegisterPage() {
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '8px' }}>
                 <span style={{ fontSize: 'var(--text-label)', fontWeight: 600, letterSpacing: 'var(--tracking-label)', color: 'var(--text-label)' }}>PASSWORD</span>
               </div>
-              <input 
-                type="password" 
-                placeholder="Create a password (min. 6 chars)" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
-                style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
-              />
+              <div style={{ position: 'relative' }}>
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="Create a password (min. 6 chars)" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 44px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '16px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'var(--text-label)',
+                  }}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
               <div style={{ fontSize: '12px', color: 'var(--text-label)', marginTop: '6px', lineHeight: 1.5 }}>You can use this to log in without WhatsApp OTP next time.</div>
             </div>
 

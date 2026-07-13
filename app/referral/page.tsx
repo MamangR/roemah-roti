@@ -27,7 +27,7 @@ export default function ReferralPage() {
 
   useEffect(() => {
     const t = setTimeout(() => setRevealed(true), 350);
-    
+
     import('@/app/admin/actions').then(m => {
       m.getSystemReward('SYSTEM_REFERRAL', 'Free Garlic Cream Cheese', 'Our thanks for a friend who joined.', 1)
         .then(res => {
@@ -38,7 +38,7 @@ export default function ReferralPage() {
         })
         .catch(console.error);
     });
-    
+
     return () => clearTimeout(t);
   }, []);
 
@@ -58,7 +58,7 @@ export default function ReferralPage() {
   const link = `${origin}/join/${code}`;
   const rawFriends = member?.referredFriends || [];
   const qualifying = rawFriends.filter((f: any) => f.status === 'Approved').length;
-  
+
   const hasClaimed = member?.rewards?.some((r: any) => r.type === 'Referral' && r.title.includes(rewardName));
   const baseRewardState = locallyClaimed || hasClaimed ? 'claimed' : (qualifying >= goalCount ? 'ready' : 'locked');
 
@@ -118,11 +118,11 @@ export default function ReferralPage() {
   return (
     <PhoneLayout>
       <div className="rf-scroll" key={view + (selFriendId || '')} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'rslide .3s cubic-bezier(.22,1,.36,1)' }}>
-        
+
         {view === 'referral' && (
           <div style={{ padding: '8px 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div>
                 <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Referral Program</div>
               </div>
@@ -209,11 +209,11 @@ export default function ReferralPage() {
                       <img src={rewardImageUrl} alt={rewardName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="1.5"/>
-                        <rect x="2" y="7" width="20" height="4" rx="1"/>
-                        <line x1="12" y1="7" x2="12" y2="22"/>
-                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4"/>
-                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4"/>
+                        <rect x="3" y="11" width="18" height="11" rx="1.5" />
+                        <rect x="2" y="7" width="20" height="4" rx="1" />
+                        <line x1="12" y1="7" x2="12" y2="22" />
+                        <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4" />
+                        <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4" />
                       </svg>
                     )}
                   </div>
@@ -262,7 +262,7 @@ export default function ReferralPage() {
         {view === 'friend' && selFriend && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('referral')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => setView('referral')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Friend Progress</div>
             </div>
 
@@ -321,9 +321,9 @@ export default function ReferralPage() {
             <div style={{ fontSize: '15px', fontWeight: 600, textAlign: 'center', marginBottom: '4px' }}>Share Referral Link</div>
             <div style={{ fontSize: '12px', color: '#8A7A6E', textAlign: 'center', marginBottom: '16px' }}>Invite a friend to Roemah Roti.</div>
 
-            <div onClick={() => { 
-              setShareOpen(false); 
-              toast('Opening WhatsApp…'); 
+            <div onClick={() => {
+              setShareOpen(false);
+              toast('Opening WhatsApp…');
               if (typeof window !== 'undefined') {
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Join Roemah Roti Insider and use my referral code to earn rewards: ${link}`)}`, '_blank');
               }
@@ -332,14 +332,14 @@ export default function ReferralPage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5C7B5A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L4 20l1.1-4.4A8.5 8.5 0 1 1 21 11.5z"></path><path d="M9 10.5c0 3 2.5 5 5 5"></path></svg>
               </div>
               <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>WhatsApp</div>
-              <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+              <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg></div>
             </div>
-            <div onClick={() => { 
+            <div onClick={() => {
               if (typeof navigator !== 'undefined') {
                 navigator.clipboard.writeText(link);
               }
-              setShareOpen(false); 
-              toast('Link copied'); 
+              setShareOpen(false);
+              toast('Link copied');
             }} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '14px 6px', cursor: 'pointer', borderBottom: '1px solid #F2ECE3' }}>
               <div style={{ width: '42px', height: '42px', borderRadius: '12px', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="3"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg>

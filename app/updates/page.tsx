@@ -12,6 +12,16 @@ function fmtDateDisplay(iso: string) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+function fmtRupiah(price: number | null | undefined) {
+  if (price == null || isNaN(price)) return '';
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(price);
+}
+
 function derivePromoStatus(startDate: string, endDate: string, databaseStatus: string): 'active' | 'ending' | 'ended' {
   const now = new Date();
   const todayStr = now.toISOString().slice(0, 10);
@@ -25,7 +35,7 @@ function derivePromoStatus(startDate: string, endDate: string, databaseStatus: s
     const today = new Date(todayStr + 'T00:00:00');
     const diffTime = end.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays >= 0 && diffDays <= 3) {
       return 'ending';
     }
@@ -185,7 +195,7 @@ export default function UpdatesPage() {
         {view === 'updates' && (
           <div style={{ padding: '8px 20px 40px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Updates</div>
             </div>
             <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px', marginLeft: '2px' }}>Things worth knowing at Roemah Roti.</div>
@@ -212,10 +222,15 @@ export default function UpdatesPage() {
                     <div style={{ flex: 1, minWidth: 0, padding: '13px 14px' }}>
                       <div style={{ fontSize: '14.5px', fontWeight: 600, letterSpacing: '-.005em', paddingRight: '50px' }}>{item.name}</div>
                       <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '4px', lineHeight: 1.4 }}>{item.desc}</div>
-                      <div style={{ fontSize: '11px', color: '#A08A7B', marginTop: '6px' }}>Added {item.date}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: '6px' }}>
+                        <div style={{ fontSize: '11px', color: '#A08A7B' }}>Added {item.date}</div>
+                        {item.price != null && (
+                          <div style={{ fontSize: '12px', fontWeight: 500, color: '#000', fontVariantNumeric: 'tabular-nums' }}>{fmtRupiah(item.price)}</div>
+                        )}
+                      </div>
                     </div>
                     {item.showNewBadge && (
-                      <span style={{ position: 'absolute', top: '14px', right: '16px', fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#5C7B5A', background: 'rgba(122,150,116,.14)', padding: '2px 8px', borderRadius: '999px' }}>NEW</span>
+                      <span style={{ position: 'absolute', top: '8px', right: '10px', fontSize: '9.5px', fontWeight: 600, letterSpacing: '.06em', color: '#5C7B5A', background: 'rgba(122,150,116,.14)', padding: '2px 8px', borderRadius: '999px' }}>NEW</span>
                     )}
                   </div>
                 ))}
@@ -259,16 +274,16 @@ export default function UpdatesPage() {
                       <div style={{ fontSize: '12.5px', color: '#8A7A6E', marginTop: '6px', lineHeight: 1.5 }}>{item.desc}</div>
                       <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '9px' }}>{item.validity}</div>
                     </div>
-                    <span style={{ 
-                      position: 'absolute', 
-                      top: '16px', 
-                      right: '16px', 
-                      fontSize: '10px', 
-                      fontWeight: 600, 
-                      letterSpacing: '.02em', 
-                      padding: '4px 10px', 
-                      borderRadius: '999px', 
-                      background: item.badgeBg, 
+                    <span style={{
+                      position: 'absolute',
+                      top: '16px',
+                      right: '16px',
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      letterSpacing: '.02em',
+                      padding: '4px 10px',
+                      borderRadius: '999px',
+                      background: item.badgeBg,
                       color: item.badgeColor,
                       ...(item.statusKey === 'ending' ? { animation: 'slowflash 2.5s ease-in-out infinite' } : {})
                     }}>{item.badgeText}</span>
@@ -337,10 +352,15 @@ export default function UpdatesPage() {
               ) : (
                 <div style={{ width: '100%', height: '100%', background: selItem.tileBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{selItem.iconLarge}</div>
               )}
-              <div onClick={() => setView('updates')} style={{ position: 'absolute', top: '14px', left: '16px', width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(252,251,248,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,42,34,.12)', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => setView('updates')} style={{ position: 'absolute', top: '14px', left: '16px', width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(252,251,248,.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(59,42,34,.12)', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
             </div>
             <div style={{ padding: '22px 22px 0' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.12em', color: '#A67C52' }}>{selItem.categoryUpper}</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.12em', color: '#A67C52' }}>{selItem.categoryUpper}</div>
+                {selItem.price != null && (
+                  <div style={{ fontSize: '15px', fontWeight: 500, color: '#000', fontVariantNumeric: 'tabular-nums' }}>{fmtRupiah(selItem.price)}</div>
+                )}
+              </div>
               <div style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '8px' }}>{selItem.name}</div>
               <div style={{ fontSize: '12px', color: '#A08A7B', marginTop: '8px' }}>Added {selItem.date}</div>
               <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#7A6A5F', marginTop: '14px', whiteSpace: 'pre-wrap' }}>{selItem.long}</div>
@@ -352,7 +372,7 @@ export default function UpdatesPage() {
         {view === 'promoDetail' && selPromo && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Promo</div>
             </div>
             {selPromo.imageUrl && (
@@ -386,7 +406,7 @@ export default function UpdatesPage() {
         {view === 'announcementDetail' && selAnnouncement && (
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></div>
+              <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Announcement</div>
             </div>
             {selAnnouncement.imageUrl && (

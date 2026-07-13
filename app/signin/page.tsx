@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import { useMember } from '@/context/MemberContext';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function LoginPage() {
   
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -157,14 +159,33 @@ export default function LoginPage() {
                 <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: '#5A6A54' }}>We'll send a 6-digit code to your WhatsApp. No password to remember.</div>
               </div>
             ) : (
-              <div style={{ marginTop: '14px' }}>
+              <div style={{ marginTop: '14px', position: 'relative' }}>
                 <input 
-                  type="password" 
+                  type={showPassword ? 'text' : 'password'} 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password" 
-                  style={{ width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }} 
+                  style={{ width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 44px 15px 16px', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }} 
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '16px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: '#A08A7B',
+                  }}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
             )}
           </>

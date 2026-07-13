@@ -76,15 +76,15 @@ export default function ReferralManagementPage() {
     }
     load();
   }, [screen]);
-  
+
   const [listQuery, setListQuery] = useState('');
   const [listFilter, setListFilter] = useState('all');
-  
+
   const [selectedReferralId, setSelectedReferralId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('referrer');
   const [approveConfirmOpen, setApproveConfirmOpen] = useState(false);
   const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false);
-  
+
   const [historyQuery, setHistoryQuery] = useState('');
   const [historyFilter, setHistoryFilter] = useState('all');
 
@@ -145,7 +145,7 @@ export default function ReferralManagementPage() {
               <div onClick={() => { setScreen('history'); setSidebarOpen(false); }} style={navItemStyle(screen === 'history')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div><div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Riwayat Referral</span></div>
             </div>
             <div style={{ flex: 1 }}></div>
-            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>{referrals.length} referral tersimpan</div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br />{referrals.length} referral tersimpan</div>
           </div>
         </div>
       )}
@@ -171,7 +171,7 @@ export default function ReferralManagementPage() {
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Referral</span>
           </div>
-          
+
           {screen === 'detail' && (
             <>
               <div onClick={() => setActiveTab('referrer')} style={navItemStyle(activeTab === 'referrer')}>
@@ -211,7 +211,7 @@ export default function ReferralManagementPage() {
         </div>
 
         <div style={{ flex: 1 }}></div>
-        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br/>{referrals.length} referral tersimpan</div>
+        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br />{referrals.length} referral tersimpan</div>
       </div>
 
       {/* Main content with mobile top bar */}
@@ -226,203 +226,203 @@ export default function ReferralManagementPage() {
           <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Manajemen Referral</div>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
-        
-        {screen === 'list' && (
-          <div style={{ padding: '52px 40px 60px' }}>
-            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Referral</div>
-            <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{filteredReferrals.length} dari {referrals.length} referral</div>
 
-            <div style={{ marginTop: '22px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-              <div style={{ width: '320px' }}>
-                <Input label="CARI" placeholder="Cari nama referrer atau referred" value={listQuery} onChange={(e: any) => setListQuery(e.target.value)} />
-              </div>
-              <div style={{ width: '360px' }}>
-                <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Pending', label: 'Menunggu' }, { value: 'Approved', label: 'Disetujui' }, { value: 'Rejected', label: 'Ditolak' }]} value={listFilter} onChange={setListFilter} />
-              </div>
-            </div>
+          {screen === 'list' && (
+            <div style={{ padding: '52px 40px 60px' }}>
+              <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Daftar Referral</div>
+              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{filteredReferrals.length} dari {referrals.length} referral</div>
 
-            <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-              <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                <div>Referrer</div><div>Referred</div><div>Tanggal</div><div>Status</div><div>Reward</div>
-              </div>
-              {filteredReferrals.map((r: any) => (
-                <div key={r.id} className="text-responsive-row" onClick={() => { setSelectedReferralId(r.id); setActiveTab('referrer'); setScreen('detail'); }} style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '15px 20px', cursor: 'pointer', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
-                  <div style={{ fontWeight: 600, color: '#3B2A22' }}>{r.referrerName}</div>
-                  <div>{r.referredName}</div>
-                  <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{r.dateLabel}</div>
-                  <div>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: r.pillBg, color: r.pillColor, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
-                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: r.pillColor }}></span>{r.statusLabel}
-                    </span>
-                  </div>
-                  <div style={{ color: '#7A6A5F' }}>{r.rewardName}</div>
+              <div style={{ marginTop: '22px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                <div style={{ width: '320px' }}>
+                  <Input label="CARI" placeholder="Cari nama referrer atau referred" value={listQuery} onChange={(e: any) => setListQuery(e.target.value)} />
                 </div>
-              ))}
-              {filteredReferrals.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Tidak ada referral yang cocok.</div>}
-            </div>
-          </div>
-        )}
-
-        {screen === 'detail' && activeReferral && (
-          <div style={{ maxWidth: '760px', margin: '0 auto', padding: '52px 40px 60px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-              <div onClick={() => setScreen('list')} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              </div>
-              <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#7A6A5F' }}>Kembali ke Daftar Referral</div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
-              <div>
-                <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>{activeReferral.referrerName} → {activeReferral.referredName}</div>
-                <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Referral tanggal {activeReferral.dateLabel} · {activeReferral.rewardName}</div>
-              </div>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: activeReferral.pillBg, color: activeReferral.pillColor, fontSize: '12px', fontWeight: 600, padding: '6px 12px', borderRadius: '999px', flex: 'none' }}>
-                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: activeReferral.pillColor }}></span>{activeReferral.statusLabel}
-              </span>
-            </div>
-
-            <div style={{ marginTop: '24px', maxWidth: '520px' }}>
-              <SegmentedToggle options={[
-                { value: 'referrer', label: 'Referrer' },
-                { value: 'referred', label: 'Direferensikan' },
-                { value: 'status', label: 'Status' },
-                { value: 'approve', label: 'Persetujuan' }
-              ]} value={activeTab} onChange={setActiveTab} />
-            </div>
-
-            {activeTab === 'referrer' && (
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#3B2A22' }}>{activeReferral.referrer.name}</div>
-                <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px' }}>
-                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>MEMBER ID</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.memberId}</div></div>
-                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>NOMOR WHATSAPP</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.wa}</div></div>
-                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TOTAL REFERRAL SUKSES</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.totalSuccess}</div></div>
-                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TANGGAL JOIN</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.joinDateLabel}</div></div>
+                <div style={{ width: '360px' }}>
+                  <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Pending', label: 'Menunggu' }, { value: 'Approved', label: 'Disetujui' }, { value: 'Rejected', label: 'Ditolak' }]} value={listFilter} onChange={setListFilter} />
                 </div>
               </div>
-            )}
 
-            {activeTab === 'referred' && (
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#3B2A22' }}>{activeReferral.referred.name}</div>
-                <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px' }}>
-                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>MEMBER ID</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referred.memberId}</div></div>
-                  <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TANGGAL DAFTAR</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referred.registerDateLabel}</div></div>
-                  <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>KUNJUNGAN PERTAMA</div>
-                    <div style={{ marginTop: '6px' }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: activeReferral.referred.visitPillBg, color: activeReferral.referred.visitPillColor, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
-                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: activeReferral.referred.visitPillColor }}></span>{activeReferral.referred.visitLabel}
+              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                  <div>Referrer</div><div>Referred</div><div>Tanggal</div><div>Status</div><div>Reward</div>
+                </div>
+                {filteredReferrals.map((r: any) => (
+                  <div key={r.id} className="text-responsive-row" onClick={() => { setSelectedReferralId(r.id); setActiveTab('referrer'); setScreen('detail'); }} style={{ display: 'grid', gridTemplateColumns: '1.3fr 1.3fr .9fr .8fr 1.2fr', gap: '10px', padding: '15px 20px', cursor: 'pointer', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
+                    <div style={{ fontWeight: 600, color: '#3B2A22' }}>{r.referrerName}</div>
+                    <div>{r.referredName}</div>
+                    <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{r.dateLabel}</div>
+                    <div>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: r.pillBg, color: r.pillColor, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: r.pillColor }}></span>{r.statusLabel}
                       </span>
+                    </div>
+                    <div style={{ color: '#7A6A5F' }}>{r.rewardName}</div>
+                  </div>
+                ))}
+                {filteredReferrals.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Tidak ada referral yang cocok.</div>}
+              </div>
+            </div>
+          )}
+
+          {screen === 'detail' && activeReferral && (
+            <div style={{ maxWidth: '760px', margin: '0 auto', padding: '52px 40px 60px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                <div onClick={() => setScreen('list')} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+                </div>
+                <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#7A6A5F' }}>Kembali ke Daftar Referral</div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+                <div>
+                  <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>{activeReferral.referrerName} → {activeReferral.referredName}</div>
+                  <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Referral tanggal {activeReferral.dateLabel} · {activeReferral.rewardName}</div>
+                </div>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: activeReferral.pillBg, color: activeReferral.pillColor, fontSize: '12px', fontWeight: 600, padding: '6px 12px', borderRadius: '999px', flex: 'none' }}>
+                  <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: activeReferral.pillColor }}></span>{activeReferral.statusLabel}
+                </span>
+              </div>
+
+              <div style={{ marginTop: '24px', maxWidth: '520px' }}>
+                <SegmentedToggle options={[
+                  { value: 'referrer', label: 'Referrer' },
+                  { value: 'referred', label: 'Direferensikan' },
+                  { value: 'status', label: 'Status' },
+                  { value: 'approve', label: 'Persetujuan' }
+                ]} value={activeTab} onChange={setActiveTab} />
+              </div>
+
+              {activeTab === 'referrer' && (
+                <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#3B2A22' }}>{activeReferral.referrer.name}</div>
+                  <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px' }}>
+                    <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>MEMBER ID</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.memberId}</div></div>
+                    <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>NOMOR WHATSAPP</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.wa}</div></div>
+                    <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TOTAL REFERRAL SUKSES</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.totalSuccess}</div></div>
+                    <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TANGGAL JOIN</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referrer.joinDateLabel}</div></div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'referred' && (
+                <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
+                  <div style={{ fontSize: '16px', fontWeight: 600, color: '#3B2A22' }}>{activeReferral.referred.name}</div>
+                  <div style={{ marginTop: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px' }}>
+                    <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>MEMBER ID</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referred.memberId}</div></div>
+                    <div><div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>TANGGAL DAFTAR</div><div style={{ fontSize: '14px', color: '#4A3830', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{activeReferral.referred.registerDateLabel}</div></div>
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>KUNJUNGAN PERTAMA</div>
+                      <div style={{ marginTop: '6px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: activeReferral.referred.visitPillBg, color: activeReferral.referred.visitPillColor, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
+                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: activeReferral.referred.visitPillColor }}></span>{activeReferral.referred.visitLabel}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {activeTab === 'status' && (
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: activeReferral.pillBg, color: activeReferral.pillColor, fontSize: '13px', fontWeight: 600, padding: '7px 14px', borderRadius: '999px' }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeReferral.pillColor }}></span>{activeReferral.statusLabel}
-                  </span>
-                </div>
-                <div style={{ fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F' }}>{activeReferral.statusDescription}</div>
-              </div>
-            )}
-
-            {activeTab === 'approve' && (
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-                {activeReferral.status === 'Pending' && (
-                  <>
-                    {!approveConfirmOpen && !rejectConfirmOpen && (
-                      <>
-                        <div style={{ fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F' }}>Referral ini menunggu persetujuan. Reward: {activeReferral.rewardName}, untuk {activeReferral.referrerName}.</div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                          <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setRejectConfirmOpen(true)}>Reject</Button></div>
-                          <div style={{ flex: 1 }}><Button variant="primary" onClick={() => setApproveConfirmOpen(true)}>Approve</Button></div>
-                        </div>
-                      </>
-                    )}
-                    {approveConfirmOpen && (
-                      <>
-                        <div style={{ fontSize: '14.5px', lineHeight: 1.6, color: '#3B2A22' }}>Reward “{activeReferral.rewardName}” akan diberikan ke {activeReferral.referrerName}. Lanjutkan?</div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                          <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setApproveConfirmOpen(false)}>Batal</Button></div>
-                          <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
-                            await approveReferralAdmin(activeReferral.id);
-                            setScreen('list');
-                            setApproveConfirmOpen(false);
-                          }}>Konfirmasi Approve</Button></div>
-                        </div>
-                      </>
-                    )}
-                    {rejectConfirmOpen && (
-                      <>
-                        <div style={{ fontSize: '14.5px', lineHeight: 1.6, color: '#3B2A22' }}>Referral dari {activeReferral.referrerName} akan ditolak, reward tidak diberikan. Lanjutkan?</div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                          <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setRejectConfirmOpen(false)}>Batal</Button></div>
-                          <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
-                            await rejectReferralAdmin(activeReferral.id);
-                            setScreen('list');
-                            setRejectConfirmOpen(false);
-                          }}>Konfirmasi Tolak</Button></div>
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
-                {activeReferral.status === 'Approved' && (
-                  <div style={{ padding: '16px', background: '#F8F4EE', borderRadius: '14px', border: '1px solid #EAE1D5', fontSize: '13.5px', lineHeight: 1.5, color: '#3B2A22' }}>
-                    Reward “{activeReferral.rewardName}” sudah diberikan ke {activeReferral.referrerName}. Lihat detailnya di Referral History.
-                  </div>
-                )}
-                {activeReferral.status === 'Rejected' && (
-                  <div style={{ fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F' }}>Referral ini sudah ditolak. Tidak ada reward yang diberikan.</div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {screen === 'history' && (
-          <div style={{ padding: '52px 40px 60px' }}>
-            <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Referral History</div>
-            <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{filteredHistory.length} riwayat ditemukan</div>
-
-            <div style={{ marginTop: '22px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-              <div style={{ width: '320px' }}>
-                <Input label="CARI" placeholder="Cari nama referrer" value={historyQuery} onChange={(e: any) => setHistoryQuery(e.target.value)} />
-              </div>
-              <div style={{ width: '320px' }}>
-                <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' }]} value={historyFilter} onChange={setHistoryFilter} />
-              </div>
-            </div>
-
-            <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr .8fr 1.4fr 1fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                <div>Referral</div><div>Aksi</div><div>Reward</div><div>Tanggal</div><div>Oleh</div>
-              </div>
-              {filteredHistory.map((h: any) => (
-                <div key={h.id} style={{ display: 'grid', gridTemplateColumns: '1.4fr .8fr 1.4fr 1fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', fontSize: '13.5px', color: '#4A3830' }}>
-                  <div style={{ fontWeight: 600, color: '#3B2A22' }}>{h.referrerName} → {h.referredName}</div>
-                  <div>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: h.pillBg, color: h.pillColor, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
-                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: h.pillColor }}></span>{h.actionLabel}
+              {activeTab === 'status' && (
+                <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: activeReferral.pillBg, color: activeReferral.pillColor, fontSize: '13px', fontWeight: 600, padding: '7px 14px', borderRadius: '999px' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeReferral.pillColor }}></span>{activeReferral.statusLabel}
                     </span>
                   </div>
-                  <div style={{ color: '#7A6A5F' }}>{h.rewardName}</div>
-                  <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{h.dateLabel}</div>
-                  <div style={{ color: '#7A6A5F' }}>{h.by}</div>
+                  <div style={{ fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F' }}>{activeReferral.statusDescription}</div>
                 </div>
-              ))}
-              {filteredHistory.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Tidak ada riwayat yang cocok.</div>}
-            </div>
-          </div>
-        )}
+              )}
 
-      </div>{/* close overflowY:auto */}
+              {activeTab === 'approve' && (
+                <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                  {activeReferral.status === 'Pending' && (
+                    <>
+                      {!approveConfirmOpen && !rejectConfirmOpen && (
+                        <>
+                          <div style={{ fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F' }}>Referral ini menunggu persetujuan. Reward: {activeReferral.rewardName}, untuk {activeReferral.referrerName}.</div>
+                          <div style={{ display: 'flex', gap: '12px' }}>
+                            <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setRejectConfirmOpen(true)}>Reject</Button></div>
+                            <div style={{ flex: 1 }}><Button variant="primary" onClick={() => setApproveConfirmOpen(true)}>Approve</Button></div>
+                          </div>
+                        </>
+                      )}
+                      {approveConfirmOpen && (
+                        <>
+                          <div style={{ fontSize: '14.5px', lineHeight: 1.6, color: '#3B2A22' }}>Reward “{activeReferral.rewardName}” akan diberikan ke {activeReferral.referrerName}. Lanjutkan?</div>
+                          <div style={{ display: 'flex', gap: '12px' }}>
+                            <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setApproveConfirmOpen(false)}>Batal</Button></div>
+                            <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
+                              await approveReferralAdmin(activeReferral.id);
+                              setScreen('list');
+                              setApproveConfirmOpen(false);
+                            }}>Konfirmasi Approve</Button></div>
+                          </div>
+                        </>
+                      )}
+                      {rejectConfirmOpen && (
+                        <>
+                          <div style={{ fontSize: '14.5px', lineHeight: 1.6, color: '#3B2A22' }}>Referral dari {activeReferral.referrerName} akan ditolak, reward tidak diberikan. Lanjutkan?</div>
+                          <div style={{ display: 'flex', gap: '12px' }}>
+                            <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setRejectConfirmOpen(false)}>Batal</Button></div>
+                            <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
+                              await rejectReferralAdmin(activeReferral.id);
+                              setScreen('list');
+                              setRejectConfirmOpen(false);
+                            }}>Konfirmasi Tolak</Button></div>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                  {activeReferral.status === 'Approved' && (
+                    <div style={{ padding: '16px', background: '#F8F4EE', borderRadius: '14px', border: '1px solid #EAE1D5', fontSize: '13.5px', lineHeight: 1.5, color: '#3B2A22' }}>
+                      Reward “{activeReferral.rewardName}” sudah diberikan ke {activeReferral.referrerName}. Lihat detailnya di Referral History.
+                    </div>
+                  )}
+                  {activeReferral.status === 'Rejected' && (
+                    <div style={{ fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F' }}>Referral ini sudah ditolak. Tidak ada reward yang diberikan.</div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {screen === 'history' && (
+            <div style={{ padding: '52px 40px 60px' }}>
+              <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Referral History</div>
+              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{filteredHistory.length} riwayat ditemukan</div>
+
+              <div style={{ marginTop: '22px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ width: '320px' }}>
+                  <Input label="CARI" placeholder="Cari nama referrer" value={historyQuery} onChange={(e: any) => setHistoryQuery(e.target.value)} />
+                </div>
+                <div style={{ width: '320px' }}>
+                  <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Approved', label: 'Approved' }, { value: 'Rejected', label: 'Rejected' }]} value={historyFilter} onChange={setHistoryFilter} />
+                </div>
+              </div>
+
+              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.4fr .8fr 1.4fr 1fr 1fr', gap: '10px', padding: '14px 20px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                  <div>Referral</div><div>Aksi</div><div>Reward</div><div>Tanggal</div><div>Oleh</div>
+                </div>
+                {filteredHistory.map((h: any) => (
+                  <div key={h.id} style={{ display: 'grid', gridTemplateColumns: '1.4fr .8fr 1.4fr 1fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid #EAE1D5', alignItems: 'center', fontSize: '13.5px', color: '#4A3830' }}>
+                    <div style={{ fontWeight: 600, color: '#3B2A22' }}>{h.referrerName} → {h.referredName}</div>
+                    <div>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: h.pillBg, color: h.pillColor, fontSize: '11px', fontWeight: 600, padding: '4px 9px', borderRadius: '999px' }}>
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: h.pillColor }}></span>{h.actionLabel}
+                      </span>
+                    </div>
+                    <div style={{ color: '#7A6A5F' }}>{h.rewardName}</div>
+                    <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{h.dateLabel}</div>
+                    <div style={{ color: '#7A6A5F' }}>{h.by}</div>
+                  </div>
+                ))}
+                {filteredHistory.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: '#7A6A5F', fontSize: '14px', borderTop: '1px solid #EAE1D5' }}>Tidak ada riwayat yang cocok.</div>}
+              </div>
+            </div>
+          )}
+
+        </div>{/* close overflowY:auto */}
       </div>{/* close flex flex-col main wrapper */}
     </div>
   );

@@ -142,6 +142,7 @@ model NewMenu {
   shortDesc String
   longDesc  String   @db.Text
   imageUrl  String?
+  price     Int?
   dateAdded String
   status    String   @default("Draft")
   createdAt DateTime @default(now())

@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     const { type, ...data } = body;
 
     if (type === 'newMenu') {
+      const priceVal = data.price != null && data.price !== '' ? parseInt(data.price.toString()) : null;
       const item = await prisma.newMenu.create({
         data: {
           name: data.name,
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
           shortDesc: data.shortDesc,
           longDesc: data.longDesc,
           imageUrl: data.imageUrl || null,
+          price: priceVal,
           dateAdded: data.dateAdded,
           status: data.status ?? 'Draft',
         },
@@ -88,6 +90,7 @@ export async function PUT(request: NextRequest) {
     if (!id) return Response.json({ error: 'id is required' }, { status: 400 });
 
     if (type === 'newMenu') {
+      const priceVal = data.price != null && data.price !== '' ? parseInt(data.price.toString()) : null;
       const item = await prisma.newMenu.update({
         where: { id },
         data: {
@@ -96,6 +99,7 @@ export async function PUT(request: NextRequest) {
           shortDesc: data.shortDesc,
           longDesc: data.longDesc,
           imageUrl: data.imageUrl || null,
+          price: priceVal,
           dateAdded: data.dateAdded,
           status: data.status,
         },
