@@ -56,19 +56,68 @@ export default function RewardManagementPage() {
   const [history, setHistory] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const queryProcessedRef = React.useRef(false);
+
   useEffect(() => {
     async function load() {
       try {
-        setRewards(await getRewardsAdmin());
-        setMembers(await getMembers());
+        const _rewards = await getRewardsAdmin();
+        const _members = await getMembers();
+        setRewards(_rewards);
+        setMembers(_members);
         setMenuItems(await getMenuItemsAdmin());
         setHistory(await getHistoryAdmin());
+
+        if (!queryProcessedRef.current) {
+          queryProcessedRef.current = true;
+          const search = window.location.search;
+          const params = new URLSearchParams(search);
+          const qMemberId = params.get('memberId');
+          const qRewardId = params.get('rewardId');
+          
+          if (qMemberId && qRewardId) {
+            const m = _members.find((x: any) => x.id === qMemberId || x.referralCode === qMemberId || x.phone === qMemberId || x.rawPhone === qMemberId);
+            
+            if (m) {
+              let targetReward: any = null;
+              let targetType = 'template';
+
+              if (qRewardId === 'birthday') {
+                targetReward = { id: 'birthday', name: 'Birthday Treat Box', visitsRequired: 0 };
+                targetType = 'birthday';
+              } else {
+                const t = _rewards.find((x: any) => x.id === qRewardId);
+                if (t) {
+                  targetReward = t;
+                  targetType = 'template';
+                } else {
+                  const mr = (m.rewards || []).find((x: any) => x.id === qRewardId);
+                  if (mr) {
+                    targetReward = mr;
+                    targetReward.name = mr.title;
+                    targetReward.visitsRequired = 0;
+                    targetType = 'member_reward';
+                  }
+                }
+              }
+
+              if (targetReward) {
+                setScreen('redeem');
+                setRedeemStep('select');
+                setRedeemSelectedId(m.id);
+                setRedeemTarget({ memberId: m.id, memberName: m.name, rewardId: targetReward.id, rewardName: targetReward.name, visitsRequired: targetReward.visitsRequired, type: targetType });
+                setRedeemConfirmOpen(true);
+                router.replace('/admin/rewards', { scroll: false });
+              }
+            }
+          }
+        }
       } catch (err) {
         console.error(err);
       }
     }
     load();
-  }, [screen]);
+  }, [screen, router]);
 
   const [listFilter, setListFilter] = useState('all');
   const [formMode, setFormMode] = useState<'create' | 'edit' | 'system'>('create');
@@ -83,6 +132,9 @@ export default function RewardManagementPage() {
   const [redeemSelectedId, setRedeemSelectedId] = useState<string | null>(null);
   const [redeemConfirmOpen, setRedeemConfirmOpen] = useState(false);
   const [redeemTarget, setRedeemTarget] = useState<any>(null);
+  const [redeemSuccessOpen, setRedeemSuccessOpen] = useState(false);
+  const [redeemSuccessData, setRedeemSuccessData] = useState<any>(null);
+  const [redeemLoading, setRedeemLoading] = useState(false);
 
   const [historyQuery, setHistoryQuery] = useState('');
 
@@ -97,16 +149,69 @@ export default function RewardManagementPage() {
   })) : [];
 
   const redeemSelectedMember = members.find(m => m.id === redeemSelectedId);
-  const eligibilityRows = redeemSelectedMember ? rewards.filter(r => r.status === 'Aktif').map(r => {
-    const eligible = redeemSelectedMember.visits >= r.visitsRequired;
-    return {
-      ...r,
-      eligible,
-      statusText: eligible ? 'Siap diredeem' : `Butuh ${r.visitsRequired - redeemSelectedMember.visits} visit lagi`,
-      cardBg: eligible ? '#FFFFFF' : '#F8F4EE',
-      cardOpacity: eligible ? 1 : 0.6
-    };
-  }) : [];
+  let combinedRows: any[] = [];
+  if (redeemSelectedMember) {
+    const templateRows = rewards.filter(r => r.status === 'Aktif' && !r.id.startsWith('SYSTEM_')).map(r => {
+      const alreadyRedeemed = history.some(h => h.rawMemberId === redeemSelectedMember.id && (h.sourceTemplateId === r.id || (h.rewardType || '').startsWith(r.id + '_')));
+      const eligible = !alreadyRedeemed && redeemSelectedMember.visits >= r.visitsRequired;
+      return {
+        ...r,
+        type: 'template',
+        eligible,
+        alreadyRedeemed,
+        statusText: alreadyRedeemed ? 'Sudah diredeem' : (eligible ? 'Siap diredeem' : `Butuh ${r.visitsRequired - redeemSelectedMember.visits} visit lagi`),
+        cardBg: eligible ? '#FFFFFF' : '#F8F4EE',
+        cardOpacity: eligible || alreadyRedeemed ? 1 : 0.6
+      };
+    }).filter(r => r.eligible || r.alreadyRedeemed);
+
+    combinedRows = [...templateRows];
+
+    const birthMonth = redeemSelectedMember.birthdayInput ? parseInt(redeemSelectedMember.birthdayInput.split('-')[1], 10) - 1 : -1;
+    const isBirthdayMonth = birthMonth !== -1 && birthMonth === new Date().getMonth();
+    const bdayReward = (redeemSelectedMember.rewards || []).find((r: any) => r.rewardType === 'birthday_treat');
+    
+    if (isBirthdayMonth || bdayReward) {
+      const alreadyRedeemed = bdayReward?.redeemedAt != null;
+      const eligible = !alreadyRedeemed && isBirthdayMonth;
+      if (eligible || alreadyRedeemed) {
+        combinedRows.push({
+          id: 'birthday',
+          name: bdayReward?.title || 'Birthday Treat Box',
+          type: 'birthday',
+          visitsRequired: 0,
+          eligible,
+          alreadyRedeemed,
+          statusText: alreadyRedeemed ? 'Sudah diredeem' : 'Siap diredeem',
+          cardBg: eligible ? '#FFFFFF' : '#F8F4EE',
+          cardOpacity: eligible || alreadyRedeemed ? 1 : 0.6
+        });
+      }
+    }
+
+    (redeemSelectedMember.rewards || []).forEach((r: any) => {
+      if (r.rewardType === 'birthday_treat' || r.rewardType === 'visit_reward') return;
+      const underscoreIdx = r.rewardType.lastIndexOf('_');
+      if (underscoreIdx !== -1 && rewards.some(t => t.id === r.rewardType.substring(0, underscoreIdx))) return;
+
+      const alreadyRedeemed = r.redeemedAt != null;
+      const eligible = !alreadyRedeemed && r.isAvailable;
+      if (eligible || alreadyRedeemed) {
+        combinedRows.push({
+          id: r.id,
+          name: r.title,
+          type: 'member_reward',
+          visitsRequired: 0,
+          eligible,
+          alreadyRedeemed,
+          statusText: alreadyRedeemed ? 'Sudah diredeem' : 'Siap diredeem',
+          cardBg: eligible ? '#FFFFFF' : '#F8F4EE',
+          cardOpacity: eligible || alreadyRedeemed ? 1 : 0.6
+        });
+      }
+    });
+  }
+  const eligibilityRows = combinedRows;
 
   const hq = historyQuery.trim().toLowerCase();
   const filteredHistory = history.filter(h => h.memberName.toLowerCase().includes(hq) || h.memberId.toLowerCase().includes(hq)).map(h => ({
@@ -424,8 +529,10 @@ export default function RewardManagementPage() {
                           <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '3px' }}>{r.statusText}</div>
                         </div>
                         <div style={{ width: '130px', flex: 'none' }}>
-                          {r.eligible ? (
-                            <Button variant="primary" onClick={() => { setRedeemTarget({ memberId: redeemSelectedMember.id, memberName: redeemSelectedMember.name, rewardId: r.id, rewardName: r.name, visitsRequired: r.visitsRequired }); setRedeemConfirmOpen(true); }}>Redeem</Button>
+                          {r.alreadyRedeemed ? (
+                            <div style={{ width: '100%', height: '44px', borderRadius: '14px', background: '#EAE1D5', color: '#7A6A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600 }}>Redeemed</div>
+                          ) : r.eligible ? (
+                            <Button variant="primary" onClick={() => { setRedeemTarget({ memberId: redeemSelectedMember.id, memberName: redeemSelectedMember.name, rewardId: r.id, rewardName: r.name, visitsRequired: r.visitsRequired, type: r.type }); setRedeemConfirmOpen(true); }}>Redeem</Button>
                           ) : (
                             <div style={{ width: '100%', height: '44px', borderRadius: '14px', background: '#F1EBE1', color: '#7A6A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 600 }}>Belum memenuhi syarat</div>
                           )}
@@ -490,21 +597,60 @@ export default function RewardManagementPage() {
       {redeemConfirmOpen && redeemTarget && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(43, 30, 24, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ width: '420px', background: '#FFFFFF', borderRadius: '22px', padding: '26px', boxShadow: '0 30px 60px -20px rgba(0, 0, 0, 0.5)' }}>
-            <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Redeem reward ini?</div>
-            <div style={{ fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F', marginTop: '10px' }}>Redeem “{redeemTarget.rewardName}” untuk {redeemTarget.memberName}?</div>
-            <div style={{ display: 'flex', gap: '12px', marginTop: '22px' }}>
-              <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setRedeemConfirmOpen(false)}>Batal</Button></div>
+            <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Confirm Redemption</div>
+            <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#7A6A5F', marginTop: '10px' }}>
+              Are you sure you want to redeem <strong>{redeemTarget.rewardName}</strong> for user <strong>{redeemTarget.memberName}</strong>?
+            </div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '26px' }}>
+              <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setRedeemConfirmOpen(false)}>Cancel</Button></div>
               <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
                 try {
-                  await redeemRewardAdmin(redeemTarget.memberId, redeemTarget.rewardId);
+                  setRedeemLoading(true);
+                  await redeemRewardAdmin(redeemTarget.memberId, redeemTarget.rewardId, redeemTarget.type || 'template');
+                  setRedeemLoading(false);
                   setRedeemConfirmOpen(false);
-                  setRedeemStep('search');
-                  setRedeemSelectedId(null);
-                  setRedeemSearchQuery('');
-                } catch (e) {
-                  alert(e);
+                  setRedeemSuccessData(redeemTarget);
+                  setRedeemSuccessOpen(true);
+                } catch (e: any) {
+                  setRedeemLoading(false);
+                  alert(e.message || e);
                 }
-              }}>Redeem</Button></div>
+              }}>{redeemLoading ? 'Redeeming...' : 'Proceed'}</Button></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {redeemSuccessOpen && redeemSuccessData && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(43, 30, 24, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 60 }}>
+          <style>{`
+            @keyframes popScale {
+              0% { opacity: 0; transform: scale(0.9); }
+              50% { transform: scale(1.05); }
+              100% { opacity: 1; transform: scale(1); }
+            }
+            @keyframes checkmark {
+              0% { stroke-dashoffset: 24; }
+              100% { stroke-dashoffset: 0; }
+            }
+          `}</style>
+          <div style={{ width: '380px', background: '#FFFFFF', borderRadius: '24px', padding: '32px 26px', boxShadow: '0 30px 60px -20px rgba(0, 0, 0, 0.5)', textAlign: 'center', animation: 'popScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(122, 150, 116, 0.15)', margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5A6A54" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ strokeDasharray: 24, strokeDashoffset: 24, animation: 'checkmark 0.4s ease-out 0.2s forwards' }}>
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div style={{ fontSize: '20px', fontWeight: 600, color: '#3B2A22' }}>Redemption Successful!</div>
+            <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#7A6A5F', marginTop: '12px' }}>
+              Successfully redeemed <strong>{redeemSuccessData.rewardName}</strong> for <strong>{redeemSuccessData.memberName}</strong>.
+            </div>
+            <div style={{ marginTop: '28px' }}>
+              <Button variant="primary" onClick={() => {
+                setRedeemSuccessOpen(false);
+                setRedeemStep('search');
+                setRedeemSelectedId(null);
+                setRedeemSearchQuery('');
+              }} style={{ width: '100%' }}>Done</Button>
             </div>
           </div>
         </div>

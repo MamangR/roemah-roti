@@ -42,6 +42,7 @@ export const useMember = () => useContext(MemberContext);
 export function MemberProvider({ children }: { children: React.ReactNode }) {
   const [member, setMember] = useState<Member | null>(null);
   const [loading, setLoading] = useState(true);
+  const memberStrRef = React.useRef<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -50,13 +51,23 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch('/api/user/me');
       if (res.ok) {
         const data = await res.json();
-        setMember(data.member);
+        const dataStr = JSON.stringify(data.member);
+        if (dataStr !== memberStrRef.current) {
+          memberStrRef.current = dataStr;
+          setMember(data.member);
+        }
       } else {
-        setMember(null);
+        if (memberStrRef.current !== null) {
+          memberStrRef.current = null;
+          setMember(null);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch member', error);
-      setMember(null);
+      if (memberStrRef.current !== null) {
+        memberStrRef.current = null;
+        setMember(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -66,12 +77,20 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch (err) {}
+    memberStrRef.current = null;
     setMember(null);
     router.push('/signin');
   };
 
   useEffect(() => {
     fetchMember();
+    
+    // Poll every 3 seconds to keep UI synced without manual refresh
+    const intervalId = setInterval(() => {
+      fetchMember();
+    }, 3000);
+    
+    return () => clearInterval(intervalId);
   }, []);
 
   // Simple auth guard for internal pages

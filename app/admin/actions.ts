@@ -72,7 +72,8 @@ export async function getMembers() {
   const members = await prisma.member.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
-      activities: { orderBy: { createdAt: 'desc' } }
+      activities: { orderBy: { createdAt: 'desc' } },
+      rewards: { orderBy: { createdAt: 'desc' } }
     }
   });
 
@@ -98,7 +99,10 @@ export async function getMembers() {
       spending: transactions.reduce((sum, t) => sum + t.total, 0),
       joinDate: m.createdAt.toISOString().slice(0, 10),
       lastActivity,
-      transactions
+      transactions,
+      rewards: m.rewards,
+      birthdayInput: m.birthdayInput,
+      rawPhone: m.rawPhone
     };
   });
 }
@@ -277,44 +281,128 @@ export async function deleteReward(id: string) {
   return { success: true };
 }
 
-export async function redeemRewardAdmin(memberId: string, rewardTemplateId: string) {
+export async function redeemRewardAdmin(memberId: string, targetId: string, type: 'template' | 'birthday' | 'member_reward' = 'template') {
   await checkAdmin();
   const member = await prisma.member.findUnique({ where: { id: memberId } });
-  const template = await prisma.rewardTemplate.findUnique({
-    where: { id: rewardTemplateId },
-    include: { menuItem: true }
-  });
-
-  if (!member || !template) throw new Error('Not found');
-  if (member.totalVisits < template.visitsRequired) throw new Error('Not enough visits');
+  if (!member) throw new Error('Member not found');
 
   const redeemedAt = new Date();
 
   await prisma.$transaction(async (tx) => {
-    const newReward = await tx.memberReward.create({
-      data: {
-        memberId: member.id,
-        rewardType: template.id + '_' + Date.now(), // unique type so multiple can be issued
-        title: template.name || template.menuItem?.name || 'Reward',
-        type: 'Admin Redeemed',
-        description: template.desc || template.menuItem?.shortDesc || '',
-        redeemedAt,
-        isAvailable: false
-      }
-    });
+    let rewardTitle = 'Reward';
 
-    await tx.activity.create({
-      data: {
-        memberId: member.id,
-        memberRewardId: newReward.id,
-        type: 'redeemed',
-        date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-        outlet: 'Roemah Roti',
-        reward: template.name || template.menuItem?.name || 'Reward',
-        ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+    if (type === 'template') {
+      const template = await tx.rewardTemplate.findUnique({
+        where: { id: targetId },
+        include: { menuItem: true }
+      });
+      if (!template) throw new Error('Template not found');
+      if (member.totalVisits < template.visitsRequired) throw new Error('Not enough visits');
+
+      rewardTitle = template.name || template.menuItem?.name || 'Reward';
+
+      const newReward = await tx.memberReward.create({
+        data: {
+          memberId: member.id,
+          rewardType: template.id + '_' + Date.now(),
+          title: rewardTitle,
+          type: 'Admin Redeemed',
+          description: template.desc || template.menuItem?.shortDesc || '',
+          redeemedAt,
+          isAvailable: false
+        }
+      });
+
+      await tx.activity.create({
+        data: {
+          memberId: member.id,
+          memberRewardId: newReward.id,
+          type: 'redeemed',
+          date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          outlet: 'Roemah Roti',
+          reward: rewardTitle,
+          ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+        }
+      });
+
+      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
+    } else if (type === 'birthday') {
+      rewardTitle = 'Birthday Treat Box';
+      const sysBday = await tx.rewardTemplate.findUnique({ where: { id: 'SYSTEM_BIRTHDAY' }, include: { menuItem: true } });
+      if (sysBday) {
+        rewardTitle = sysBday.name || sysBday.menuItem?.name || rewardTitle;
       }
-    });
+
+      const existingBday = await tx.memberReward.findFirst({
+        where: { memberId: member.id, rewardType: 'birthday_treat' },
+        orderBy: { createdAt: 'desc' }
+      });
+      
+      let bdayRewardId = '';
+
+      if (existingBday) {
+        await tx.memberReward.update({
+          where: { id: existingBday.id },
+          data: { redeemedAt, isAvailable: false }
+        });
+        bdayRewardId = existingBday.id;
+      } else {
+        const newReward = await tx.memberReward.create({
+          data: {
+            memberId: member.id,
+            rewardType: 'birthday_treat',
+            title: rewardTitle,
+            type: 'Birthday Reward',
+            description: sysBday?.desc || sysBday?.menuItem?.shortDesc || '',
+            redeemedAt,
+            isAvailable: false
+          }
+        });
+        bdayRewardId = newReward.id;
+      }
+
+      await tx.activity.create({
+        data: {
+          memberId: member.id,
+          memberRewardId: bdayRewardId,
+          type: 'redeemed',
+          date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          outlet: 'Roemah Roti',
+          reward: rewardTitle,
+          ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+        }
+      });
+
+      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+    } else if (type === 'member_reward') {
+      const existing = await tx.memberReward.findUnique({ where: { id: targetId } });
+      if (!existing || existing.memberId !== member.id) throw new Error('Reward not found');
+      if (existing.redeemedAt) throw new Error('Already redeemed');
+
+      rewardTitle = existing.title;
+
+      await tx.memberReward.update({
+        where: { id: targetId },
+        data: { redeemedAt, isAvailable: false }
+      });
+
+      await tx.activity.create({
+        data: {
+          memberId: member.id,
+          memberRewardId: targetId,
+          type: 'redeemed',
+          date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+          outlet: 'Roemah Roti',
+          reward: rewardTitle,
+          ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+        }
+      });
+
+      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+    }
 
     await tx.member.update({
       where: { id: memberId },
@@ -323,7 +411,6 @@ export async function redeemRewardAdmin(memberId: string, rewardTemplateId: stri
       }
     });
 
-    await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
   });
 
   return { success: true };
@@ -341,6 +428,9 @@ export async function getHistoryAdmin() {
     id: r.id,
     memberName: r.member.name,
     memberId: r.member.referralCode,
+    rawMemberId: r.memberId,
+    sourceTemplateId: r.sourceTemplateId,
+    rewardType: r.rewardType,
     rewardName: r.title,
     dateLabel: r.redeemedAt ? r.redeemedAt.toISOString().slice(0, 10) : '',
     outlet: r.location

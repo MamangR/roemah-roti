@@ -443,7 +443,7 @@ export default function RewardsPage() {
           <div onClick={e => e.stopPropagation()} style={{ background: '#FCFBF8', borderRadius: '26px', padding: '24px 24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '13px', boxShadow: '0 30px 60px -20px rgba(0,0,0,.5)', animation: 'rrgrow .3s cubic-bezier(.22,1,.36,1)', maxWidth: '280px' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.16em', color: '#A67C52' }}>REDEEM QR CODE</div>
             <div style={{ background: '#fff', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <QRCodeSVG value={`${typeof window !== 'undefined' ? window.location.origin : ''}/admin/redeem?memberId=${member?.id}&rewardId=${cur.id}`} size={160} />
+              <QRCodeSVG value={`${typeof window !== 'undefined' ? window.location.origin : ''}/admin/rewards?memberId=${member?.id}&rewardId=${cur.id}`} size={160} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', textAlign: 'center', maxWidth: '230px' }}>
               <div style={{ fontSize: '16px', fontWeight: 600, lineHeight: 1.3 }}>{cur.name}</div>
