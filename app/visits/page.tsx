@@ -28,6 +28,13 @@ export default function VisitsPage() {
   const [goal, setGoal] = useState(10);
   const [rewardName, setRewardName] = useState('Loading...');
   const [rewardImageUrl, setRewardImageUrl] = useState<string | null>(null);
+  const [greeting, setGreeting] = useState('Good morning,');
+
+  React.useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour >= 12 && hour < 17) setGreeting('Good afternoon,');
+    else if (hour >= 17) setGreeting('Good evening,');
+  }, []);
 
   React.useEffect(() => {
     getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', 'Selamat! Kunjungan Anda telah mencapai target.', 10)
@@ -88,7 +95,7 @@ export default function VisitsPage() {
           <div style={{ padding: '8px 20px 96px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '6px 2px 18px' }}>
               <div>
-                <div style={{ fontSize: '13px', fontWeight: 500, color: '#A08A7B' }}>Good morning,</div>
+                <div style={{ fontSize: '13px', fontWeight: 500, color: '#A08A7B' }}>{greeting}</div>
                 <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '1px' }}>{member?.firstName || 'User'}</div>
               </div>
               <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 600, color: '#A67C52' }}>{member?.initials || 'U'}</div>

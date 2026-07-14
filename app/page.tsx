@@ -26,8 +26,8 @@ export default function LandingPage() {
         <div className={styles.logo}>
           <div className={styles.logoIcon}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M9 2C9 2 5 5 5 9.5C5 12.5 6.8 15 9 15C11.2 15 13 12.5 13 9.5C13 5 9 2 9 2Z" fill="#F8F4EE" opacity="0.9"/>
-              <path d="M6 10C7 9 8 8.5 9 8.5C10 8.5 11 9 12 10" stroke="#F8F4EE" strokeWidth="1" strokeLinecap="round" opacity="0.6" fill="none"/>
+              <path d="M9 2C9 2 5 5 5 9.5C5 12.5 6.8 15 9 15C11.2 15 13 12.5 13 9.5C13 5 9 2 9 2Z" fill="#F8F4EE" opacity="0.9" />
+              <path d="M6 10C7 9 8 8.5 9 8.5C10 8.5 11 9 12 10" stroke="#F8F4EE" strokeWidth="1" strokeLinecap="round" opacity="0.6" fill="none" />
             </svg>
           </div>
           <div>
@@ -47,7 +47,7 @@ export default function LandingPage() {
           <Croissant size={14} aria-hidden="true" />
           Membership program
         </div>
-        <h1>Join <em>Roemah Roti</em><br/>Insider</h1>
+        <h1>Join <em>Roemah Roti</em><br />Insider</h1>
         <p>Exclusive treats, birthday surprises, and early access to everything fresh from our oven — made for those who keep coming back.</p>
         <div className={styles.heroCtas}>
           <button className={styles.btnPrimary} onClick={handleJoin}>Join for free</button>
@@ -68,7 +68,7 @@ export default function LandingPage() {
 
       <div className={styles.section} id="benefits">
         <div className={styles.sectionLabel}>Member benefits</div>
-        <h2>Everything fresh,<br/>just for you</h2>
+        <h2>Everything fresh,<br />just for you</h2>
         <p className={styles.sectionSub}>Become an insider and unlock a layer of the bakery most customers never see.</p>
         <div className={styles.benefits}>
           <div className={styles.benefitCard}>
@@ -129,7 +129,7 @@ export default function LandingPage() {
 
       <div className={styles.section}>
         <div className={styles.sectionLabel}>From our members</div>
-        <h2>Real regulars,<br/>real stories</h2>
+        <h2>Real regulars,<br />real stories</h2>
         <p className={styles.sectionSub}>What keeps them coming back every morning.</p>
         <div className={styles.statRow}>
           <div className={styles.stat}><div className={styles.statNum}>1,240</div><div className={styles.statLabel}>Members</div></div>
@@ -163,7 +163,7 @@ export default function LandingPage() {
       </div>
 
       <div className={styles.ctaSection}>
-        <h2>Ready to become<br/>an insider?</h2>
+        <h2>Ready to become<br />an insider?</h2>
         <p>Join free in under a minute. No commitments, no subscriptions.</p>
         <button className={styles.btnCta} onClick={handleJoin}>Join Roemah Roti Insider ↗</button>
       </div>

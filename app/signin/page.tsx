@@ -11,7 +11,7 @@ export default function LoginPage() {
   const { refreshMember } = useMember();
   const [method, setMethod] = useState<'whatsapp' | 'memberId'>('whatsapp');
   const [auth, setAuth] = useState<'otp' | 'password'>('otp');
-  
+
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -133,12 +133,12 @@ export default function LoginPage() {
 
             <div style={{ marginTop: '18px' }}>
               <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B' }}>{method === 'whatsapp' ? 'WHATSAPP NUMBER' : 'MEMBER ID'}</div>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder={method === 'whatsapp' ? '+62 812 3456 789' : 'RR-04217'} 
-                style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }} 
+                placeholder={method === 'whatsapp' ? '+62 812 3456 789' : 'RR-04217'}
+                style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }}
               />
             </div>
 
@@ -160,12 +160,12 @@ export default function LoginPage() {
               </div>
             ) : (
               <div style={{ marginTop: '14px', position: 'relative' }}>
-                <input 
-                  type={showPassword ? 'text' : 'password'} 
+                <input
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password" 
-                  style={{ width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 44px 15px 16px', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }} 
+                  placeholder="Enter your password"
+                  style={{ width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 44px 15px 16px', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }}
                 />
                 <button
                   type="button"
@@ -192,13 +192,13 @@ export default function LoginPage() {
         ) : (
           <div style={{ marginTop: '26px' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B' }}>6-DIGIT CODE</div>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="000000" 
+              placeholder="000000"
               maxLength={6}
-              style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '24px', letterSpacing: '.5em', textAlign: 'center', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }} 
+              style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '24px', letterSpacing: '.5em', textAlign: 'center', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }}
             />
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#A08A7B', cursor: 'pointer' }} onClick={() => { setOtpStep(false); setCode(''); setError(''); }}>
               Use a different number
@@ -208,7 +208,7 @@ export default function LoginPage() {
 
         <div style={{ flex: 1 }}></div>
 
-        <button 
+        <button
           onClick={handleLogin}
           disabled={loading}
           style={{ marginTop: '20px', background: loading ? '#C3A990' : '#A67C52', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: '15px', fontSize: '15px', fontWeight: 600, cursor: loading ? 'default' : 'pointer', border: 'none', width: '100%', boxShadow: loading ? 'none' : '0 14px 26px -14px rgba(166,124,82,.9)', transition: 'transform .12s ease,box-shadow .12s ease' }}

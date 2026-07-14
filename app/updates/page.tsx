@@ -363,7 +363,7 @@ export default function UpdatesPage() {
               </div>
               <div style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '8px' }}>{selItem.name}</div>
               <div style={{ fontSize: '12px', color: '#A08A7B', marginTop: '8px' }}>Added {selItem.date}</div>
-              <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#7A6A5F', marginTop: '14px', whiteSpace: 'pre-wrap' }}>{selItem.long}</div>
+              <div className="sm:w-[90%] sm:mx-auto" style={{ marginTop: '16px', padding: '16px 18px', background: '#F4EFE6', border: '1px solid #EAE3D6', borderRadius: '16px', fontSize: '14.5px', lineHeight: 1.6, color: '#5C4F45', whiteSpace: 'pre-wrap', boxShadow: 'inset 0 2px 10px rgba(59,42,34,0.01)' }}>{selItem.long}</div>
             </div>
           </div>
         )}
@@ -384,7 +384,7 @@ export default function UpdatesPage() {
               <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>{selPromo.name}</div>
               <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px', background: selPromo.badgeBg, color: selPromo.badgeColor, flex: 'none' }}>{selPromo.badgeText}</span>
             </div>
-            <div style={{ fontSize: '14px', lineHeight: 1.6, color: '#7A6A5F', marginTop: '12px', whiteSpace: 'pre-wrap' }}>{selPromo.long}</div>
+            <div className="sm:w-[90%] sm:mx-auto" style={{ marginTop: '16px', padding: '16px 18px', background: '#F4EFE6', border: '1px solid #EAE3D6', borderRadius: '16px', fontSize: '14.5px', lineHeight: 1.6, color: '#5C4F45', whiteSpace: 'pre-wrap', boxShadow: 'inset 0 2px 10px rgba(59,42,34,0.01)' }}>{selPromo.long}</div>
 
             <div style={{ marginTop: '18px', background: '#F8F4EE', borderRadius: '14px', padding: '13px 15px', fontSize: '13px', fontWeight: 600, color: '#4A3830' }}>{selPromo.validity}</div>
 
@@ -419,7 +419,7 @@ export default function UpdatesPage() {
             )}
             <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '12px' }}>{selAnnouncement.title}</div>
             <div style={{ fontSize: '12px', color: '#A08A7B', marginTop: '8px' }}>Posted {selAnnouncement.date} · {selAnnouncement.outlet}</div>
-            <div style={{ fontSize: '14px', lineHeight: 1.65, color: '#7A6A5F', marginTop: '16px', whiteSpace: 'pre-wrap' }}>{selAnnouncement.long}</div>
+            <div className="sm:w-[90%] sm:mx-auto" style={{ marginTop: '16px', padding: '16px 18px', background: '#F4EFE6', border: '1px solid #EAE3D6', borderRadius: '16px', fontSize: '14.5px', lineHeight: 1.6, color: '#5C4F45', whiteSpace: 'pre-wrap', boxShadow: 'inset 0 2px 10px rgba(59,42,34,0.01)' }}>{selAnnouncement.long}</div>
           </div>
         )}
       </div>

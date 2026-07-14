@@ -6,14 +6,14 @@ import PhoneLayout from '@/components/ui/PhoneLayout';
 import { useMember } from '@/context/MemberContext';
 import { Eye, EyeOff } from 'lucide-react';
 
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const WEEKDAYS = ['S','M','T','W','T','F','S'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 export default function RegisterPage() {
   const router = useRouter();
   const { refreshMember } = useMember();
   const [step, setStep] = useState<'form' | 'otp' | 'handoff'>('form');
-  
+
   const [name, setName] = useState('');
   const [wa, setWa] = useState('');
   const [waFocused, setWaFocused] = useState(false);
@@ -81,10 +81,10 @@ export default function RegisterPage() {
     for (let i = 0; i < firstDow; i++) cells.push({ empty: true });
     for (let d = 1; d <= daysInMonth; d++) {
       const isSel = birthday && birthday.y === calYear && birthday.m === calMonth && birthday.d === d;
-      cells.push({ 
-        day: d, 
-        isSel, 
-        onPick: () => pickDate(calYear, calMonth, d) 
+      cells.push({
+        day: d,
+        isSel,
+        onPick: () => pickDate(calYear, calMonth, d)
       });
     }
     return cells;
@@ -150,23 +150,23 @@ export default function RegisterPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          phone: wa, 
-          name, 
-          birthdayInput, 
+        body: JSON.stringify({
+          phone: wa,
+          name,
+          birthdayInput,
           password,
-          referralCode: finalReferralValid ? referralTrim : '' 
+          referralCode: finalReferralValid ? referralTrim : ''
         })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Registration failed');
-      
+
       await refreshMember();
       setStep('handoff');
       setTimeout(() => {
         router.push('/visits');
       }, 2000);
-    } catch(err: any) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
@@ -201,12 +201,12 @@ export default function RegisterPage() {
           <div style={{ marginTop: '20px', overflowY: 'auto', flex: 1, minHeight: 0, paddingBottom: '4px' }}>
             <div>
               <div style={{ fontSize: 'var(--text-label)', fontWeight: 600, letterSpacing: 'var(--tracking-label)', color: 'var(--text-label)', marginBottom: '8px' }}>FULL NAME</div>
-              <input 
-                type="text" 
-                placeholder="Full name" 
-                value={name} 
-                onChange={e => setName(e.target.value)} 
-                style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
+              <input
+                type="text"
+                placeholder="Full name"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }}
               />
             </div>
 
@@ -214,15 +214,15 @@ export default function RegisterPage() {
               <div style={{ fontSize: 'var(--text-label)', fontWeight: 600, letterSpacing: 'var(--tracking-label)', color: 'var(--text-label)', marginBottom: '8px' }}>WHATSAPP NUMBER</div>
               <div style={{ display: 'flex', alignItems: 'center', width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: waBorder, boxShadow: waShadow, borderRadius: 'var(--radius-sm)', padding: '15px 16px', transition: 'border-color .12s ease,box-shadow .12s ease' }}>
                 <span style={{ fontSize: 'var(--text-body)', fontWeight: 500, color: 'var(--text-label)', paddingRight: '10px', borderRight: '1px solid var(--border-hairline)' }}>+62</span>
-                <input 
-                  type="tel" 
-                  inputMode="numeric" 
-                  placeholder="812 3456 789" 
-                  value={wa} 
-                  onChange={e => setWa(e.target.value)} 
-                  onFocus={() => setWaFocused(true)} 
-                  onBlur={() => setWaFocused(false)} 
-                  style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', paddingLeft: '10px' }} 
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="812 3456 789"
+                  value={wa}
+                  onChange={e => setWa(e.target.value)}
+                  onFocus={() => setWaFocused(true)}
+                  onBlur={() => setWaFocused(false)}
+                  style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', paddingLeft: '10px' }}
                 />
               </div>
               {waHasError && (
@@ -296,7 +296,7 @@ export default function RegisterPage() {
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '6px' }}>
                         {MONTHS.map((m, i) => (
                           <div key={i} onClick={() => { setCalMonth(i); setCalMode('day'); }} style={{ textAlign: 'center', fontSize: '13px', fontWeight: calMonth === i ? 600 : 500, padding: '10px 0', borderRadius: '10px', cursor: 'pointer', background: calMonth === i ? 'var(--accent-primary)' : 'var(--surface-secondary)', color: calMonth === i ? '#FFFCF7' : 'var(--text-primary)' }}>
-                            {m.slice(0,3)}
+                            {m.slice(0, 3)}
                           </div>
                         ))}
                       </div>
@@ -333,12 +333,12 @@ export default function RegisterPage() {
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ position: 'relative', flex: 1 }}>
-                  <input 
-                    type="text" 
-                    placeholder="e.g. ROTI2026" 
-                    value={referral} 
-                    onChange={e => { setReferral(e.target.value); setReferralStatus('idle'); }} 
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: referralValid ? '1px solid var(--sage)' : (referralNotFound ? '1px solid #D32F2F' : '1px solid var(--border-hairline)'), borderRadius: 'var(--radius-sm)', padding: '15px 40px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
+                  <input
+                    type="text"
+                    placeholder="e.g. ROTI2026"
+                    value={referral}
+                    onChange={e => { setReferral(e.target.value); setReferralStatus('idle'); }}
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: referralValid ? '1px solid var(--sage)' : (referralNotFound ? '1px solid #D32F2F' : '1px solid var(--border-hairline)'), borderRadius: 'var(--radius-sm)', padding: '15px 40px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }}
                   />
                   {referralValid && (
                     <div style={{ position: 'absolute', right: '14px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', borderRadius: '50%', background: 'var(--accent-confirm-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -346,7 +346,7 @@ export default function RegisterPage() {
                     </div>
                   )}
                 </div>
-                <button 
+                <button
                   onClick={checkReferralCode}
                   disabled={referralEmpty || referralStatus === 'checking'}
                   style={{ flex: 'none', background: 'var(--surface-secondary)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '0 16px', fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)', cursor: (referralEmpty || referralStatus === 'checking') ? 'default' : 'pointer', opacity: (referralEmpty || referralStatus === 'checking') ? 0.6 : 1 }}
@@ -370,12 +370,12 @@ export default function RegisterPage() {
                 <span style={{ fontSize: 'var(--text-label)', fontWeight: 600, letterSpacing: 'var(--tracking-label)', color: 'var(--text-label)' }}>PASSWORD</span>
               </div>
               <div style={{ position: 'relative' }}>
-                <input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="Create a password (min. 6 chars)" 
-                  value={password} 
-                  onChange={e => setPassword(e.target.value)} 
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 44px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }} 
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a password (min. 6 chars)"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 44px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }}
                 />
                 <button
                   type="button"
@@ -440,13 +440,13 @@ export default function RegisterPage() {
 
           <div style={{ marginTop: '26px' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B' }}>6-DIGIT CODE</div>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="000000" 
+              placeholder="000000"
               maxLength={6}
-              style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '24px', letterSpacing: '.5em', textAlign: 'center', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }} 
+              style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '24px', letterSpacing: '.5em', textAlign: 'center', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }}
             />
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#A08A7B', cursor: 'pointer' }} onClick={() => { setStep('form'); setCode(''); setError(''); }}>
               Back to registration details
