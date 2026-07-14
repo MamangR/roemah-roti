@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
 import { useMember } from '@/context/MemberContext';
@@ -441,7 +442,9 @@ export default function RewardsPage() {
         <div onClick={() => { setQrOpen(false); setJustRedeemed(false); }} style={{ position: 'absolute', inset: 0, zIndex: 20, background: 'rgba(43,30,24,.55)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '26px', animation: 'rrfade .2s ease' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#FCFBF8', borderRadius: '26px', padding: '24px 24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '13px', boxShadow: '0 30px 60px -20px rgba(0,0,0,.5)', animation: 'rrgrow .3s cubic-bezier(.22,1,.36,1)', maxWidth: '280px' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.16em', color: '#A67C52' }}>REDEEM QR CODE</div>
-            <div style={{ width: '184px', height: '184px', background: '#3B2A22', borderRadius: '8px' }}></div>
+            <div style={{ background: '#fff', padding: '12px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <QRCodeSVG value={`${typeof window !== 'undefined' ? window.location.origin : ''}/admin/redeem?memberId=${member?.id}&rewardId=${cur.id}`} size={160} />
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', textAlign: 'center', maxWidth: '230px' }}>
               <div style={{ fontSize: '16px', fontWeight: 600, lineHeight: 1.3 }}>{cur.name}</div>
               <div style={{ fontSize: '12px', color: '#A08A7B', fontVariantNumeric: 'tabular-nums', lineHeight: 1.3 }}>{member?.firstName || 'User'} · {cur.footerValue}</div>
@@ -449,10 +452,7 @@ export default function RewardsPage() {
             <div style={{ fontSize: '12.5px', color: '#7A6A5F', textAlign: 'center', maxWidth: '220px', lineHeight: 1.5 }}>Show this QR to our cashier before payment.</div>
 
             {!justRedeemed ? (
-              <>
-                <div onClick={simulateScan} style={{ marginTop: '6px', width: '100%', boxSizing: 'border-box', background: '#3B2A22', color: '#F8F4EE', textAlign: 'center', padding: '13px', borderRadius: '14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'transform .12s ease' }}>Cashier scanned — mark as redeemed</div>
-                <div style={{ fontSize: '11px', color: '#C4B6A9', marginTop: '2px' }}>Tap outside to close</div>
-              </>
+              <div style={{ fontSize: '11px', color: '#C4B6A9', marginTop: '6px' }}>Tap outside to close</div>
             ) : (
               <div style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(122,150,116,.12)', color: '#5C7B5A', textAlign: 'center', padding: '13px', borderRadius: '14px', fontSize: '13px', fontWeight: 600 }}>Redeemed. See you soon.</div>
             )}
