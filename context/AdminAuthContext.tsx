@@ -16,6 +16,7 @@ type AdminAuthContextType = {
   logout: () => Promise<void>;
   hasPermission: (permissionId: string) => boolean;
   refreshPermissions: () => Promise<void>;
+  refreshSession: () => Promise<void>;
 };
 
 const AdminAuthContext = createContext<AdminAuthContextType>({
@@ -25,6 +26,7 @@ const AdminAuthContext = createContext<AdminAuthContextType>({
   logout: async () => {},
   hasPermission: () => false,
   refreshPermissions: async () => {},
+  refreshSession: async () => {},
 });
 
 export const useAdminAuth = () => useContext(AdminAuthContext);
@@ -96,13 +98,13 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       if (!adminUser && !isSigninPage) {
         router.push('/admin/signin');
       } else if (adminUser && isSigninPage) {
-        router.push('/admin');
+        router.push(adminUser.role === 'cashier' ? '/admin/cashierdashboard' : '/admin');
       }
     }
   }, [adminUser, loading, pathname, router]);
 
   return (
-    <AdminAuthContext.Provider value={{ adminUser, permissions, loading, logout, hasPermission, refreshPermissions }}>
+    <AdminAuthContext.Provider value={{ adminUser, permissions, loading, logout, hasPermission, refreshPermissions, refreshSession: fetchAdminMe }}>
       {children}
     </AdminAuthContext.Provider>
   );

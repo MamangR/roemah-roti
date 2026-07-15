@@ -34,7 +34,11 @@ export default function AdminSignInPage() {
         throw new Error(data.error || 'Invalid credentials');
       }
 
-      router.push('/admin');
+      if (data.admin?.role === 'cashier') {
+        window.location.href = '/admin/cashierdashboard';
+      } else {
+        window.location.href = '/admin';
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
