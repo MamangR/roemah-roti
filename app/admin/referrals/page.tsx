@@ -67,7 +67,7 @@ export default function ReferralManagementPageWrapper() {
 function ReferralManagementPage() {
   const router = useRouter();
   const { adminUser } = useAdminAuth();
-  const [screen, setScreen] = useState<'list' | 'history'>('list');
+  const [screen, setScreen] = useState<'list' | 'history' | 'detail'>('list');
   const [referrals, setReferrals] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
