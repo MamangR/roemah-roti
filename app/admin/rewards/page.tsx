@@ -154,6 +154,66 @@ function RewardManagementPage() {
   const [redeemLoading, setRedeemLoading] = useState(false);
 
   const [historyQuery, setHistoryQuery] = useState('');
+  
+  const [barcodeInput, setBarcodeInput] = useState('');
+
+  const handleBarcodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = barcodeInput.trim();
+    if (!val) return;
+    
+    const parts = val.split(':');
+    if (parts.length === 3 && parts[0] === 'REWARD') {
+      const parsedMemberId = parts[1];
+      const parsedRewardId = parts[2];
+      
+      const m = members.find((x: any) => x.id === parsedMemberId || x.memberId === parsedMemberId || x.wa === parsedMemberId);
+      if (m) {
+        let targetReward: any = null;
+        let targetType = 'template';
+
+        if (parsedRewardId === 'birthday') {
+          targetReward = { id: 'birthday', name: 'Birthday Treat Box', visitsRequired: 0 };
+          targetType = 'birthday';
+        } else {
+          const t = rewards.find((x: any) => x.id === parsedRewardId);
+          if (t) {
+            targetReward = t;
+            targetType = 'template';
+          } else {
+            const mr = (m.rewards || []).find((x: any) => x.id === parsedRewardId);
+            if (mr) {
+              targetReward = mr;
+              targetReward.name = mr.title;
+              targetReward.visitsRequired = 0;
+              targetType = 'member_reward';
+            }
+          }
+        }
+
+        if (targetReward) {
+          setScreen('redeem');
+          setRedeemStep('select');
+          setRedeemSelectedId(m.id);
+          setRedeemTarget({ memberId: m.id, memberName: m.name, rewardId: targetReward.id, rewardName: targetReward.name, visitsRequired: targetReward.visitsRequired, type: targetType });
+          setRedeemConfirmOpen(true);
+        } else {
+           alert("Reward tidak ditemukan.");
+        }
+      } else {
+         alert("Member tidak ditemukan.");
+      }
+    } else {
+      const m = members.find((x: any) => x.id === val || x.memberId === val || x.wa === val);
+      if (m) {
+        setRedeemSelectedId(m.id);
+        setRedeemStep('select');
+      } else {
+        alert("Barcode tidak valid atau member tidak ditemukan.");
+      }
+    }
+    setBarcodeInput('');
+  };
 
   const normalizeDigits = (s: string) => (s || '').replace(/\D/g, '');
 
@@ -567,6 +627,23 @@ function RewardManagementPage() {
                   <>
                     <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>Redeem Reward</div>
                     <div style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '6px' }}>Cari member berdasarkan Nomor WhatsApp atau Member ID.</div>
+                    
+                    <div style={{ marginTop: '26px', background: 'var(--surface-card)', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-lg)', padding: '16px 20px', boxShadow: 'var(--shadow-card)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <div style={{ flex: 'none', color: 'var(--caramel)' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h3"></path><path d="M17 4h3v3"></path><path d="M20 17v3h-3"></path><path d="M7 20H4v-3"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>
+                      </div>
+                      <form onSubmit={handleBarcodeSubmit} style={{ flex: 1 }}>
+                        <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: 'var(--mist)', textTransform: 'uppercase', marginBottom: '4px' }}>Scan Barcode (Klik di sini)</div>
+                        <input 
+                          autoFocus
+                          placeholder="Siap untuk scan..." 
+                          value={barcodeInput} 
+                          onChange={e => setBarcodeInput(e.target.value)} 
+                          style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }} 
+                        />
+                      </form>
+                    </div>
+
                     <div style={{ marginTop: '26px' }}>
                       <Input label="NOMOR WHATSAPP ATAU MEMBER ID" placeholder="Contoh: 0812-3456-7801 atau RR-01042" value={redeemSearchQuery} onChange={(e: any) => setRedeemSearchQuery(e.target.value)} />
                     </div>
