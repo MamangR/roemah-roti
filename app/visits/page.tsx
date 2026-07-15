@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import PhoneLayout from '@/components/ui/PhoneLayout';
+import { QRCodeSVG } from 'qrcode.react';
 import BottomNav from '@/components/ui/BottomNav';
 import { useMember } from '@/context/MemberContext';
 import { useRouter } from 'next/navigation';
@@ -27,6 +28,7 @@ export default function VisitsPage() {
   const [rewardName, setRewardName] = useState('Loading...');
   const [rewardImageUrl, setRewardImageUrl] = useState<string | null>(null);
   const [greeting, setGreeting] = useState('Good morning,');
+  const [showQrModal, setShowQrModal] = useState(false);
 
   React.useEffect(() => {
     const hour = new Date().getHours();
@@ -122,6 +124,8 @@ export default function VisitsPage() {
               <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 600, color: '#A67C52' }}>{member?.initials || 'U'}</div>
             </div>
 
+
+
             <div style={{ position: 'relative', borderRadius: '24px', background: '#3B2A22', color: '#F8F4EE', padding: '20px', overflow: 'hidden', boxShadow: '0 18px 40px -18px rgba(59,42,34,.55)' }}>
               <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px)', backgroundSize: '11px 11px', opacity: .6 }}></div>
               <div style={{ position: 'absolute', top: '-60px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(166,124,82,.35),transparent 68%)', pointerEvents: 'none' }}></div>
@@ -129,8 +133,28 @@ export default function VisitsPage() {
                 <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.28em', color: 'rgba(248,244,238,.72)' }}>ROEMAH ROTI</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(166,124,82,.9)', color: '#2A1E18', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2A1E18', opacity: .65 }}></span>Insider</div>
               </div>
-              <div style={{ position: 'relative', marginTop: '20px', fontSize: '21px', fontWeight: 600, letterSpacing: '-.02em' }}>{member?.firstName || 'User'}</div>
-              <div style={{ position: 'relative', marginTop: '4px', fontSize: '12.5px', color: 'rgba(248,244,238,.6)', fontVariantNumeric: 'tabular-nums' }}>{member?.id || 'RR-00000'} · Member since {member?.since || 'Unknown'}</div>
+              
+              <div style={{ position: 'relative', marginTop: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '21px', fontWeight: 600, letterSpacing: '-.02em' }}>{member?.firstName || 'User'}</div>
+                  <div style={{ marginTop: '4px', fontSize: '12.5px', color: 'rgba(248,244,238,.6)', fontVariantNumeric: 'tabular-nums' }}>{member?.id || 'RR-00000'}</div>
+                  <div style={{ marginTop: '2px', fontSize: '12px', color: 'rgba(248,244,238,.5)' }}>Member since {member?.since || 'Unknown'}</div>
+                </div>
+                
+                <div 
+                  onClick={() => setShowQrModal(true)}
+                  style={{ padding: '8px', background: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                >
+                  <QRCodeSVG 
+                    value={member?.id || ''}
+                    size={72}
+                    bgColor={"#ffffff"}
+                    fgColor={"#3B2A22"}
+                    level={"L"}
+                    includeMargin={false}
+                  />
+                </div>
+              </div>
 
               {/* Referral Code sub-section inside Membership Card */}
               <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '22px', paddingTop: '18px', borderTop: '1px solid rgba(248,244,238,.12)' }}>
@@ -320,6 +344,29 @@ export default function VisitsPage() {
       </div>
 
       {showNav && <BottomNav />}
+
+      {showQrModal && (
+        <div 
+          onClick={() => setShowQrModal(false)}
+          style={{ position: 'absolute', inset: 0, zIndex: 100, background: 'rgba(26,19,15,0.7)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', animation: 'vfade .2s ease' }}
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: '32px', padding: '36px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0 24px 60px -20px rgba(0,0,0,0.6)', transform: 'scale(1)', animation: 'vslide .3s cubic-bezier(.22,1,.36,1)' }}
+          >
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#A08A7B', letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: '24px' }}>Member Barcode</div>
+            <QRCodeSVG 
+              value={member?.id || ''}
+              size={220}
+              bgColor={"#ffffff"}
+              fgColor={"#3B2A22"}
+              level={"Q"}
+              includeMargin={false}
+            />
+            <div style={{ marginTop: '24px', fontSize: '18px', fontWeight: 600, color: '#3B2A22', letterSpacing: '.04em' }}>{member?.id || 'RR-00000'}</div>
+          </div>
+        </div>
+      )}
     </PhoneLayout>
   );
 }

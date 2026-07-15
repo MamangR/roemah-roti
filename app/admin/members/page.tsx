@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { LockedPage } from '@/components/admin/LockedPage';
+import { Suspense } from 'react';
 
 const tx = (date: string, invoice: string, total: number, visitEarned: number) => ({ date, invoice, total, visitEarned });
 
@@ -110,11 +111,17 @@ export default function MemberManagementPageWrapper() {
   if (!adminUser) return null;
   if (!hasPermission('manage_members')) return <LockedPage pageName="Member Management" />;
 
-  return <MemberManagementPage />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MemberManagementPage />
+    </Suspense>
+  );
 }
 
 function MemberManagementPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('edit');
   const { adminUser, hasPermission } = useAdminAuth();
 
   const [screen, setScreen] = useState<'search' | 'list' | 'detail' | 'edit'>('list');
@@ -131,14 +138,59 @@ function MemberManagementPage() {
         setMembers(data);
         const templates = await getPublicTemplates();
         setPublicTemplates(templates);
+
+        if (editId) {
+          const member = data.find((m: any) => m.id === editId);
+          if (member) {
+            const redeemedIds = new Set(
+              (member.rewards || [])
+                .filter((r: any) => r.redeemedAt !== null)
+                .map((r: any) => r.sourceTemplateId || (r.rewardType && r.rewardType.split('_')[0]))
+            );
+            const available = templates.filter((t: any) => !redeemedIds.has(t.id));
+            const next = available.find((t: any) => t.visitsRequired > member.visits);
+            const GOAL = next ? next.visitsRequired : (member.visits || 1);
+            setSelectedId(member.id);
+            setDraft({ ...member, goal: GOAL });
+            setScreen('edit');
+          }
+        }
       } catch (e) { console.error(e); }
     }
     fetchM();
-  }, []);
+  }, [editId]);
   const [searchQuery, setSearchQuery] = useState('');
   const [listFilter, setListFilter] = useState('all');
   const [sortKey, setSortKey] = useState('name');
   const [sortDir, setSortDir] = useState('asc');
+  
+  const [barcodeInput, setBarcodeInput] = useState('');
+  
+  const handleBarcodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const val = barcodeInput.trim();
+    if (!val) return;
+    
+    const found = members.find(m => m.id === val || m.memberId === val || m.wa === val);
+    if (found) {
+      const redeemedIds = new Set(
+        (found.rewards || [])
+          .filter((r: any) => r.redeemedAt !== null)
+          .map((r: any) => r.sourceTemplateId || (r.rewardType && r.rewardType.split('_')[0]))
+      );
+      const available = publicTemplates.filter((t: any) => !redeemedIds.has(t.id));
+      const next = available.find((t: any) => t.visitsRequired > found.visits);
+      const GOAL = next ? next.visitsRequired : (found.visits || 1);
+      
+      setSelectedId(found.id);
+      setDraft({ ...found, goal: GOAL });
+      setScreen('edit');
+      setBarcodeInput('');
+    } else {
+      alert("Member tidak ditemukan dengan barcode: " + val);
+      setBarcodeInput('');
+    }
+  };
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [cameFrom, setCameFrom] = useState<'list' | 'search'>('list');
 
@@ -329,6 +381,23 @@ function MemberManagementPage() {
                   <div style={{ flex: '1 1 50%', maxWidth: '180px' }}><Button variant="primary" onClick={() => setAddMemberOpen(true)} style={{ width: '100%', paddingLeft: '6px', paddingRight: '6px' }}>+ Tambah Member</Button></div>
                 </div>
               </div>
+
+              <div style={{ marginTop: '26px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '16px 20px', boxShadow: '0 6px 20px -20px rgba(59, 42, 34, 0.35)', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ flex: 'none', color: '#A67C52' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h3"></path><path d="M17 4h3v3"></path><path d="M20 17v3h-3"></path><path d="M7 20H4v-3"></path><line x1="4" y1="12" x2="20" y2="12"></line></svg>
+                </div>
+                <form onSubmit={handleBarcodeSubmit} style={{ flex: 1 }}>
+                  <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '4px' }}>Scan Barcode (Klik di sini)</div>
+                  <input 
+                    autoFocus
+                    placeholder="Siap untuk scan..." 
+                    value={barcodeInput} 
+                    onChange={e => setBarcodeInput(e.target.value)} 
+                    style={{ width: '100%', background: 'transparent', border: 'none', outline: 'none', fontSize: '16px', fontWeight: 600, color: '#3B2A22' }} 
+                  />
+                </form>
+              </div>
+
               <div style={{ marginTop: '22px', maxWidth: '520px' }}>
                 <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Active', label: 'Aktif' }, { value: 'Suspended', label: 'Ditangguhkan' }, { value: 'Archived', label: 'Diarsipkan' }]} value={listFilter} onChange={setListFilter} />
               </div>
@@ -432,6 +501,12 @@ function MemberManagementPage() {
               </div>
               <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Edit Member</div>
               <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{draft.memberId} · {draft.wa}</div>
+
+              {draft.hasVisitToday && (
+                <div style={{ marginTop: '16px', padding: '12px 16px', background: 'rgba(255, 193, 7, 0.15)', borderRadius: '12px', border: '1px solid #FFC107', color: '#856404', fontSize: '14px', fontWeight: 600 }}>
+                  ⚠️ Member ini sudah mendapatkan 1 visit hari ini.
+                </div>
+              )}
 
               <div style={{ marginTop: '28px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Data Pribadi</div>

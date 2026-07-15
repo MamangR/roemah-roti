@@ -105,7 +105,8 @@ export async function getMembers() {
       transactions,
       rewards: m.rewards,
       birthdayInput: m.birthdayInput,
-      rawPhone: m.rawPhone
+      rawPhone: m.rawPhone,
+      hasVisitToday: m.activities.some(a => a.type === 'visit' && a.createdAt >= new Date(new Date().setHours(0, 0, 0, 0)))
     };
   });
 }
