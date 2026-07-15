@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { LockedPage } from '@/components/admin/LockedPage';
 
 function fmtDate(iso: string) {
   if (!iso) return '';
@@ -73,8 +75,20 @@ const SegmentedToggle = ({ options, value, onChange }: any) => (
   </div>
 );
 
-export default function UpdatesManagementPage() {
+export default function UpdatesManagementPageWrapper() {
+  const { adminUser, hasPermission, loading: authLoading } = useAdminAuth();
+
+  if (authLoading) return null;
+  if (!adminUser) return null;
+  // allow all admin/cashiers to view updates
+  
+  return <UpdatesManagementPage />;
+}
+
+function UpdatesManagementPage() {
   const router = useRouter();
+  const { adminUser, hasPermission } = useAdminAuth();
+  const canManageUpdates = hasPermission('manage_updates');
   const [screen, setScreen] = useState<'list' | 'form'>('list');
   const [activeTab, setActiveTab] = useState('newMenu');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -225,9 +239,9 @@ export default function UpdatesManagementPage() {
       {sidebarOpen && (
         <div onClick={() => setSidebarOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'rgba(26,19,15,0.55)', backdropFilter: 'blur(2px)' }}>
           <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '260px', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box', boxShadow: '4px 0 40px rgba(0,0,0,0.4)' }}>
-            <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
+            <div onClick={() => router.push(adminUser?.role === 'cashier' ? '/admin/cashierdashboard' : '/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
               <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}><span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span></div>
-              <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div></div>
+              <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>{adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard'}</div></div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
               <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: 'rgba(166,124,82,.9)', color: '#2A1E18' }}>
@@ -243,13 +257,13 @@ export default function UpdatesManagementPage() {
 
       {/* Desktop Sidebar — hidden on mobile */}
       <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }} className="hidden md:flex">
-        <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
+        <div onClick={() => router.push(adminUser?.role === 'cashier' ? '/admin/cashierdashboard' : '/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
           <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
           </div>
           <div>
             <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>{adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard'}</div>
           </div>
         </div>
 
@@ -296,7 +310,7 @@ export default function UpdatesManagementPage() {
                           announcements.length + ' announcement tersimpan'
                   }</div>
                 </div>
-                <div style={{ width: '180px' }}>
+                <div style={{ width: '180px', opacity: canManageUpdates ? 1 : 0.4, pointerEvents: canManageUpdates ? 'auto' : 'none' }}>
                   <Button variant="primary" onClick={() => { setFormMode('add'); setFormType(activeTab); setDraft(emptyDraft(activeTab)); setScreen('form'); }}>+ Tambah Update</Button>
                 </div>
               </div>
@@ -330,7 +344,7 @@ export default function UpdatesManagementPage() {
                             <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: p.color }}></span>{it.status}
                           </span>
                         </div>
-                        <div style={{ display: 'flex', gap: '14px' }}>
+                        <div style={{ display: 'flex', gap: '14px', opacity: canManageUpdates ? 1 : 0.4, pointerEvents: canManageUpdates ? 'auto' : 'none' }}>
                           <span onClick={() => { setFormMode('edit'); setFormType('newMenu'); setEditingId(it.id); setDraft({ name: it.name, category: it.category, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', price: it.price || '', dateAdded: it.dateAdded, status: it.status }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
                           <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'newMenu' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
                         </div>
@@ -357,7 +371,7 @@ export default function UpdatesManagementPage() {
                             <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: p.color }}></span>{it.promoStatus}
                           </span>
                         </div>
-                        <div style={{ display: 'flex', gap: '14px' }}>
+                        <div style={{ display: 'flex', gap: '14px', opacity: canManageUpdates ? 1 : 0.4, pointerEvents: canManageUpdates ? 'auto' : 'none' }}>
                           <span onClick={() => { setFormMode('edit'); setFormType('promo'); setEditingId(it.id); setDraft({ name: it.name, shortDesc: it.shortDesc, longDesc: it.longDesc, imageUrl: it.imageUrl || '', terms: it.terms ?? [''], startDate: it.startDate, endDate: it.endDate, promoStatus: it.promoStatus }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
                           <span onClick={() => { setDeleteTarget({ id: it.id, name: it.name, type: 'promo' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
                         </div>
@@ -385,7 +399,7 @@ export default function UpdatesManagementPage() {
                           <span style={{ color: '#7A6A5F' }}>Tidak</span>
                         )}
                       </div>
-                      <div style={{ display: 'flex', gap: '14px' }}>
+                      <div style={{ display: 'flex', gap: '14px', opacity: canManageUpdates ? 1 : 0.4, pointerEvents: canManageUpdates ? 'auto' : 'none' }}>
                         <span onClick={() => { setFormMode('edit'); setFormType('announcement'); setEditingId(it.id); setDraft({ title: it.title, summary: it.summary, content: it.content, outlet: it.outlet, pinned: it.pinned, datePosted: it.datePosted }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
                         <span onClick={() => { setDeleteTarget({ id: it.id, name: it.title, type: 'announcement' }); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
                       </div>

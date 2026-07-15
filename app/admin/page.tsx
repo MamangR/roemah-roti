@@ -4,9 +4,22 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import { getDashboardStats } from './actions';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { LockedPage } from '@/components/admin/LockedPage';
 
-export default function AdminDashboardPage() {
+export default function AdminDashboardPageWrapper() {
+  const { adminUser, hasPermission, loading: authLoading } = useAdminAuth();
+
+  if (authLoading) return null;
+  if (!adminUser) return null;
+  if (!hasPermission('view_dashboard')) return <LockedPage pageName="Dashboard" />;
+
+  return <AdminDashboardPage />;
+}
+
+function AdminDashboardPage() {
   const router = useRouter();
+  const { adminUser } = useAdminAuth();
 
   const DATA = {
     today: {
@@ -258,6 +271,7 @@ export default function AdminDashboardPage() {
     { label: 'Rewards', path: '/admin/rewards', active: false },
     { label: 'Referral', path: '/admin/referrals', active: false },
     { label: 'Update', path: '/admin/updates', active: false },
+    { label: 'Settings', path: '/admin/settings', active: false },
   ];
 
   return (
@@ -281,7 +295,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div>
                   <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>Roemah Roti</div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248,244,238,.92)' }}>Dashboard Pemilik</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248,244,238,.92)' }}>{adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard Pemilik'}</div>
                 </div>
               </div>
               <button
@@ -314,8 +328,8 @@ export default function AdminDashboardPage() {
           {/* Top Row for Mobile (Title + Burger) / Left Side for Desktop */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flex: '1 1 auto', minWidth: 0, width: '100%' }}>
             {/* Logo + title */}
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Roemah Roti · Dashboard Pemilik</div>
+            <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => router.push(adminUser?.role === 'cashier' ? '/admin/cashierdashboard' : '/admin')}>
+              <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Roemah Roti · {adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard Pemilik'}</div>
               <div style={{ fontSize: '22px', letterSpacing: '-0.03em', fontWeight: 600, color: '#3B2A22', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Ringkasan Dashboard</div>
             </div>
 

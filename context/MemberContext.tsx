@@ -33,8 +33,8 @@ type MemberContextType = {
 const MemberContext = createContext<MemberContextType>({
   member: null,
   loading: true,
-  refreshMember: async () => {},
-  logout: async () => {},
+  refreshMember: async () => { },
+  logout: async () => { },
 });
 
 export const useMember = () => useContext(MemberContext);
@@ -76,7 +76,7 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
-    } catch (err) {}
+    } catch (err) { }
     memberStrRef.current = null;
     setMember(null);
     router.push('/signin');
@@ -84,18 +84,15 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchMember();
-    
-    // Poll every 3 seconds to keep UI synced without manual refresh
-    const intervalId = setInterval(() => {
-      fetchMember();
-    }, 3000);
-    
-    return () => clearInterval(intervalId);
   }, []);
 
   // Simple auth guard for internal pages
   useEffect(() => {
     if (!loading) {
+      // Admin routes have their own auth — skip member auth guard
+      const isAdminRoute = pathname.startsWith('/admin');
+      if (isAdminRoute) return;
+
       const isAuthPage = pathname === '/signin' || pathname === '/register';
       const isLandingPage = pathname === '/';
       if (!member && !isAuthPage && !isLandingPage) {

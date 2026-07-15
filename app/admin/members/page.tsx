@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAdminAuth } from '@/context/AdminAuthContext';
+import { LockedPage } from '@/components/admin/LockedPage';
 
 const tx = (date: string, invoice: string, total: number, visitEarned: number) => ({ date, invoice, total, visitEarned });
 
@@ -65,7 +67,7 @@ const VisitProgressCard = ({ visits, goal, reward, rewardImageUrl, visitsNeeded 
         <div style={{ fontSize: '14px', fontWeight: 600 }}>Visit Progress</div>
         <div style={{ fontSize: '12px', color: '#3B2A22' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{visits}</span> / {goal} visits</div>
       </div>
-      
+
       <div style={{ display: 'flex', gap: '4px', marginTop: '16px' }}>
         {Array.from({ length: segmentCount }).map((_, i) => (
           <div key={i} style={{ flex: 1, height: '12px', borderRadius: '4px', background: i < visits ? '#B98A5E' : '#F1EBE1' }}></div>
@@ -101,12 +103,26 @@ const VisitProgressCard = ({ visits, goal, reward, rewardImageUrl, visitsNeeded 
 };
 
 
-export default function MemberManagementPage() {
+export default function MemberManagementPageWrapper() {
+  const { adminUser, hasPermission, loading: authLoading } = useAdminAuth();
+
+  if (authLoading) return null;
+  if (!adminUser) return null;
+  if (!hasPermission('manage_members')) return <LockedPage pageName="Member Management" />;
+
+  return <MemberManagementPage />;
+}
+
+function MemberManagementPage() {
   const router = useRouter();
-  const [screen, setScreen] = useState<'list' | 'search' | 'detail' | 'edit'>('list');
+  const { adminUser, hasPermission } = useAdminAuth();
+
+  const [screen, setScreen] = useState<'search' | 'list' | 'detail' | 'edit'>('list');
   const [members, setMembers] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [publicTemplates, setPublicTemplates] = useState<any[]>([]);
+
 
   useEffect(() => {
     async function fetchM() {
@@ -135,7 +151,7 @@ export default function MemberManagementPage() {
   const buildDisplayMember = (m: any, onClick: any) => {
     const p = pillStyle(m.status);
     const statusLabel = m.status === 'Active' ? 'Aktif' : (m.status === 'Suspended' ? 'Ditangguhkan' : 'Diarsipkan');
-    
+
     const redeemedIds = new Set(
       (m.rewards || [])
         .filter((r: any) => r.redeemedAt !== null)
@@ -190,13 +206,13 @@ export default function MemberManagementPage() {
             onClick={e => e.stopPropagation()}
             style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '260px', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box', boxShadow: '4px 0 40px rgba(0,0,0,0.4)' }}
           >
-            <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
+            <div onClick={() => router.push(adminUser?.role === 'cashier' ? '/admin/cashierdashboard' : '/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
               <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
                 <span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
               </div>
               <div>
                 <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>{adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard'}</div>
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
@@ -223,13 +239,13 @@ export default function MemberManagementPage() {
 
       {/* Desktop Sidebar — hidden on mobile */}
       <div style={{ width: '250px', flex: 'none', background: '#3B2A22', display: 'flex', flexDirection: 'column', padding: '26px 18px', boxSizing: 'border-box' }} className="hidden md:flex">
-        <div onClick={() => router.push('/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
+        <div onClick={() => router.push(adminUser?.role === 'cashier' ? '/admin/cashierdashboard' : '/admin')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '11px', padding: '0 8px 26px', borderBottom: '1px solid rgba(248, 244, 238, 0.12)' }}>
           <div style={{ width: '38px', height: '38px', borderRadius: '12px', background: 'rgba(255,255,255,.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
             <span style={{ fontSize: '15px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
           </div>
           <div>
             <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>Dashboard</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>{adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard'}</div>
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
@@ -426,14 +442,14 @@ export default function MemberManagementPage() {
                 <SegmentedToggle options={[{ value: 'Active', label: 'Aktif' }, { value: 'Suspended', label: 'Ditangguhkan' }, { value: 'Archived', label: 'Diarsipkan' }]} value={draft.status} onChange={(v: any) => setDraft({ ...draft, status: v })} />
                 <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Koreksi Visit</div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px', opacity: hasPermission('add_visits') ? 1 : 0.6 }}>
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Visit saat ini</div>
                     <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {draft.goal}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
-                    <div onClick={() => setDraft({ ...draft, visits: Math.max(0, draft.visits - 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>−</div>
-                    <div onClick={() => setDraft({ ...draft, visits: draft.visits + 1 })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>+</div>
+                    <div onClick={() => hasPermission('add_visits') && setDraft({ ...draft, visits: Math.max(0, draft.visits - 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: hasPermission('add_visits') ? 'pointer' : 'not-allowed', background: '#FFFFFF' }}>−</div>
+                    <div onClick={() => hasPermission('add_visits') && setDraft({ ...draft, visits: draft.visits + 1 })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: hasPermission('add_visits') ? 'pointer' : 'not-allowed', background: '#FFFFFF' }}>+</div>
                   </div>
                 </div>
               </div>

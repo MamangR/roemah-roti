@@ -240,3 +240,28 @@ model ReferredFriend {
   referrer     Member   @relation("MemberToReferredFriend", fields: [referrerId], references: [id], onDelete: Cascade)
 }
 
+// ─── Admin Authentication ─────────────────────────────────────────────────────
+model AdminUser {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String                          // plaintext for hardcoded users (dev only)
+  role      String   @default("admin")      // "admin" or "cashier"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions  AdminSession[]
+}
+
+model AdminSession {
+  id          String   @id @default(cuid())
+  adminUserId String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  admin       AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+}
+
+model CashierPermission {
+  id          String   @id @default("singleton")
+  permissions Json     @default("{}")       // { "view_dashboard": false, "add_visits": true, ... }
+  updatedAt   DateTime @updatedAt
+}
+
