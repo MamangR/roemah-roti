@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { LockedPage } from '@/components/admin/LockedPage';
+import { ImageSelector } from '@/components/admin/ImageSelector';
 
 function fmtDate(iso: string) {
   if (!iso) return '';
@@ -457,7 +458,7 @@ function UpdatesManagementPage() {
                       <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang item ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
                     </div>
                     <Input label="HARGA (RUPIAH - OPSIONAL)" placeholder="Contoh: 18000" type="number" value={draft.price || ''} onChange={(e: any) => setDraft({ ...draft, price: e.target.value === '' ? '' : parseInt(e.target.value) })} />
-                    <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
+                    <ImageSelector label="THUMBNAIL IMAGE (OPSIONAL)" value={draft.imageUrl || ''} onChange={(val: string) => setDraft({ ...draft, imageUrl: val })} />
                     <Input label="TANGGAL TAYANG" type="date" value={draft.dateAdded} onChange={(e: any) => setDraft({ ...draft, dateAdded: e.target.value })} />
                     <div>
                       <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>STATUS</div>
@@ -477,7 +478,7 @@ function UpdatesManagementPage() {
                       <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>DESKRIPSI LENGKAP</div>
                       <textarea value={draft.longDesc} onChange={(e: any) => setDraft({ ...draft, longDesc: e.target.value })} placeholder="Ceritakan lebih detail tentang promo ini" rows={4} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '11px 13px', fontSize: '14px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical' }} />
                     </div>
-                    <Input label="IMAGE URL (OPSIONAL)" placeholder="https://..." value={draft.imageUrl || ''} onChange={(e: any) => setDraft({ ...draft, imageUrl: e.target.value })} />
+                    <ImageSelector label="THUMBNAIL IMAGE (OPSIONAL)" value={draft.imageUrl || ''} onChange={(val: string) => setDraft({ ...draft, imageUrl: val })} />
                     <div>
                       <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>SYARAT & KETENTUAN</div>
                       {(draft.terms ?? ['']).map((t: string, i: number) => (
