@@ -181,7 +181,7 @@ export default function RegisterPage() {
 
     <PhoneLayout>
       {step === 'form' && (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', padding: '22px 28px 26px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', padding: '22px 28px 26px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '2px', flex: 'none' }}>
             <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'var(--espresso)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--wheat)', fontWeight: 700, fontSize: '18px', letterSpacing: '-0.03em' }}>RR</div>
             <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.26em', color: 'var(--caramel)', marginTop: '10px' }}>ROEMAH ROTI</div>
@@ -198,7 +198,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <div style={{ marginTop: '20px', overflowY: 'auto', flex: 1, minHeight: 0, paddingBottom: '4px' }}>
+          <div style={{ marginTop: '20px' }}>
             <div>
               <div style={{ fontSize: 'var(--text-label)', fontWeight: 600, letterSpacing: 'var(--tracking-label)', color: 'var(--text-label)', marginBottom: '8px' }}>FULL NAME</div>
               <input
@@ -401,6 +401,8 @@ export default function RegisterPage() {
             </div>
 
           </div>
+
+          <div style={{ flex: 1 }}></div>
 
           <div style={{ flex: 'none', marginTop: '16px' }}>
             <button onClick={submitForm} disabled={!canSubmit || loading} style={{ width: '100%', margin: 0, background: 'var(--accent-primary)', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-body)', fontWeight: 600, border: 'none', cursor: canSubmit && !loading ? 'pointer' : 'default', boxShadow: 'var(--shadow-cta)', transition: 'transform .12s ease,box-shadow .12s ease,opacity .12s ease', opacity: canSubmit ? 1 : 0.45, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
