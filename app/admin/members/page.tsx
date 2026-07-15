@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 const tx = (date: string, invoice: string, total: number, visitEarned: number) => ({ date, invoice, total, visitEarned });
 
-import { getMembers, saveMember, createMemberAdmin, getSystemReward } from '../actions';
+import { getMembers, saveMember, createMemberAdmin, getPublicTemplates } from '../actions';
 
 function fmtRupiah(n: number) { return 'Rp' + n.toLocaleString('id-ID'); }
 function fmtDate(iso: string) {
@@ -57,17 +57,48 @@ const SegmentedToggle = ({ options, value, onChange }: any) => (
   </div>
 );
 
-const VisitProgressCard = ({ visits, goal, reward }: any) => (
-  <div style={{ background: '#3B2A22', borderRadius: '22px', padding: '20px', color: '#fff', position: 'relative', overflow: 'hidden' }}>
-    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: 'rgba(248, 244, 238, 0.72)', textTransform: 'uppercase' }}>Progress</div>
-    <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: 'rgba(248, 244, 238, 0.92)', marginTop: '4px' }}>{visits} / {goal}</div>
-    <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-      {Array.from({ length: goal }).map((_, i) => (
-        <div key={i} style={{ flex: 1, height: '8px', borderRadius: '4px', background: i < visits ? '#A67C52' : 'rgba(248, 244, 238, 0.12)' }}></div>
-      ))}
+const VisitProgressCard = ({ visits, goal, reward, rewardImageUrl, visitsNeeded }: any) => {
+  const segmentCount = Math.max(1, goal);
+  return (
+    <div style={{ background: '#FFFFFF', borderRadius: '22px', padding: '20px', color: '#3B2A22', position: 'relative', overflow: 'hidden', border: '1px solid #EFE8DE', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ fontSize: '14px', fontWeight: 600 }}>Visit Progress</div>
+        <div style={{ fontSize: '12px', color: '#3B2A22' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{visits}</span> / {goal} visits</div>
+      </div>
+      
+      <div style={{ display: 'flex', gap: '4px', marginTop: '16px' }}>
+        {Array.from({ length: segmentCount }).map((_, i) => (
+          <div key={i} style={{ flex: 1, height: '12px', borderRadius: '4px', background: i < visits ? '#B98A5E' : '#F1EBE1' }}></div>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: '20px' }}>
+        <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#F8F4EE', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+          {rewardImageUrl ? (
+            <img src={rewardImageUrl} alt={reward} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="1.5" />
+              <rect x="2" y="7" width="20" height="4" rx="1" />
+              <line x1="12" y1="7" x2="12" y2="22" />
+              <path d="M12 7 C12 7 9 5 8 3.5 S9.5 1.5 12 4" />
+              <path d="M12 7 C12 7 15 5 16 3.5 S14.5 1.5 12 4" />
+            </svg>
+          )}
+        </div>
+        <div>
+          <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', color: '#A08A7B', textTransform: 'uppercase' }}>NEXT REWARD</div>
+          <div style={{ fontSize: '15px', fontWeight: 600, color: '#3B2A22', marginTop: '2px' }}>{reward}</div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '18px', background: '#F8F4EE', borderRadius: '12px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ fontSize: '18px', fontWeight: 700, color: '#3B2A22' }}>{visitsNeeded}</span>
+        <span style={{ fontSize: '13px', color: '#3B2A22' }}>{visitsNeeded === 0 ? "Semua reward telah tercapai!" : "more visits until your next reward. See you soon."}</span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 
 export default function MemberManagementPage() {
@@ -75,15 +106,15 @@ export default function MemberManagementPage() {
   const [screen, setScreen] = useState<'list' | 'search' | 'detail' | 'edit'>('list');
   const [members, setMembers] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [goalConfig, setGoalConfig] = useState({ req: 10, name: 'Free Garlic Cream Cheese' });
+  const [publicTemplates, setPublicTemplates] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchM() {
       try {
         const data = await getMembers();
         setMembers(data);
-        const sys = await getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', '', 10);
-        setGoalConfig({ req: sys.visitsRequired || 10, name: sys.resolvedName });
+        const templates = await getPublicTemplates();
+        setPublicTemplates(templates);
       } catch (e) { console.error(e); }
     }
     fetchM();
@@ -104,16 +135,25 @@ export default function MemberManagementPage() {
   const buildDisplayMember = (m: any, onClick: any) => {
     const p = pillStyle(m.status);
     const statusLabel = m.status === 'Active' ? 'Aktif' : (m.status === 'Suspended' ? 'Ditangguhkan' : 'Diarsipkan');
-    const GOAL = goalConfig.req;
-    const REWARD = goalConfig.name;
-    const currentGoal = Math.floor(m.visits / GOAL) * GOAL + GOAL;
-    const progressInCurrentTier = m.visits % GOAL;
-    const visitsNeeded = GOAL - progressInCurrentTier;
+    
+    const redeemedIds = new Set(
+      (m.rewards || [])
+        .filter((r: any) => r.redeemedAt !== null)
+        .map((r: any) => r.sourceTemplateId || (r.rewardType && r.rewardType.split('_')[0]))
+    );
+    const available = publicTemplates.filter((t: any) => !redeemedIds.has(t.id));
+    const next = available.find((t: any) => t.visitsRequired > m.visits);
+
+    const GOAL = next ? next.visitsRequired : (m.visits || 1);
+    const REWARD = next ? (next.name || next.menuItem?.name || 'Loading...') : 'Semua reward telah tercapai!';
+    const REWARD_IMAGE = next ? (next.imageUrl || next.menuItem?.imageUrl || null) : null;
+    const visitsNeeded = next ? GOAL - m.visits : 0;
+
     return {
-      ...m, goal: currentGoal, reward: REWARD, initials: initials(m.name), pillBg: p.bg, pillColor: p.color,
+      ...m, goal: GOAL, reward: REWARD, rewardImageUrl: REWARD_IMAGE, visitsNeeded, initials: initials(m.name), pillBg: p.bg, pillColor: p.color,
       statusLabel,
-      spendingLabel: fmtRupiah(m.spending), joinDateLabel: fmtDate(m.joinDate), lastActivityLabel: fmtDate(m.lastActivity),
-      rewardStatusLabel: progressInCurrentTier === 0 && m.visits > 0 ? `Siap ditukar — ${REWARD}` : `${visitsNeeded} kunjungan lagi menuju ${REWARD}`,
+      spendingLabel: fmtRupiah(0), joinDateLabel: fmtDate(m.joinDate), lastActivityLabel: fmtDate(m.lastActivity),
+      rewardStatusLabel: visitsNeeded === 0 ? 'Semua reward telah tercapai!' : `${visitsNeeded} kunjungan lagi menuju ${REWARD}`,
       onClick
     };
   };
@@ -135,7 +175,7 @@ export default function MemberManagementPage() {
 
   const selM = members.find(m => m.id === selectedId);
   const selectedMember = selM ? buildDisplayMember(selM, null) : null;
-  const selectedMemberTransactions = selM ? (selM.transactions || []).map((t: any) => ({ ...t, dateLabel: fmtDate(t.date), totalLabel: fmtRupiah(t.total) })) : [];
+  const selectedMemberTransactions = selM ? (selM.transactions || []).map((t: any) => ({ ...t, dateLabel: fmtDate(t.date), totalLabel: fmtRupiah(0) })) : [];
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#FCFBF8', fontFamily: "'Inter', sans-serif", color: '#3B2A22', boxSizing: 'border-box', overflow: 'hidden' }}>
@@ -323,7 +363,7 @@ export default function MemberManagementPage() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: '18px', marginTop: '26px', alignItems: 'start' }}>
-                <VisitProgressCard visits={selectedMember!.visits} goal={selectedMember!.goal} reward={selectedMember!.reward} />
+                <VisitProgressCard visits={selectedMember!.visits} goal={selectedMember!.goal} reward={selectedMember!.reward} rewardImageUrl={selectedMember!.rewardImageUrl} visitsNeeded={selectedMember!.visitsNeeded} />
                 <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '20px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Reward Status</div>
@@ -389,7 +429,7 @@ export default function MemberManagementPage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>
                   <div>
                     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Visit saat ini</div>
-                    <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {Math.floor(draft.visits / goalConfig.req) * goalConfig.req + goalConfig.req}</div>
+                    <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {draft.goal}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <div onClick={() => setDraft({ ...draft, visits: Math.max(0, draft.visits - 1) })} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid #E0D5C6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer', background: '#FFFFFF' }}>−</div>

@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "prisma db push --accept-data-loss && next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "cron": "node local-cron.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -22,6 +23,7 @@
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
+    "node-cron": "^4.6.0",
     "qrcode-terminal": "^0.12.0",
     "qrcode.react": "^4.2.0",
     "radix-ui": "^1.6.1",

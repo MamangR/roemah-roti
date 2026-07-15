@@ -5,8 +5,6 @@ import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
 import { useMember } from '@/context/MemberContext';
 import { useRouter } from 'next/navigation';
-import { getSystemReward } from '@/app/admin/actions';
-
 type Entry = {
   id: string;
   type: 'visit' | 'earned' | 'redeemed';
@@ -37,14 +35,37 @@ export default function VisitsPage() {
   }, []);
 
   React.useEffect(() => {
-    getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', 'Selamat! Kunjungan Anda telah mencapai target.', 10)
-      .then(res => {
-        setGoal(res.visitsRequired || 10);
-        setRewardName(res.resolvedName || 'Free Garlic Cream Cheese');
-        setRewardImageUrl(res.imageUrl || null);
-      })
-      .catch(console.error);
-  }, []);
+    async function loadNextReward() {
+      if (!member) return;
+      try {
+        const res = await fetch('/api/rewards/templates');
+        if (!res.ok) return;
+        const templates = await res.json();
+        
+        const redeemedIds = new Set(
+          (member.rewards || [])
+            .filter((r: any) => r.redeemedAt !== null)
+            .map((r: any) => r.sourceTemplateId || (r.rewardType && r.rewardType.split('_')[0]))
+        );
+
+        const available = templates.filter((t: any) => !t.id.startsWith('SYSTEM_') && !redeemedIds.has(t.id));
+        const next = available.find((t: any) => t.visitsRequired > member.totalVisits);
+
+        if (next) {
+          setGoal(next.visitsRequired);
+          setRewardName(next.name || next.menuItem?.name || 'Loading...');
+          setRewardImageUrl(next.imageUrl || next.menuItem?.imageUrl || null);
+        } else {
+          setGoal(member.totalVisits || 1);
+          setRewardName('Semua reward telah tercapai!');
+          setRewardImageUrl(null);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    loadNextReward();
+  }, [member]);
 
   const enrich = (e: Entry) => {
     const monthDay = e.date.slice(0, e.date.length - 6);
@@ -139,16 +160,16 @@ export default function VisitsPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
                     <div style={{ fontSize: '14px', fontWeight: 600 }}>Visit Progress</div>
-                    <div style={{ fontSize: '12px', color: '#A08A7B' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{member?.totalVisits || 0}</span> / {Math.floor((member?.totalVisits || 0) / goal) * goal + goal} visits</div>
+                    <div style={{ fontSize: '12px', color: '#A08A7B' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{member?.totalVisits || 0}</span> / {goal} visits</div>
                   </div>
                   <div style={{ position: 'relative', marginTop: '12px', height: '10px', borderRadius: '999px', background: '#F1EBE1', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(90deg,transparent 0,transparent calc(${100 / goal}% - 1.5px),rgba(255,255,255,.9) calc(${100 / goal}% - 1.5px),rgba(255,255,255,.9) ${100 / goal}%)`, zIndex: 2 }}></div>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${((member?.totalVisits || 0) % goal) * (100 / goal)}%`, background: 'linear-gradient(90deg,#B98A5E,#A67C52)', borderRadius: '999px', zIndex: 1 }}></div>
+                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, ((member?.totalVisits || 0) / (goal || 1)) * 100)}%`, background: 'linear-gradient(90deg,#B98A5E,#A67C52)', borderRadius: '999px', zIndex: 1 }}></div>
                   </div>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px' }}>
-                <div style={{ fontSize: '12.5px', color: '#7A6A5F' }}><span style={{ fontWeight: 600, color: '#3B2A22' }}>{goal - ((member?.totalVisits || 0) % goal)} more visits</span> until your next reward: <span style={{ fontWeight: 600, color: '#3B2A22' }}>{rewardName}</span>.</div>
+                <div style={{ fontSize: '12.5px', color: '#7A6A5F' }}><span style={{ fontWeight: 600, color: '#3B2A22' }}>{Math.max(0, goal - (member?.totalVisits || 0))} more visits</span> until your next reward: <span style={{ fontWeight: 600, color: '#3B2A22' }}>{rewardName}</span>.</div>
                 <div onClick={() => setView('history')} style={{ fontSize: '12px', fontWeight: 600, color: '#A67C52', cursor: 'pointer', flex: 'none', paddingLeft: '10px' }}>View History</div>
               </div>
             </div>

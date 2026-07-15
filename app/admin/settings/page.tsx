@@ -4,21 +4,21 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const PERMISSIONS = [
-  { id: 'view_dashboard', label: 'Lihat dashboard & laporan', cashierDefault: false },
-  { id: 'manage_members', label: 'Kelola anggota', cashierDefault: false },
-  { id: 'add_visits', label: 'Tambah kunjungan', cashierDefault: true },
-  { id: 'redeem_rewards', label: 'Tukarkan reward', cashierDefault: true },
-  { id: 'manage_rewards', label: 'Buat/edit/hapus reward', cashierDefault: false },
-  { id: 'manage_referral', label: 'Kelola program referral', cashierDefault: false },
-  { id: 'manage_updates', label: 'Buat/edit/hapus update', cashierDefault: false },
-  { id: 'manage_settings', label: 'Kelola pengaturan', cashierDefault: false },
-  { id: 'manage_admins', label: 'Kelola pengguna admin', cashierDefault: false },
-  { id: 'manage_pos', label: 'Kelola integrasi POS', cashierDefault: false },
-  { id: 'manage_whatsapp', label: 'Kelola API WhatsApp', cashierDefault: false },
-  { id: 'search_members', label: 'Cari anggota', cashierDefault: true },
-  { id: 'scan_qr', label: 'Pindai QR anggota', cashierDefault: true },
-  { id: 'view_member_info', label: 'Lihat informasi anggota', cashierDefault: true },
-  { id: 'delete_member_data', label: 'Hapus data anggota', cashierDefault: false },
+  { id: 'view_dashboard', label: 'View dashboard & reports', cashierDefault: false },
+  { id: 'manage_members', label: 'Manage members', cashierDefault: false },
+  { id: 'add_visits', label: 'Add visits', cashierDefault: true },
+  { id: 'redeem_rewards', label: 'Redeem rewards', cashierDefault: true },
+  { id: 'manage_rewards', label: 'Create/edit/delete rewards', cashierDefault: false },
+  { id: 'manage_referral', label: 'Manage referral program', cashierDefault: false },
+  { id: 'manage_updates', label: 'Create/edit/delete updates', cashierDefault: false },
+  { id: 'manage_settings', label: 'Manage settings', cashierDefault: false },
+  { id: 'manage_admins', label: 'Manage admin users', cashierDefault: false },
+  { id: 'manage_pos', label: 'Manage POS integration', cashierDefault: false },
+  { id: 'manage_whatsapp', label: 'Manage WhatsApp API', cashierDefault: false },
+  { id: 'search_members', label: 'Search members', cashierDefault: true },
+  { id: 'scan_qr', label: 'Scan member QR', cashierDefault: true },
+  { id: 'view_member_info', label: 'View member info', cashierDefault: true },
+  { id: 'delete_member_data', label: 'Delete member data', cashierDefault: false },
 ];
 
 function fmtLogTime(iso: string) {
@@ -27,11 +27,11 @@ function fmtLogTime(iso: string) {
 }
 
 const SEED_SYNC_LOGS = [
-  { id: 'l1', time: '2026-07-05T08:12:00', status: 'Berhasil' },
-  { id: 'l2', time: '2026-07-05T07:57:00', status: 'Berhasil' },
-  { id: 'l3', time: '2026-07-05T07:42:00', status: 'Berhasil' },
-  { id: 'l4', time: '2026-07-05T07:27:00', status: 'Gagal, dicoba ulang' },
-  { id: 'l5', time: '2026-07-05T07:12:00', status: 'Berhasil' },
+  { id: 'l1', time: '2026-07-05T08:12:00', status: 'Success' },
+  { id: 'l2', time: '2026-07-05T07:57:00', status: 'Success' },
+  { id: 'l3', time: '2026-07-05T07:42:00', status: 'Success' },
+  { id: 'l4', time: '2026-07-05T07:27:00', status: 'Failed, retrying' },
+  { id: 'l5', time: '2026-07-05T07:12:00', status: 'Success' },
 ];
 
 const SEED_MAPPINGS = [
@@ -99,11 +99,11 @@ export default function SettingsPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', background: 'rgba(166,124,82,.9)', color: '#2A1E18' }}>
                 <div style={{ width: '15px', height: '15px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', top: '5px', left: '2px', width: '7px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div><div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div></div>
-                <span style={{ fontSize: '14px', fontWeight: 600 }}>Pengaturan</span>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
               </div>
             </div>
             <div style={{ flex: 1 }}></div>
-            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br />Masuk sebagai {role === 'owner' ? 'Owner' : 'Kasir'}</div>
+            <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff Tool · Internal Use<br />Logged in as {role === 'owner' ? 'Owner' : 'Cashier'}</div>
           </div>
         </div>
       )}
@@ -126,12 +126,12 @@ export default function SettingsPage() {
               <div style={{ position: 'absolute', top: '5px', left: '2px', width: '7px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div>
               <div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div>
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>Pengaturan</span>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
           </div>
         </div>
 
         <div style={{ flex: 1 }}></div>
-        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br />Masuk sebagai {role === 'owner' ? 'Owner' : 'Kasir'}</div>
+        <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Staff Tool · Internal Use<br />Logged in as {role === 'owner' ? 'Owner' : 'Cashier'}</div>
       </div>
 
       {/* Main content with mobile top bar */}
@@ -143,20 +143,20 @@ export default function SettingsPage() {
             <span style={{ width: '14px', height: '1.6px', background: '#E9C9A6', borderRadius: '1px', display: 'block' }} />
           </button>
           <div style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248,244,238,.55)', textTransform: 'uppercase' }}>ROEMAH ROTI</div>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Pengaturan</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(248,244,238,.92)', marginLeft: '2px' }}>Settings</div>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', boxSizing: 'border-box' }}>
           <div style={{ maxWidth: '920px', margin: '0 auto', padding: '52px 40px 70px' }}>
 
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px', flexWrap: 'wrap' }}>
               <div>
-                <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Pengaturan</div>
-                <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Izin, integrasi POS, dan API WhatsApp.</div>
+                <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Settings</div>
+                <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Permissions, integrasi POS, dan WhatsApp API.</div>
               </div>
               <div style={{ textAlign: 'right', flex: 'none' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Lihat Sebagai</div>
+                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>View As</div>
                 <div style={{ width: '220px' }}>
-                  <SegmentedToggle options={[{ value: 'owner', label: 'Owner' }, { value: 'cashier', label: 'Kasir' }]} value={role} onChange={setRole} />
+                  <SegmentedToggle options={[{ value: 'owner', label: 'Owner' }, { value: 'cashier', label: 'Cashier' }]} value={role} onChange={setRole} />
                 </div>
               </div>
             </div>
@@ -168,8 +168,8 @@ export default function SettingsPage() {
                     <div style={{ position: 'absolute', top: '-11px', left: '2px', width: '10px', height: '11px', border: '1.8px solid #7A6A5F', borderBottom: 'none', borderRadius: '6px 6px 0 0' }}></div>
                   </div>
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Hanya pemilik yang dapat mengelola pengaturan</div>
-                <div style={{ fontSize: '14px', color: '#7A6A5F', marginTop: '8px', maxWidth: '360px', lineHeight: 1.6 }}>Akun kasir tidak memiliki akses ke izin, integrasi POS, atau API WhatsApp. Beralih ke Pemilik untuk melihat atau membuat perubahan.</div>
+                <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>Only owners can manage settings</div>
+                <div style={{ fontSize: '14px', color: '#7A6A5F', marginTop: '8px', maxWidth: '360px', lineHeight: 1.6 }}>Cashier accounts do not have access to permissions, POS integration, or WhatsApp API. Switch to Owner to view or make changes.</div>
               </div>
             )}
 
@@ -178,11 +178,11 @@ export default function SettingsPage() {
                 {/* Permissions */}
                 <div style={{ marginTop: '32px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
                   <div style={{ padding: '20px 22px 16px' }}>
-                    <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>Peran & izin admin</div>
-                    <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Hanya pemilik yang dapat mengubah hal-hal yang diizinkan untuk akun kasir.</div>
+                    <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>Admin roles & permissions</div>
+                    <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Only owners can change what cashier accounts are allowed to do.</div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px 90px', gap: '10px', padding: '12px 22px', background: '#F8F4EE', fontSize: '11px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                    <div>Izin</div><div style={{ textAlign: 'center' }}>Pemilik</div><div style={{ textAlign: 'center' }}>Kasir</div>
+                    <div>Permissions</div><div style={{ textAlign: 'center' }}>Owner</div><div style={{ textAlign: 'center' }}>Cashier</div>
                   </div>
                   {PERMISSIONS.map(p => (
                     <div key={p.id} style={{ display: 'grid', gridTemplateColumns: '1fr 90px 90px', gap: '10px', padding: '13px 22px', borderTop: '1px solid #EAE1D5', alignItems: 'center', fontSize: '13.5px', color: '#4A3830' }}>
@@ -199,15 +199,15 @@ export default function SettingsPage() {
                 <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
                     <div>
-                      <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>Integrasi POS</div>
-                      <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Hubungkan point-of-sale Anda agar kunjungan dan pengeluaran tersinkronisasi secara otomatis.</div>
+                      <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>POS Integration</div>
+                      <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Connect your point-of-sale so visits and spend sync automatically.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 'none' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: posConnected ? 'rgba(122, 150, 116, 0.18)' : '#F1EBE1', color: posConnected ? '#5A6A54' : '#7A6A5F', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}>
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: posConnected ? '#5A6A54' : '#7A6A5F' }}></span>{posConnected ? 'Terhubung' : 'Terputus'}
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: posConnected ? '#5A6A54' : '#7A6A5F' }}></span>{posConnected ? 'Connected' : 'Disconnected'}
                       </span>
                       <div style={{ width: '120px' }}>
-                        <Button variant="outline" onClick={() => setPosConnected(!posConnected)}>{posConnected ? 'Putuskan' : 'Hubungkan'}</Button>
+                        <Button variant="outline" onClick={() => setPosConnected(!posConnected)}>{posConnected ? 'Disconnect' : 'Connect'}</Button>
                       </div>
                     </div>
                   </div>
@@ -215,32 +215,32 @@ export default function SettingsPage() {
                   <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Pemetaan toko / outlet</div>
+                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Store / outlet mapping</div>
                     <span onClick={() => {
                       const id = 'sm' + Date.now();
                       setStoreMappings([...storeMappings, { id, name: '', posId: '' }]);
                       setEditingMappingId(id);
                       setMappingDraft({ name: '', posId: '' });
-                    }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Tambah outlet</span>
+                    }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Add outlet</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {storeMappings.map(sm => (
                       <div key={sm.id} style={{ border: '1px solid #E6DDD0', borderRadius: '14px', padding: '12px 14px' }}>
                         {editingMappingId === sm.id ? (
                           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '10px', alignItems: 'center' }}>
-                            <input value={mappingDraft?.name || ''} onChange={(e: any) => setMappingDraft({ ...mappingDraft, name: e.target.value })} placeholder="Nama outlet" style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '9px 11px', fontSize: '13.5px', color: '#3B2A22', outline: 'none' }} />
+                            <input value={mappingDraft?.name || ''} onChange={(e: any) => setMappingDraft({ ...mappingDraft, name: e.target.value })} placeholder="Outlet name" style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '9px 11px', fontSize: '13.5px', color: '#3B2A22', outline: 'none' }} />
                             <input value={mappingDraft?.posId || ''} onChange={(e: any) => setMappingDraft({ ...mappingDraft, posId: e.target.value })} placeholder="POS ID" style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '9px 11px', fontSize: '13.5px', color: '#3B2A22', outline: 'none', fontVariantNumeric: 'tabular-nums' }} />
                             <div style={{ display: 'flex', gap: '8px' }}>
                               <span onClick={() => {
                                 if (!sm.name) setStoreMappings(storeMappings.filter(m => m.id !== sm.id));
                                 setEditingMappingId(null);
-                              }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Batal</span>
+                              }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Cancel</span>
                               <span onClick={() => {
                                 if (mappingDraft?.name) {
                                   setStoreMappings(storeMappings.map(m => m.id === sm.id ? { ...m, name: mappingDraft.name, posId: mappingDraft.posId } : m));
                                 }
                                 setEditingMappingId(null);
-                              }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Simpan</span>
+                              }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Save</span>
                             </div>
                           </div>
                         ) : (
@@ -251,37 +251,37 @@ export default function SettingsPage() {
                             </div>
                             <div style={{ display: 'flex', gap: '14px', flex: 'none' }}>
                               <span onClick={() => { setEditingMappingId(sm.id); setMappingDraft({ name: sm.name, posId: sm.posId }); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
-                              <span onClick={() => setStoreMappings(storeMappings.filter(m => m.id !== sm.id))} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
+                              <span onClick={() => setStoreMappings(storeMappings.filter(m => m.id !== sm.id))} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Delete</span>
                             </div>
                           </div>
                         )}
                       </div>
                     ))}
-                    {storeMappings.length === 0 && <div style={{ padding: '20px', textAlign: 'center', color: '#7A6A5F', fontSize: '13px' }}>Belum ada outlet yang dihubungkan.</div>}
+                    {storeMappings.length === 0 && <div style={{ padding: '20px', textAlign: 'center', color: '#7A6A5F', fontSize: '13px' }}>No outlets connected yet.</div>}
                   </div>
 
                   <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Sinkronisasi transaksi</div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Transaction sync</div>
                       <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>Real-time</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Pencocokan anggota</div>
-                      <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>Berdasarkan nomor WhatsApp</div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Member matching</div>
+                      <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px' }}>By WhatsApp number</div>
                     </div>
                   </div>
 
                   <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
-                  <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '10px' }}>Log sinkronisasi</div>
+                  <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '10px' }}>Sync logs</div>
                   <div style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid #E6DDD0', borderRadius: '14px' }}>
                     {syncLogs.map(lg => (
                       <div key={lg.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '10px 14px', borderTop: '1px solid #EAE1D5' }}>
                         <span style={{ fontSize: '12.5px', color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtLogTime(lg.time)}</span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: lg.status === 'Berhasil' ? '#5C7B5A' : '#A08A7B' }}>
-                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: lg.status === 'Berhasil' ? '#5C7B5A' : '#A08A7B' }}></span>{lg.status}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: lg.status === 'Success' ? '#5C7B5A' : '#A08A7B' }}>
+                          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: lg.status === 'Success' ? '#5C7B5A' : '#A08A7B' }}></span>{lg.status}
                         </span>
                       </div>
                     ))}
@@ -292,15 +292,15 @@ export default function SettingsPage() {
                 <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
                     <div>
-                      <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>API WhatsApp</div>
-                      <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Kelola koneksi yang digunakan untuk menjangkau anggota di WhatsApp.</div>
+                      <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>WhatsApp API</div>
+                      <div style={{ fontSize: '13px', color: '#7A6A5F', marginTop: '4px' }}>Manage the connection used to reach members on WhatsApp.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 'none' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: waConnected ? 'rgba(122, 150, 116, 0.18)' : '#F1EBE1', color: waConnected ? '#5A6A54' : '#7A6A5F', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}>
-                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: waConnected ? '#5A6A54' : '#7A6A5F' }}></span>{waConnected ? 'Terhubung' : 'Terputus'}
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: waConnected ? '#5A6A54' : '#7A6A5F' }}></span>{waConnected ? 'Connected' : 'Disconnected'}
                       </span>
                       <div style={{ width: '120px' }}>
-                        <Button variant="outline" onClick={() => setWaConnected(!waConnected)}>{waConnected ? 'Putuskan' : 'Hubungkan'}</Button>
+                        <Button variant="outline" onClick={() => setWaConnected(!waConnected)}>{waConnected ? 'Disconnect' : 'Connect'}</Button>
                       </div>
                     </div>
                   </div>
@@ -308,8 +308,8 @@ export default function SettingsPage() {
                   <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Template pesan</div>
-                    <span onClick={() => { setTemplateModalMode('add'); setActiveTemplate({ name: '', body: '' }); setTemplateModalOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Tambah template</span>
+                    <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Message templates</div>
+                    <span onClick={() => { setTemplateModalMode('add'); setActiveTemplate({ name: '', body: '' }); setTemplateModalOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Add template</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {templates.map(tp => (
@@ -319,22 +319,22 @@ export default function SettingsPage() {
                           <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '2px', maxWidth: '400px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tp.body}</div>
                         </div>
                         <div style={{ display: 'flex', gap: '14px', flex: 'none' }}>
-                          <span onClick={() => { setTemplateModalMode('edit'); setActiveTemplate(tp); setTemplateModalOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Lihat</span>
-                          <span onClick={() => setTemplates(templates.filter(t => t.id !== tp.id))} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Hapus</span>
+                          <span onClick={() => { setTemplateModalMode('edit'); setActiveTemplate(tp); setTemplateModalOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>View</span>
+                          <span onClick={() => setTemplates(templates.filter(t => t.id !== tp.id))} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Delete</span>
                         </div>
                       </div>
                     ))}
-                    {templates.length === 0 && <div style={{ padding: '20px', textAlign: 'center', color: '#7A6A5F', fontSize: '13px' }}>Belum ada template pesan.</div>}
+                    {templates.length === 0 && <div style={{ padding: '20px', textAlign: 'center', color: '#7A6A5F', fontSize: '13px' }}>No message templates yet.</div>}
                   </div>
 
                   <div style={{ height: '1px', background: '#EAE1D5', margin: '18px 0' }}></div>
 
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px' }}>
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Siapa yang dapat mengirim siaran</div>
-                      <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px', maxWidth: '400px', lineHeight: 1.5 }}>Siaran hanya dapat dikirim oleh pemilik.</div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Who can send broadcasts</div>
+                      <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '3px', maxWidth: '400px', lineHeight: 1.5 }}>Broadcasts can only be sent by owners.</div>
                     </div>
-                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '12px 16px', flex: 'none' }}>Hanya pemilik</div>
+                    <div style={{ fontSize: '14.5px', fontWeight: 600, color: '#3B2A22', background: '#F8F4EE', borderRadius: '14px', padding: '12px 16px', flex: 'none' }}>Owners only</div>
                   </div>
                 </div>
               </>
@@ -347,23 +347,23 @@ export default function SettingsPage() {
       {templateModalOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(43, 30, 24, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ width: '480px', background: '#FFFFFF', borderRadius: '22px', padding: '26px', boxShadow: '0 30px 60px -20px rgba(0, 0, 0, 0.5)' }}>
-            <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>{templateModalMode === 'add' ? 'Tambah template' : 'Edit template'}</div>
-            <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '4px' }}>{templateModalMode === 'add' ? 'Buat template pesan baru.' : 'Edit konten template pesan ini.'}</div>
+            <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22' }}>{templateModalMode === 'add' ? 'Add template' : 'Edit template'}</div>
+            <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '4px' }}>{templateModalMode === 'add' ? 'Create a new message template.' : 'Edit the content of this message template.'}</div>
 
             {templateModalMode === 'add' && (
               <div style={{ marginTop: '18px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '6px' }}>NAMA TEMPLATE</div>
-                <input value={activeTemplate.name} onChange={(e: any) => setActiveTemplate({ ...activeTemplate, name: e.target.value })} placeholder="Contoh: Reminder pembayaran" style={{ background: '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '12px 14px', fontSize: '15px', color: '#3B2A22', outline: 'none', width: '100%', boxSizing: 'border-box' }} />
+                <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '6px' }}>TEMPLATE NAME</div>
+                <input value={activeTemplate.name} onChange={(e: any) => setActiveTemplate({ ...activeTemplate, name: e.target.value })} placeholder="e.g., Payment reminder" style={{ background: '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '12px 14px', fontSize: '15px', color: '#3B2A22', outline: 'none', width: '100%', boxSizing: 'border-box' }} />
               </div>
             )}
 
             <div style={{ marginTop: '18px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Isi pesan</div>
+              <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase', marginBottom: '8px' }}>Message body</div>
               <textarea value={activeTemplate.body} onChange={(e: any) => setActiveTemplate({ ...activeTemplate, body: e.target.value })} rows={6} style={{ width: '100%', boxSizing: 'border-box', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '12px 13px', fontSize: '13.5px', fontFamily: "'Inter', sans-serif", color: '#3B2A22', background: '#FFFFFF', outline: 'none', resize: 'vertical', lineHeight: 1.5 }} />
             </div>
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '22px' }}>
-              <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setTemplateModalOpen(false)}>Batal</Button></div>
+              <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setTemplateModalOpen(false)}>Cancel</Button></div>
               <div style={{ flex: 1 }}><Button variant="primary" onClick={() => {
                 if (templateModalMode === 'add') {
                   if (activeTemplate.name) {
@@ -373,7 +373,7 @@ export default function SettingsPage() {
                   setTemplates(templates.map(t => t.id === activeTemplate.id ? { ...t, body: activeTemplate.body } : t));
                 }
                 setTemplateModalOpen(false);
-              }}>Simpan</Button></div>
+              }}>Save</Button></div>
             </div>
           </div>
         </div>

@@ -138,8 +138,6 @@ export async function saveMember(id: string, data: { name: string; wa: string; s
   await checkAdmin();
   
   const oldMember = await prisma.member.findUnique({ where: { id } });
-  const visitConfig = await getSystemReward('SYSTEM_VISIT', 'Free Garlic Cream Cheese', 'Selamat! Kunjungan Anda telah mencapai target.', 10);
-  const threshold = visitConfig.visitsRequired || 10;
 
   await prisma.member.update({
     where: { id },
@@ -161,42 +159,6 @@ export async function saveMember(id: string, data: { name: string; wa: string; s
         // Auto-approve! This adds the bonus to the referrer.
         await approveReferralAdmin(pendingReferral.id);
       }
-    }
-
-    const oldTier = Math.floor(oldMember.totalVisits / threshold);
-    const newTier = Math.floor(data.visits / threshold);
-    const rewardsEarned = newTier - oldTier;
-    
-    if (rewardsEarned > 0) {
-      await prisma.$transaction(async (tx) => {
-        for (let i = 0; i < rewardsEarned; i++) {
-          const reward = await tx.memberReward.create({
-            data: {
-              memberId: id,
-              sourceTemplateId: visitConfig.id,
-              rewardType: 'VISIT_' + threshold + '_' + Date.now() + '_' + i,
-              title: visitConfig.resolvedName,
-              type: 'Reward',
-              description: visitConfig.resolvedDesc,
-              redeemedAt: null,
-              isAvailable: true,
-              expiresAtLabel: 'Valid for ' + (visitConfig.validityDays || 30) + ' days'
-            }
-          });
-          
-          await tx.activity.create({
-            data: {
-              memberId: id,
-              memberRewardId: reward.id,
-              type: 'earned',
-              date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-              reward: visitConfig.resolvedName,
-              earnedVia: 'Visit Milestone',
-              status: 'ready'
-            }
-          });
-        }
-      });
     }
   }
 
@@ -246,6 +208,17 @@ export async function getMenuItemsAdmin() {
 export async function getRewardsAdmin() {
   await checkAdmin();
   return await prisma.rewardTemplate.findMany({ orderBy: { createdAt: 'desc' } });
+}
+
+export async function getPublicTemplates() {
+  return await prisma.rewardTemplate.findMany({
+    where: {
+      status: 'Aktif',
+      id: { not: { startsWith: 'SYSTEM_' } }
+    },
+    orderBy: { visitsRequired: 'asc' },
+    include: { menuItem: true }
+  });
 }
 
 export async function saveReward(data: { id: string, name: string | null, desc: string | null, visitsRequired: number, status: string, validityDays: number | null, menuItemId: string | null }) {
@@ -494,16 +467,11 @@ export async function rejectReferralAdmin(friendId: string) {
 }
 
 export async function handleRedemptionVisit(tx: any, memberId: string, oldVisits: number, visitsDiff: number, redeemedAt: Date) {
-  const visitConfig = await tx.rewardTemplate.findUnique({
-    where: { id: 'SYSTEM_VISIT' },
-    include: { menuItem: true }
-  });
-  const threshold = visitConfig?.visitsRequired || 10;
   const newVisits = oldVisits + visitsDiff;
 
   await tx.member.update({
     where: { id: memberId },
-    data: { totalVisits: newVisits }
+    data: { totalVisits: newVisits, status: 'Active' }
   });
 
   await tx.activity.create({
@@ -516,44 +484,5 @@ export async function handleRedemptionVisit(tx: any, memberId: string, oldVisits
       visitNo: `Visit #${newVisits}`
     }
   });
-
-  const baseForOldTier = visitsDiff < 0 ? oldVisits + (visitsDiff - 1) : oldVisits;
-  const oldTier = Math.floor(baseForOldTier / threshold);
-  const newTier = Math.floor(newVisits / threshold);
-  const rewardsEarned = newTier - oldTier;
-
-  if (rewardsEarned > 0 && visitConfig) {
-    const resolvedName = visitConfig.name || visitConfig.menuItem?.name || 'Free Garlic Cream Cheese';
-    const resolvedDesc = visitConfig.desc || visitConfig.menuItem?.shortDesc || 'Selamat! Kunjungan Anda telah mencapai target.';
-
-    for (let i = 0; i < rewardsEarned; i++) {
-      const reward = await tx.memberReward.create({
-        data: {
-          memberId,
-          sourceTemplateId: visitConfig.id,
-          rewardType: 'VISIT_' + threshold + '_' + Date.now() + '_' + i,
-          title: resolvedName,
-          type: 'Reward',
-          description: resolvedDesc,
-          redeemedAt: null,
-          isAvailable: true,
-          expiresAtLabel: 'Valid for ' + (visitConfig.validityDays || 30) + ' days'
-        }
-      });
-      
-      await tx.activity.create({
-        data: {
-          memberId,
-          memberRewardId: reward.id,
-          type: 'earned',
-          date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-          reward: resolvedName,
-          earnedVia: 'Visit Milestone',
-          status: 'ready'
-        }
-      });
-    }
-  }
 }
 
