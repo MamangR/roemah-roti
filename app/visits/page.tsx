@@ -102,6 +102,21 @@ const MEMBERSHIP_TIERS = [
   }
 ];
 
+const slideVariants = {
+  initial: (d: number) => ({
+    x: d > 0 ? 300 : d < 0 ? -300 : 0,
+    opacity: 0
+  }),
+  animate: {
+    x: 0,
+    opacity: 1
+  },
+  exit: (d: number) => ({
+    x: d > 0 ? -300 : d < 0 ? 300 : 0,
+    opacity: 0
+  })
+};
+
 // We now use member.activities instead of rawEntries
 export default function VisitsPage() {
   const router = useRouter();
@@ -265,9 +280,10 @@ export default function VisitsPage() {
             className="v-scroll"
             key={viewKey}
             custom={direction}
-            initial={(d: number) => ({ x: d > 0 ? 300 : d < 0 ? -300 : 0, opacity: 0 })}
-            animate={{ x: 0, opacity: 1 }}
-            exit={(d: number) => ({ x: d > 0 ? -300 : d < 0 ? 300 : 0, opacity: 0 })}
+            variants={slideVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             transition={{ type: 'spring', stiffness: 350, damping: 35, mass: 0.8 }}
             style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', color: '#3B2A22' }}
           >

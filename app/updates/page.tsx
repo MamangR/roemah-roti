@@ -80,6 +80,21 @@ const badgeMap: Record<string, { text: string; bg: string; color: string }> = {
   ended: { text: 'Ended', bg: '#F3F4F6', color: '#6B7280' },
 };
 
+const slideVariants = {
+  initial: (d: number) => ({
+    x: d > 0 ? 300 : d < 0 ? -300 : 0,
+    opacity: 0
+  }),
+  animate: {
+    x: 0,
+    opacity: 1
+  },
+  exit: (d: number) => ({
+    x: d > 0 ? -300 : d < 0 ? 300 : 0,
+    opacity: 0
+  })
+};
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function UpdatesPage() {
   const router = useRouter();
@@ -256,9 +271,10 @@ export default function UpdatesPage() {
         className="u-scroll" 
         key={view} 
         custom={direction}
-        initial={(d: number) => ({ x: d > 0 ? 300 : d < 0 ? -300 : 0, opacity: 0 })}
-        animate={{ x: 0, opacity: 1 }}
-        exit={(d: number) => ({ x: d > 0 ? -300 : d < 0 ? 300 : 0, opacity: 0 })}
+        variants={slideVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
         transition={{ type: 'spring', stiffness: 350, damping: 35, mass: 0.8 }}
         style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}
       >
