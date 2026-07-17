@@ -504,6 +504,13 @@ export default function VisitsPage() {
                     })}
                   </div>
                 </div>
+
+                {/* Learn More Text */}
+                <div style={{ marginTop: '56px', display: 'flex', justifyContent: 'center' }}>
+                  <div onClick={() => router.push('/membership')} style={{ color: '#000000', fontSize: '11px', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                    Learn More
+                  </div>
+                </div>
               </div>
             )}
 
