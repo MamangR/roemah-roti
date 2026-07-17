@@ -90,7 +90,7 @@ function UpdatesManagementPage() {
   const router = useRouter();
   const { adminUser, hasPermission } = useAdminAuth();
   const canManageUpdates = hasPermission('manage_updates');
-  const [screen, setScreen] = useState<'list' | 'form'>('list');
+  const [screen, setScreen] = useState<'list' | 'form' | 'sync'>('list');
   const [activeTab, setActiveTab] = useState('newMenu');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -245,9 +245,13 @@ function UpdatesManagementPage() {
               <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'rgba(248, 244, 238, 0.72)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(248, 244, 238, 0.92)', marginTop: '2px' }}>{adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard'}</div></div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
-              <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: 'rgba(166,124,82,.9)', color: '#2A1E18' }}>
+              <div onClick={() => { setScreen('list'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen !== 'sync' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen !== 'sync' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
                 <div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div>
                 <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Update</span>
+              </div>
+              <div onClick={() => { setScreen('sync'); setSidebarOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen === 'sync' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen === 'sync' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Product Sync</span>
               </div>
             </div>
             <div style={{ flex: 1 }}></div>
@@ -269,13 +273,17 @@ function UpdatesManagementPage() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
-          <div onClick={() => setScreen('list')} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: 'rgba(166,124,82,.9)', color: '#2A1E18' }}>
+          <div onClick={() => setScreen('list')} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen !== 'sync' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen !== 'sync' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
             <div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
               <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Update</span>
+          </div>
+          <div onClick={() => setScreen('sync')} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: 'pointer', background: screen === 'sync' ? 'rgba(166,124,82,.9)' : 'transparent', color: screen === 'sync' ? '#2A1E18' : 'rgba(248, 244, 238, 0.72)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Product Sync</span>
           </div>
         </div>
 
@@ -312,7 +320,13 @@ function UpdatesManagementPage() {
                   }</div>
                 </div>
                 <div style={{ width: '180px', opacity: canManageUpdates ? 1 : 0.4, pointerEvents: canManageUpdates ? 'auto' : 'none' }}>
-                  <Button variant="primary" onClick={() => { setFormMode('add'); setFormType(activeTab); setDraft(emptyDraft(activeTab)); setScreen('form'); }}>+ Tambah Update</Button>
+                  <Button variant="primary" onClick={() => { 
+                    setFormMode('add'); 
+                    const initialType = activeTab === 'newMenu' ? 'promo' : activeTab;
+                    setFormType(initialType); 
+                    setDraft(emptyDraft(initialType)); 
+                    setScreen('form'); 
+                  }}>+ Tambah Update</Button>
                 </div>
               </div>
 
@@ -431,7 +445,6 @@ function UpdatesManagementPage() {
               {formMode === 'add' && (
                 <div style={{ marginTop: '22px', maxWidth: '480px' }}>
                   <SegmentedToggle options={[
-                    { value: 'newMenu', label: 'Menu Baru' },
                     { value: 'promo', label: 'Promo' },
                     { value: 'announcement', label: 'Announcement' }
                   ]} value={formType} onChange={(v: any) => { setFormType(v); setDraft(emptyDraft(v)); }} />
@@ -577,6 +590,56 @@ function UpdatesManagementPage() {
               <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
                 <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setScreen('list')}>Batal</Button></div>
                 <div style={{ flex: 1 }}><Button variant="primary" disabled={saving} onClick={handleSave}>{saving ? 'Menyimpan...' : 'Simpan'}</Button></div>
+              </div>
+            </div>
+          )}
+
+          {screen === 'sync' && (
+            <div style={{ padding: '52px 40px 60px' }}>
+              <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', flexWrap: 'wrap', gap: '24px' }}>
+                <div>
+                  <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Product & SKU management</div>
+                  <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>Accurate POS adalah sumber utama data produk.</div>
+                </div>
+                <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <div style={{ background: '#F8F4EE', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', color: '#7A6A5F', lineHeight: 1.5 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#3B2A22', marginBottom: '4px' }}>
+                      <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#5C7B5A' }}></span>
+                      Connected to Accurate
+                    </div>
+                    <div>Last synced 2 hours ago</div>
+                    <div>5 products synced</div>
+                    <div>2 products failed to sync</div>
+                  </div>
+                  <Button variant="primary" style={{ padding: '14px 24px' }}>Sync products</Button>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '16px 20px', display: 'flex', gap: '16px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.15)', flexWrap: 'wrap' }}>
+                <input type="text" placeholder="Search by product name or SKU" style={{ flex: 1, minWidth: '250px', background: 'transparent', border: '1px solid #E6DDD0', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', outline: 'none' }} />
+                <div style={{ border: '1px solid #E6DDD0', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: '#FFFFFF', minWidth: '160px' }}>
+                  <span>Category — all</span>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '10px', padding: '14px 24px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                  <div>Product Name</div><div>SKU</div><div>Category</div><div>Price</div>
+                </div>
+                {[
+                  { name: 'Original Saltbread', sku: 'RR-BRD-001', cat: 'Bread', price: 'Rp 28.000' },
+                  { name: 'Garlic Cream Cheese Saltbread', sku: 'RR-BRD-002', cat: 'Bread', price: 'Rp 33.000' },
+                  { name: 'Fudgy Brownies', sku: 'RR-CAKE-001', cat: 'Cake', price: 'Rp 30.000' },
+                  { name: 'Kopi Roemah Roti', sku: 'RR-COF-001', cat: 'Coffee', price: 'Rp 25.000' },
+                  { name: 'Roti Baso Ayam', sku: 'RR-BRD-003', cat: 'Bread', price: 'Rp 32.000' }
+                ].map((p, i) => (
+                  <div key={i} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '10px', padding: '16px 24px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
+                    <div style={{ fontWeight: 600, color: '#3B2A22' }}>{p.name}</div>
+                    <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{p.sku}</div>
+                    <div style={{ color: '#7A6A5F' }}>{p.cat}</div>
+                    <div style={{ color: '#3B2A22', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{p.price}</div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
