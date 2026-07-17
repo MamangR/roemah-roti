@@ -220,7 +220,7 @@ function MemberManagementPage() {
     return {
       ...m, goal: GOAL, reward: REWARD, rewardImageUrl: REWARD_IMAGE, visitsNeeded, initials: initials(m.name), pillBg: p.bg, pillColor: p.color,
       statusLabel,
-      spendingLabel: fmtRupiah(0), joinDateLabel: fmtDate(m.joinDate), lastActivityLabel: fmtDate(m.lastActivity),
+      spendingLabel: fmtRupiah(m.lifetimeSpend || 0), joinDateLabel: fmtDate(m.joinDate), lastActivityLabel: fmtDate(m.lastActivity),
       rewardStatusLabel: visitsNeeded === 0 ? 'Semua reward telah tercapai!' : `${visitsNeeded} kunjungan lagi menuju ${REWARD}`,
       onClick
     };
@@ -243,7 +243,7 @@ function MemberManagementPage() {
 
   const selM = members.find(m => m.id === selectedId);
   const selectedMember = selM ? buildDisplayMember(selM, null) : null;
-  const selectedMemberTransactions = selM ? (selM.transactions || []).map((t: any) => ({ ...t, dateLabel: fmtDate(t.date), totalLabel: fmtRupiah(0) })) : [];
+  const selectedMemberTransactions = selM ? (selM.transactions || []).map((t: any) => ({ ...t, dateLabel: fmtDate(t.date), totalLabel: fmtRupiah(t.total || 0) })) : [];
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', background: '#FCFBF8', fontFamily: "'Inter', sans-serif", color: '#3B2A22', boxSizing: 'border-box', overflow: 'hidden' }}>

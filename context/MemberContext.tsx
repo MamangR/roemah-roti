@@ -15,6 +15,7 @@ export type Member = {
   since: string;
   referralCode: string;
   totalVisits: number;
+  lifetimeSpend: number;
   rewardsEarned: number;
   memberDurationLabel: string;
   activities: any[];

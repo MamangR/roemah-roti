@@ -32,6 +32,7 @@ model Member {
   since               String                            // member-since label e.g. "July 2025"
   referralCode        String   @unique
   totalVisits         Int      @default(0)
+  lifetimeSpend       Int      @default(0)
   rewardsEarned       Int      @default(0)
   memberDurationLabel String   @default("new")
   status              String   @default("Active")

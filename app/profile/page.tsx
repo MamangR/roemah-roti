@@ -9,7 +9,18 @@ import { useMember } from '@/context/MemberContext';
 export default function ProfilePage() {
   const router = useRouter();
   const { member, logout } = useMember();
-  const [view, setView] = useState<'main' | 'personal' | 'membership' | 'edit' | 'loggedOut'>('main');
+  const [view, _setView] = useState<'main' | 'personal' | 'membership' | 'edit' | 'loggedOut'>('main');
+  const setView = (newView: 'main' | 'personal' | 'membership' | 'edit' | 'loggedOut') => {
+    _setView(newView);
+    if (typeof window !== 'undefined') sessionStorage.setItem('profile_view', newView);
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedView = sessionStorage.getItem('profile_view');
+      if (savedView) _setView(savedView as any);
+    }
+  }, []);
   const [logoutSheetOpen, setLogoutSheetOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const [toastKey, setToastKey] = useState(0);

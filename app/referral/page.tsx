@@ -9,8 +9,29 @@ import { useMember } from '@/context/MemberContext';
 export default function ReferralPage() {
   const router = useRouter();
   const { member } = useMember();
-  const [view, setView] = useState<'referral' | 'friend' | 'success'>('referral');
-  const [selFriendId, setSelFriendId] = useState<string | null>(null);
+  const [view, _setView] = useState<'referral' | 'friend' | 'success'>('referral');
+  const setView = (newView: 'referral' | 'friend' | 'success') => {
+    _setView(newView);
+    if (typeof window !== 'undefined') sessionStorage.setItem('referral_view', newView);
+  };
+
+  const [selFriendId, _setSelFriendId] = useState<string | null>(null);
+  const setSelFriendId = (id: string | null) => {
+    _setSelFriendId(id);
+    if (typeof window !== 'undefined') {
+      if (id) sessionStorage.setItem('referral_selFriendId', id);
+      else sessionStorage.removeItem('referral_selFriendId');
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedView = sessionStorage.getItem('referral_view');
+      if (savedView) _setView(savedView as any);
+      const savedFriendId = sessionStorage.getItem('referral_selFriendId');
+      if (savedFriendId) _setSelFriendId(savedFriendId);
+    }
+  }, []);
   const [termsOpen, setTermsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [toastMsg, setToastMsg] = useState('');

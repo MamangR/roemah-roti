@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
 import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
+import PageTransition from '@/components/ui/PageTransition';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtDateDisplay(iso: string) {
@@ -81,11 +83,69 @@ const badgeMap: Record<string, { text: string; bg: string; color: string }> = {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function UpdatesPage() {
   const router = useRouter();
-  const [view, setView] = useState<'updates' | 'newMenuDetail' | 'promoDetail' | 'announcementDetail'>('updates');
-  const [tab, setTab] = useState<'newMenu' | 'promo' | 'announcements'>('newMenu');
-  const [selNewMenuId, setSelNewMenuId] = useState<string | null>(null);
-  const [selPromoId, setSelPromoId] = useState<string | null>(null);
-  const [selAnnouncementId, setSelAnnouncementId] = useState<string | null>(null);
+  const [view, _setView] = useState<'updates' | 'newMenuDetail' | 'promoDetail' | 'announcementDetail'>('updates');
+  const [direction, setDirection] = useState(0);
+
+  const setView = (newView: 'updates' | 'newMenuDetail' | 'promoDetail' | 'announcementDetail') => {
+    const depth: Record<string, number> = { updates: 0, newMenuDetail: 1, promoDetail: 1, announcementDetail: 1 };
+    const currentDepth = depth[view] || 0;
+    const newDepth = depth[newView] || 0;
+    setDirection(newDepth > currentDepth ? 1 : newDepth < currentDepth ? -1 : 0);
+    _setView(newView);
+    if (typeof window !== 'undefined') sessionStorage.setItem('updates_view', newView);
+  };
+  
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedView = sessionStorage.getItem('updates_view');
+      if (savedView) _setView(savedView as any);
+      
+      const savedTab = sessionStorage.getItem('updates_tab');
+      if (savedTab) _setTab(savedTab as any);
+      
+      const savedNewMenu = sessionStorage.getItem('updates_newMenuId');
+      if (savedNewMenu) _setSelNewMenuId(savedNewMenu);
+      
+      const savedPromo = sessionStorage.getItem('updates_promoId');
+      if (savedPromo) _setSelPromoId(savedPromo);
+      
+      const savedAnnouncement = sessionStorage.getItem('updates_announcementId');
+      if (savedAnnouncement) _setSelAnnouncementId(savedAnnouncement);
+    }
+  }, []);
+  
+  const [tab, _setTab] = useState<'newMenu' | 'promo' | 'announcements'>('newMenu');
+  const setTab = (t: 'newMenu' | 'promo' | 'announcements') => {
+    _setTab(t);
+    if (typeof window !== 'undefined') sessionStorage.setItem('updates_tab', t);
+  };
+  
+  const [selNewMenuId, _setSelNewMenuId] = useState<string | null>(null);
+  const setSelNewMenuId = (id: string | null) => {
+    _setSelNewMenuId(id);
+    if (typeof window !== 'undefined') {
+      if (id) sessionStorage.setItem('updates_newMenuId', id);
+      else sessionStorage.removeItem('updates_newMenuId');
+    }
+  };
+  
+  const [selPromoId, _setSelPromoId] = useState<string | null>(null);
+  const setSelPromoId = (id: string | null) => {
+    _setSelPromoId(id);
+    if (typeof window !== 'undefined') {
+      if (id) sessionStorage.setItem('updates_promoId', id);
+      else sessionStorage.removeItem('updates_promoId');
+    }
+  };
+  
+  const [selAnnouncementId, _setSelAnnouncementId] = useState<string | null>(null);
+  const setSelAnnouncementId = (id: string | null) => {
+    _setSelAnnouncementId(id);
+    if (typeof window !== 'undefined') {
+      if (id) sessionStorage.setItem('updates_announcementId', id);
+      else sessionStorage.removeItem('updates_announcementId');
+    }
+  };
 
   // ─── DB State ──────────────────────────────────────────────────────────────
   const [rawNewMenu, setRawNewMenu] = useState<any[]>([]);
@@ -189,11 +249,22 @@ export default function UpdatesPage() {
 
   return (
     <PhoneLayout>
+      <PageTransition>
       <style>{`@keyframes skpulse { 0%,100%{opacity:1} 50%{opacity:.45} } @keyframes uslide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} } @keyframes ufade { from{opacity:0} to{opacity:1} } @keyframes slowflash { 0%,100%{opacity:0.6} 50%{opacity:1} }`}</style>
-      <div className="u-scroll" key={view} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'uslide .3s cubic-bezier(.22,1,.36,1)' }}>
+      <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+      <motion.div 
+        className="u-scroll" 
+        key={view} 
+        custom={direction}
+        initial={(d: number) => ({ x: d > 0 ? 300 : d < 0 ? -300 : 0, opacity: 0 })}
+        animate={{ x: 0, opacity: 1 }}
+        exit={(d: number) => ({ x: d > 0 ? -300 : d < 0 ? 300 : 0, opacity: 0 })}
+        transition={{ type: 'spring', stiffness: 350, damping: 35, mass: 0.8 }}
+        style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto' }}
+      >
 
         {view === 'updates' && (
-          <div style={{ padding: '8px 20px 40px' }}>
+          <div style={{ padding: '8px 20px 120px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Updates</div>
@@ -345,7 +416,7 @@ export default function UpdatesPage() {
 
         {/* ============ NEW MENU DETAIL ============ */}
         {view === 'newMenuDetail' && selItem && (
-          <div style={{ paddingBottom: '60px' }}>
+          <div style={{ paddingBottom: '120px' }}>
             <div style={{ position: 'relative', height: '230px', overflow: 'hidden' }}>
               {selItem.imageUrl ? (
                 <img src={selItem.imageUrl} alt={selItem.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -370,7 +441,7 @@ export default function UpdatesPage() {
 
         {/* ============ PROMO DETAIL ============ */}
         {view === 'promoDetail' && selPromo && (
-          <div style={{ padding: '8px 22px 60px' }}>
+          <div style={{ padding: '8px 22px 120px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Promo</div>
@@ -404,7 +475,7 @@ export default function UpdatesPage() {
 
         {/* ============ ANNOUNCEMENT DETAIL ============ */}
         {view === 'announcementDetail' && selAnnouncement && (
-          <div style={{ padding: '8px 22px 60px' }}>
+          <div style={{ padding: '8px 22px 120px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div onClick={() => setView('updates')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Announcement</div>
@@ -422,7 +493,9 @@ export default function UpdatesPage() {
             <div className="sm:w-[90%] sm:mx-auto" style={{ marginTop: '16px', padding: '16px 18px', background: '#F4EFE6', border: '1px solid #EAE3D6', borderRadius: '16px', fontSize: '14.5px', lineHeight: 1.6, color: '#5C4F45', whiteSpace: 'pre-wrap', boxShadow: 'inset 0 2px 10px rgba(59,42,34,0.01)' }}>{selAnnouncement.long}</div>
           </div>
         )}
-      </div>
+      </motion.div>
+      </AnimatePresence>
+      </PageTransition>
 
       {view === 'updates' && <BottomNav />}
     </PhoneLayout>

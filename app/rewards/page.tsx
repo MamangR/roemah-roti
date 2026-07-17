@@ -23,8 +23,29 @@ type RewardItem = {
 
 export default function RewardsPage() {
   const { member, refreshMember } = useMember();
-  const [view, setView] = useState<'list' | 'detail' | 'history'>('list');
-  const [sel, setSel] = useState<string | null>(null);
+  const [view, _setView] = useState<'list' | 'detail' | 'history'>('list');
+  const setView = (newView: 'list' | 'detail' | 'history') => {
+    _setView(newView);
+    if (typeof window !== 'undefined') sessionStorage.setItem('rewards_view', newView);
+  };
+
+  const [sel, _setSel] = useState<string | null>(null);
+  const setSel = (id: string | null) => {
+    _setSel(id);
+    if (typeof window !== 'undefined') {
+      if (id) sessionStorage.setItem('rewards_sel', id);
+      else sessionStorage.removeItem('rewards_sel');
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedView = sessionStorage.getItem('rewards_view');
+      if (savedView) _setView(savedView as any);
+      const savedSel = sessionStorage.getItem('rewards_sel');
+      if (savedSel) _setSel(savedSel);
+    }
+  }, []);
   const [qrOpen, setQrOpen] = useState(false);
   const [justRedeemed, setJustRedeemed] = useState(false);
   const [demoStatus, setDemoStatus] = useState<Record<string, 'locked' | 'unlocked' | 'redeemed' | 'expired'>>({});

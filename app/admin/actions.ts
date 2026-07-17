@@ -100,6 +100,7 @@ export async function getMembers() {
       status: m.status,
       visits: m.totalVisits,
       spending: transactions.reduce((sum, t) => sum + t.total, 0),
+      lifetimeSpend: m.lifetimeSpend,
       joinDate: m.createdAt.toISOString().slice(0, 10),
       lastActivity,
       transactions,
