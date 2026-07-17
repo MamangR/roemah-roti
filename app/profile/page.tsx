@@ -5,6 +5,7 @@ import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
 import { useRouter } from 'next/navigation';
 import { useMember } from '@/context/MemberContext';
+import PageTransition from '@/components/ui/PageTransition';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -50,7 +51,13 @@ export default function ProfilePage() {
   const initials = member?.initials || 'U';
   const since = member?.since || 'Unknown';
   const memberId = member?.id || 'RR-00000';
-  const tier = 'Insider';
+  
+  const lifetimeSpend = member?.lifetimeSpend || 0;
+  let tier = 'Insider';
+  if (lifetimeSpend >= 5000000) tier = 'Inner Circle';
+  else if (lifetimeSpend >= 2000000) tier = 'Neighbor';
+  else if (lifetimeSpend >= 1000000) tier = 'Familiar';
+
   const outlet = 'Greenville Outlet';
   const referral = member?.referralCode || 'RR-CODE';
 
@@ -67,7 +74,8 @@ export default function ProfilePage() {
 
   return (
     <PhoneLayout>
-      <div className="p-scroll" key={view} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'pslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
+      <PageTransition>
+        <div className="p-scroll" key={view} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'pslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
 
         {/* ============ PROFILE MAIN ============ */}
         {view === 'main' && (
@@ -204,6 +212,9 @@ export default function ProfilePage() {
           {toastMsg}
         </div>
       )}
+      </PageTransition>
+
+      <BottomNav />
     </PhoneLayout>
   );
 }

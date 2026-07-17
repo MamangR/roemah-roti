@@ -290,7 +290,7 @@ export default function VisitsPage() {
                   <div style={{ position: 'absolute', top: '-60px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(166,124,82,.35),transparent 68%)', pointerEvents: 'none' }}></div>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.28em', color: 'rgba(248,244,238,.72)' }}>ROEMAH ROTI</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(166,124,82,.9)', color: '#2A1E18', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2A1E18', opacity: .65 }}></span>Insider</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(166,124,82,.9)', color: '#2A1E18', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2A1E18', opacity: .65 }}></span>{currentTier}</div>
                   </div>
 
                   <div style={{ position: 'relative', marginTop: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

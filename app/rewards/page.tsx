@@ -5,6 +5,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
 import { useMember } from '@/context/MemberContext';
+import PageTransition from '@/components/ui/PageTransition';
 
 type RewardItem = {
   id: string;
@@ -288,7 +289,8 @@ export default function RewardsPage() {
 
   return (
     <PhoneLayout>
-      <div className="rr-scroll" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'rrslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
+      <PageTransition>
+        <div className="rr-scroll" style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflowY: 'auto', animation: 'rrslide .3s cubic-bezier(.22,1,.36,1)', color: '#3B2A22' }}>
 
         {view === 'list' && (
           <div style={{ padding: '6px 20px 96px' }}>
@@ -480,6 +482,8 @@ export default function RewardsPage() {
           </div>
         </div>
       )}
+      </PageTransition>
+      <BottomNav />
     </PhoneLayout>
   );
 }
