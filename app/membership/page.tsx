@@ -109,7 +109,7 @@ export default function MembershipPage() {
           </motion.div>
         </AnimatePresence>
       </PageTransition>
-      <BottomNav current="visits" />
+      <BottomNav />
     </PhoneLayout>
   );
 }
