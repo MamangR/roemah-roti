@@ -103,7 +103,7 @@ export default function RewardsPage() {
     return map[status] || map.locked;
   };
 
-  const statusLabelText = (status: string) => ({ locked: 'Locked', unlocked: 'Unlocked', redeemed: 'Redeemed', expired: 'Expired' }[status] || 'Locked');
+  const statusLabelText = (status: string) => ({ locked: t('rewards.status_locked', 'Locked'), unlocked: t('rewards.status_unlocked', 'Unlocked'), redeemed: t('rewards.status_redeemed', 'Redeemed'), expired: t('rewards.status_expired', 'Expired') }[status] || t('rewards.status_locked', 'Locked'));
   const reqTone = (status: string) => ({ locked: ['#C9B7A6', '#A08A7B'], unlocked: ['#A67C52', '#A67C52'], redeemed: ['#5C7B5A', '#5C7B5A'], expired: ['#CBB0A6', '#B08E82'] }[status] as [string, string]);
 
   const enrich = (r: RewardItem) => {
@@ -111,7 +111,7 @@ export default function RewardsPage() {
     const isUnlocked = status === 'unlocked', isLocked = status === 'locked', isRedeemed = status === 'redeemed', isExpired = status === 'expired';
     const tone = reqTone(status);
     const reqText = isLocked ? r.need : (isRedeemed ? ('Redeemed on ' + (r.redeemedDate || 'Jun 2, 2026')) : (isExpired ? 'No longer available' : (r.progress || 'Ready to redeem')));
-    const footerLabel = isLocked ? 'PROGRESS' : (isRedeemed ? 'REDEEMED' : (isExpired ? 'EXPIRED' : 'EXPIRATION DATE'));
+    const footerLabel = isLocked ? t('rewards.label_progress', 'PROGRESS') : (isRedeemed ? t('rewards.label_redeemed', 'REDEEMED') : (isExpired ? t('rewards.label_expired', 'EXPIRED') : t('rewards.label_expiration', 'EXPIRATION DATE')));
     const footerValue = isLocked ? (r.progress || '') : (isRedeemed ? (r.redeemedDate || '') : (r.expirationDate || 'Dec 31, 2026'));
 
     return {
@@ -459,8 +459,8 @@ export default function RewardsPage() {
               {history.length === 0 && (
                 <div style={{ marginTop: '70px', textAlign: 'center', padding: '0 30px' }}>
                   <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#F1EBE1', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', color: '#C4B6A9' }}>◷</div>
-                  <div style={{ fontSize: '16px', fontWeight: 600, marginTop: '18px' }}>No redemptions yet</div>
-                  <div style={{ fontSize: '13px', lineHeight: 1.55, color: '#8A7A6E', marginTop: '6px' }}>Rewards you redeem in store will appear here.</div>
+                  <div style={{ fontSize: '16px', fontWeight: 600, marginTop: '18px' }}>{t('rewards.empty_history_title', 'No redemptions yet')}</div>
+                  <div style={{ fontSize: '13px', lineHeight: 1.55, color: '#8A7A6E', marginTop: '6px' }}>{t('rewards.empty_history_desc', 'Rewards you redeem in store will appear here.')}</div>
                 </div>
               )}
             </div>

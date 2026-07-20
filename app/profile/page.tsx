@@ -3,14 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
+import { useUiText } from '@/context/UiTextContext';
 import { useRouter } from 'next/navigation';
 import { useMember } from '@/context/MemberContext';
 import PageTransition from '@/components/ui/PageTransition';
-import { useUiText } from '@/context/UiTextContext';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { member, logout } = useMember();
+  const { member, logout, refreshMember } = useMember();
   const { t } = useUiText();
   const [view, _setView] = useState<'main' | 'personal' | 'membership' | 'edit' | 'loggedOut'>('main');
   const setView = (newView: 'main' | 'personal' | 'membership' | 'edit' | 'loggedOut') => {
@@ -108,12 +108,12 @@ export default function ProfilePage() {
                 <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z"></path></svg>
                 </div>
-                <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>Edit Profile</div>
+                <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>{t('profile.btn_edit_profile', 'Edit Profile')}</div>
                 <div style={{ fontSize: '16px', color: '#C4B6A9' }}>›</div>
               </div>
             </div>
 
-            <div onClick={() => setLogoutSheetOpen(true)} style={{ marginTop: '16px', textAlign: 'center', padding: '15px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#8A7A6E' }}>Logout</div>
+            <div onClick={() => setLogoutSheetOpen(true)} style={{ marginTop: '16px', textAlign: 'center', padding: '15px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, color: '#8A7A6E' }}>{t('auth.btn_logout', 'Logout')}</div>
           </div>
         )}
 
@@ -125,10 +125,10 @@ export default function ProfilePage() {
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Personal Information</div>
             </div>
             <div style={{ marginTop: '22px', background: '#F8F4EE', borderRadius: '18px', padding: '6px 20px', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Full Name</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{profile.name}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Phone Number</span><span style={{ fontSize: '13.5px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{profile.phone}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Email</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{profile.email}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Date of Birth</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{profile.dob}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_full_name', 'Full Name')}</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{profile.name}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_phone', 'Phone Number')}</span><span style={{ fontSize: '13.5px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{profile.phone}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_email', 'Email')}</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{profile.email}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_dob', 'Date of Birth')}</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{profile.dob}</span></div>
             </div>
           </div>
         )}
@@ -141,11 +141,11 @@ export default function ProfilePage() {
               <div style={{ fontSize: '16px', fontWeight: 600 }}>Membership Information</div>
             </div>
             <div style={{ marginTop: '22px', background: '#F8F4EE', borderRadius: '18px', padding: '6px 20px', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Member ID</span><span style={{ fontSize: '13.5px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{memberId}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Membership Tier</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{tier}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Member Since</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{since}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Home Outlet</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{outlet}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>Referral Code</span><span style={{ fontSize: '13.5px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', letterSpacing: '.03em' }}>{referral}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_member_id', 'Member ID')}</span><span style={{ fontSize: '13.5px', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{memberId}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_tier', 'Membership Tier')}</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{tier}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_member_since', 'Member Since')}</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{since}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #EFE6DA' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_home_outlet', 'Home Outlet')}</span><span style={{ fontSize: '13.5px', fontWeight: 600 }}>{outlet}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0' }}><span style={{ fontSize: '13px', color: '#A08A7B' }}>{t('profile.label_referral_code', 'Referral Code')}</span><span style={{ fontSize: '13.5px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', letterSpacing: '.03em' }}>{referral}</span></div>
             </div>
           </div>
         )}
@@ -155,7 +155,7 @@ export default function ProfilePage() {
           <div style={{ padding: '8px 22px 60px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div onClick={() => setView('main')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
-              <div style={{ fontSize: '16px', fontWeight: 600 }}>Edit Profile</div>
+              <div style={{ fontSize: '16px', fontWeight: 600 }}>{t('profile.btn_edit_profile', 'Edit Profile')}</div>
             </div>
 
             <div style={{ marginTop: '22px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -177,7 +177,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div onClick={saveProfile} style={{ marginTop: '26px', textAlign: 'center', background: '#A67C52', color: '#FFFCF7', padding: '16px', borderRadius: '16px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>Save Changes</div>
+            <div onClick={saveProfile} style={{ marginTop: '26px', textAlign: 'center', background: '#A67C52', color: '#FFFCF7', padding: '16px', borderRadius: '16px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>{t('profile.btn_save_changes', 'Save Changes')}</div>
           </div>
         )}
 
@@ -185,9 +185,9 @@ export default function ProfilePage() {
         {view === 'loggedOut' && (
           <div style={{ minHeight: '766px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '30px', boxSizing: 'border-box', textAlign: 'center' }}>
             <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: '#A67C52' }}>RR</div>
-            <div style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '20px' }}>You've been logged out</div>
-            <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px' }}>See you soon.</div>
-            <div onClick={() => router.push('/signin')} style={{ marginTop: '26px', width: '100%', boxSizing: 'border-box', background: '#A67C52', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: '16px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>Log In Again</div>
+            <div style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '20px' }}>{t('auth.logged_out_title', 'You\'ve been logged out')}</div>
+            <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px' }}>{t('auth.logged_out_desc', 'See you soon.')}</div>
+            <div onClick={() => router.push('/signin')} style={{ marginTop: '26px', width: '100%', boxSizing: 'border-box', background: '#A67C52', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: '16px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>{t('auth.btn_login_again', 'Log In Again')}</div>
           </div>
         )}
 
@@ -201,10 +201,10 @@ export default function ProfilePage() {
           <div onClick={() => setLogoutSheetOpen(false)} style={{ position: 'absolute', inset: 0, zIndex: 20, background: 'rgba(43,30,24,.5)', animation: 'pfade .2s ease' }}></div>
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 21, background: '#FCFBF8', borderRadius: '24px 24px 0 0', padding: '10px 20px 30px', boxShadow: '0 -20px 50px -20px rgba(0,0,0,.3)', animation: 'psheetup .32s cubic-bezier(.22,1,.36,1)' }}>
             <div style={{ width: '36px', height: '4px', borderRadius: '2px', background: '#E0D5C6', margin: '6px auto 18px' }}></div>
-            <div style={{ fontSize: '15px', fontWeight: 600, textAlign: 'center' }}>Log out of your Roemah Roti account?</div>
-            <div style={{ fontSize: '12.5px', color: '#8A7A6E', textAlign: 'center', marginTop: '6px' }}>You can log back in anytime.</div>
-            <div onClick={confirmLogout} style={{ marginTop: '22px', textAlign: 'center', background: '#3B2A22', color: '#F8F4EE', padding: '15px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer' }}>Log Out</div>
-            <div onClick={() => setLogoutSheetOpen(false)} style={{ marginTop: '10px', textAlign: 'center', border: '1px solid #E0D5C6', padding: '15px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer' }}>Cancel</div>
+            <div style={{ fontSize: '15px', fontWeight: 600, textAlign: 'center' }}>{t('auth.logout_sheet_title', 'Log out of your Roemah Roti account?')}</div>
+            <div style={{ fontSize: '12.5px', color: '#8A7A6E', textAlign: 'center', marginTop: '6px' }}>{t('auth.logout_sheet_desc', 'You can log back in anytime.')}</div>
+            <div onClick={confirmLogout} style={{ marginTop: '22px', textAlign: 'center', background: '#3B2A22', color: '#F8F4EE', padding: '15px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer' }}>{t('auth.btn_logout', 'Log Out')}</div>
+            <div onClick={() => setLogoutSheetOpen(false)} style={{ marginTop: '10px', textAlign: 'center', border: '1px solid #E0D5C6', padding: '15px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer' }}>{t('auth.btn_cancel', 'Cancel')}</div>
           </div>
         </>
       )}

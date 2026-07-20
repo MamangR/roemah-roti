@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import { useMember } from '@/context/MemberContext';
 import { Eye, EyeOff } from 'lucide-react';
+import { useUiText } from '@/context/UiTextContext';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -12,6 +13,7 @@ const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 export default function RegisterPage() {
   const router = useRouter();
   const { refreshMember } = useMember();
+  const { t } = useUiText();
   const [step, setStep] = useState<'form' | 'otp' | 'handoff'>('form');
 
   const [name, setName] = useState('');
@@ -188,8 +190,8 @@ export default function RegisterPage() {
           </div>
 
           <div style={{ marginTop: '20px', flex: 'none' }}>
-            <div style={{ fontSize: 'var(--text-display)', fontWeight: 600, letterSpacing: 'var(--tracking-display)' }}>Create your account</div>
-            <div style={{ fontSize: '14px', lineHeight: 1.55, color: 'var(--text-label)', marginTop: '7px' }}>Join Roemah Roti Insider membership.</div>
+            <div style={{ fontSize: 'var(--text-display)', fontWeight: 600, letterSpacing: 'var(--tracking-display)' }}>{t('auth.register_title', 'Create your account')}</div>
+            <div style={{ fontSize: '14px', lineHeight: 1.55, color: 'var(--text-label)', marginTop: '7px' }}>{t('auth.register_subtitle', 'Join Roemah Roti Insider membership.')}</div>
           </div>
 
           {error && (
@@ -409,7 +411,7 @@ export default function RegisterPage() {
               {loading ? (
                 <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid rgba(255,252,247,.35)', borderTopColor: '#FFFCF7', animation: 'rr-spin .7s linear infinite' }}></div>
               ) : (
-                <span>Register</span>
+                <span>{t('auth.btn_create_account', 'Register')}</span>
               )}
             </button>
 

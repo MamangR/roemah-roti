@@ -22,19 +22,19 @@ type Entry = {
   ref?: string;
 };
 
-const MEMBERSHIP_TIERS = [
+const getMembershipTiers = (t: any) => [
   {
     id: 'insider',
     name: 'Insider',
     emoji: '🥐',
     minSpend: 0,
     maxSpend: 999999,
-    description: 'Your first step into the Roemah.',
-    birthdayReward: { title: 'Birthday Treat', desc: 'A little something to mark your day.', tag: 'Your first' },
+    description: t('visits.tier_insider_desc', 'Your first step into the Roemah.'),
+    birthdayReward: { title: t('visits.tier_insider_bday_title', 'Birthday Treat'), desc: t('visits.tier_insider_bday_desc', 'A little something to mark your day.'), tag: t('visits.tier_insider_bday_tag', 'Your first') },
     newPerks: [
-      { name: 'Welcome Treat — free Americano', tag: 'New · one-time' },
-      { name: 'Visit Reward Access', tag: 'New' },
-      { name: 'Member-only updates', tag: 'New' }
+      { name: t('visits.tier_insider_perk1', 'Welcome Treat — free Americano'), tag: t('visits.tier_insider_perk1_tag', 'New · one-time') },
+      { name: t('visits.tier_insider_perk2', 'Visit Reward Access'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_insider_perk3', 'Member-only updates'), tag: t('visits.tag_new', 'New') }
     ]
   },
   {
@@ -43,15 +43,15 @@ const MEMBERSHIP_TIERS = [
     emoji: '☕',
     minSpend: 1000000,
     maxSpend: 1999999,
-    description: "You're becoming part of our morning routine.",
-    birthdayReward: { title: 'Birthday Celebration', desc: 'Replaces your Birthday Treat with something a little bigger.', tag: 'Replaces earlier' },
+    description: t('visits.tier_familiar_desc', "You're becoming part of our morning routine."),
+    birthdayReward: { title: t('visits.tier_familiar_bday_title', 'Birthday Celebration'), desc: t('visits.tier_familiar_bday_desc', 'Replaces your Birthday Treat with something a little bigger.'), tag: t('visits.tier_familiar_bday_tag', 'Replaces earlier') },
     newPerks: [
-      { name: 'Early Menu Drop Access', tag: 'New' },
-      { name: 'Special Reward & Promo Access', tag: 'New' }
+      { name: t('visits.tier_familiar_perk1', 'Early Menu Drop Access'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_familiar_perk2', 'Special Reward & Promo Access'), tag: t('visits.tag_new', 'New') }
     ],
     carriedPerks: [
-      { name: 'Visit Reward Access', tag: 'Carried over' },
-      { name: 'Member-only updates', tag: 'Carried over' }
+      { name: t('visits.tier_insider_perk2', 'Visit Reward Access'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_insider_perk3', 'Member-only updates'), tag: t('visits.tag_carried', 'Carried over') }
     ]
   },
   {
@@ -60,19 +60,19 @@ const MEMBERSHIP_TIERS = [
     emoji: '🏡',
     minSpend: 2000000,
     maxSpend: 4999999,
-    description: "You're our neighbor.",
-    birthdayReward: { title: 'Birthday Surprise', desc: 'Carried from Familiar — your birthday reward stays enhanced.', tag: 'Same as Familiar' },
+    description: t('visits.tier_neighbor_desc', "You're our neighbor."),
+    birthdayReward: { title: t('visits.tier_neighbor_bday_title', 'Birthday Surprise'), desc: t('visits.tier_neighbor_bday_desc', 'Carried from Familiar — your birthday reward stays enhanced.'), tag: t('visits.tier_neighbor_bday_tag', 'Same as Familiar') },
     newPerks: [
-      { name: 'First Batch Alert', tag: 'New' },
-      { name: 'Neighbor Day', tag: 'New' },
-      { name: 'Menu Testing Access', tag: 'New' },
-      { name: 'Mystery Reward Unlock', tag: 'New' }
+      { name: t('visits.tier_neighbor_perk1', 'First Batch Alert'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_neighbor_perk2', 'Neighbor Day'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_neighbor_perk3', 'Menu Testing Access'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_neighbor_perk4', 'Mystery Reward Unlock'), tag: t('visits.tag_new', 'New') }
     ],
     carriedPerks: [
-      { name: 'Visit Reward Access', tag: 'Carried over' },
-      { name: 'Member-only updates', tag: 'Carried over' },
-      { name: 'Early Menu Drop Access', tag: 'Carried over' },
-      { name: 'Special Reward & Promo Access', tag: 'Carried over' }
+      { name: t('visits.tier_insider_perk2', 'Visit Reward Access'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_insider_perk3', 'Member-only updates'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_familiar_perk1', 'Early Menu Drop Access'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_familiar_perk2', 'Special Reward & Promo Access'), tag: t('visits.tag_carried', 'Carried over') }
     ]
   },
   {
@@ -81,24 +81,24 @@ const MEMBERSHIP_TIERS = [
     emoji: '🤍',
     minSpend: 5000000,
     maxSpend: Infinity,
-    description: "You're part of the Roemah.",
-    birthdayReward: { title: 'Curated Birthday Box', desc: 'Replaces every earlier birthday reward — the full box.', tag: 'Replaces all' },
+    description: t('visits.tier_inner_circle_desc', "You're part of the Roemah."),
+    birthdayReward: { title: t('visits.tier_inner_circle_bday_title', 'Curated Birthday Box'), desc: t('visits.tier_inner_circle_bday_desc', 'Replaces every earlier birthday reward — the full box.'), tag: t('visits.tier_inner_circle_bday_tag', 'Replaces all') },
     newPerks: [
-      { name: 'Private First Taste', tag: 'New' },
-      { name: 'Monthly Treat', tag: 'New' },
-      { name: 'Invite-only Experiences', tag: 'New' },
-      { name: 'Anniversary Gift', tag: 'New' },
-      { name: 'Secret Menu Access', tag: 'New' }
+      { name: t('visits.tier_inner_circle_perk1', 'Private First Taste'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_inner_circle_perk2', 'Monthly Treat'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_inner_circle_perk3', 'Invite-only Experiences'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_inner_circle_perk4', 'Anniversary Gift'), tag: t('visits.tag_new', 'New') },
+      { name: t('visits.tier_inner_circle_perk5', 'Secret Menu Access'), tag: t('visits.tag_new', 'New') }
     ],
     carriedPerks: [
-      { name: 'Visit Reward Access', tag: 'Carried over' },
-      { name: 'Member-only updates', tag: 'Carried over' },
-      { name: 'Early Menu Drop Access', tag: 'Carried over' },
-      { name: 'Special Reward & Promo Access', tag: 'Carried over' },
-      { name: 'First Batch Alert', tag: 'Carried over' },
-      { name: 'Neighbor Day', tag: 'Carried over' },
-      { name: 'Menu Testing Access', tag: 'Carried over' },
-      { name: 'Mystery Reward Unlock', tag: 'Carried over' }
+      { name: t('visits.tier_insider_perk2', 'Visit Reward Access'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_insider_perk3', 'Member-only updates'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_familiar_perk1', 'Early Menu Drop Access'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_familiar_perk2', 'Special Reward & Promo Access'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_neighbor_perk1', 'First Batch Alert'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_neighbor_perk2', 'Neighbor Day'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_neighbor_perk3', 'Menu Testing Access'), tag: t('visits.tag_carried', 'Carried over') },
+      { name: t('visits.tier_neighbor_perk4', 'Mystery Reward Unlock'), tag: t('visits.tag_carried', 'Carried over') }
     ]
   }
 ];
@@ -123,6 +123,7 @@ export default function VisitsPage() {
   const router = useRouter();
   const { member } = useMember();
   const { t } = useUiText();
+  const MEMBERSHIP_TIERS = React.useMemo(() => getMembershipTiers(t), [t]);
   const [view, _setView] = useState<'dashboard' | 'history' | 'detail' | 'roadmap' | 'tier_detail'>('dashboard');
   const [direction, setDirection] = useState(0);
 
@@ -557,7 +558,7 @@ export default function VisitsPage() {
 
                       {/* NEW AT TIER */}
                       <div style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '24px', padding: '20px', boxShadow: '0 8px 20px -12px rgba(59,42,34,.1)' }}>
-                        <div style={{ fontSize: '15px', fontWeight: 600, color: '#3B2A22' }}>New at {tier.name}</div>
+                        <div style={{ fontSize: '15px', fontWeight: 600, color: '#3B2A22' }}>{t('visits.tier_new_at', 'New at')} {tier.name}</div>
                         <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column' }}>
                           {tier.newPerks.map((p, i) => (
                             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: i < tier.newPerks.length - 1 ? '1px solid #EFE8DE' : 'none' }}>
@@ -638,8 +639,8 @@ export default function VisitsPage() {
                   {entriesEmpty && (
                     <div style={{ marginTop: '60px', textAlign: 'center', padding: '0 30px' }}>
                       <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#F1EBE1', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', color: '#C4B6A9' }}>◷</div>
-                      <div style={{ fontSize: '16px', fontWeight: 600, marginTop: '18px' }}>No visits recorded yet</div>
-                      <div style={{ fontSize: '13px', lineHeight: 1.55, color: '#8A7A6E', marginTop: '6px' }}>Your first visit will show up here.</div>
+                      <div style={{ fontSize: '16px', fontWeight: 600, marginTop: '18px' }}>{t('visits.empty_history_title', 'No visits recorded yet')}</div>
+                      <div style={{ fontSize: '13px', lineHeight: 1.55, color: '#8A7A6E', marginTop: '6px' }}>{t('visits.empty_history_desc', 'Your first visit will show up here.')}</div>
                     </div>
                   )}
                 </div>
@@ -754,7 +755,10 @@ export default function VisitsPage() {
                 level={"Q"}
                 includeMargin={false}
               />
-              <div style={{ marginTop: '24px', fontSize: '18px', fontWeight: 600, color: '#3B2A22', letterSpacing: '.04em' }}>{member?.id || 'RR-00000'}</div>
+              <div style={{ marginTop: '16px', fontSize: '13.5px', color: '#7A6A5F', textAlign: 'center', lineHeight: 1.5, maxWidth: '240px' }}>
+                {t('visits.barcode_instruction', 'Scan this barcode at the cashier to earn points and claim rewards.')}
+              </div>
+              <div style={{ marginTop: '16px', fontSize: '18px', fontWeight: 600, color: '#3B2A22', letterSpacing: '.04em' }}>{member?.id || 'RR-00000'}</div>
             </motion.div>
           </motion.div>
         )}

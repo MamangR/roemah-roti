@@ -6,6 +6,7 @@ import BottomNav from '@/components/ui/BottomNav';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import PageTransition from '@/components/ui/PageTransition';
+import { useUiText } from '@/context/UiTextContext';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmtDateDisplay(iso: string) {
@@ -98,6 +99,7 @@ const slideVariants = {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function UpdatesPage() {
   const router = useRouter();
+  const { t } = useUiText();
   const [view, _setView] = useState<'updates' | 'newMenuDetail' | 'promoDetail' | 'announcementDetail'>('updates');
   const [direction, setDirection] = useState(0);
 
@@ -283,16 +285,16 @@ export default function UpdatesPage() {
           <div style={{ padding: '8px 20px 120px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
-              <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Updates</div>
+              <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>{t('updates.page_title', 'Updates')}</div>
             </div>
-            <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px', marginLeft: '2px' }}>Things worth knowing at Roemah Roti.</div>
+            <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px', marginLeft: '2px' }}>{t('updates.page_subtitle', 'Things worth knowing at Roemah Roti.')}</div>
 
             {/* segmented toggle */}
             <div style={{ position: 'relative', marginTop: '20px', background: '#F1EBE1', borderRadius: '14px', padding: '4px', display: 'flex' }}>
               <div style={{ position: 'absolute', top: '4px', bottom: '4px', left: '4px', width: 'calc(33.333% - 4px)', background: '#fff', borderRadius: '11px', boxShadow: '0 4px 12px -4px rgba(59,42,34,.25)', transform: `translateX(${tabIndex * 100}%)`, transition: 'transform .32s cubic-bezier(.22,1,.36,1)' }}></div>
-              <div onClick={() => setTab('newMenu')} style={{ position: 'relative', flex: 1, textAlign: 'center', padding: '10px 4px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', color: tab === 'newMenu' ? tabActive : tabIdle, zIndex: 1, transition: 'color .2s ease' }}>New Menu</div>
-              <div onClick={() => setTab('promo')} style={{ position: 'relative', flex: 1, textAlign: 'center', padding: '10px 4px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', color: tab === 'promo' ? tabActive : tabIdle, zIndex: 1, transition: 'color .2s ease' }}>Promo</div>
-              <div onClick={() => setTab('announcements')} style={{ position: 'relative', flex: 1, textAlign: 'center', padding: '10px 4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', color: tab === 'announcements' ? tabActive : tabIdle, zIndex: 1, transition: 'color .2s ease' }}>Announcements</div>
+              <div onClick={() => setTab('newMenu')} style={{ position: 'relative', flex: 1, textAlign: 'center', padding: '10px 4px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', color: tab === 'newMenu' ? tabActive : tabIdle, zIndex: 1, transition: 'color .2s ease' }}>{t('updates.tab_new_menu', 'New Menu')}</div>
+              <div onClick={() => setTab('promo')} style={{ position: 'relative', flex: 1, textAlign: 'center', padding: '10px 4px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer', color: tab === 'promo' ? tabActive : tabIdle, zIndex: 1, transition: 'color .2s ease' }}>{t('updates.tab_promos', 'Promos')}</div>
+              <div onClick={() => setTab('announcements')} style={{ position: 'relative', flex: 1, textAlign: 'center', padding: '10px 4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', color: tab === 'announcements' ? tabActive : tabIdle, zIndex: 1, transition: 'color .2s ease' }}>{t('updates.tab_announcements', 'Announcements')}</div>
             </div>
 
             {/* New Menu tab */}
@@ -324,8 +326,8 @@ export default function UpdatesPage() {
                 {!loading && newMenu.length === 0 && (
                   <div style={{ marginTop: '20px', textAlign: 'center', padding: '30px 20px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px' }}>
                     <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#F1EBE1', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', color: '#C4B6A9' }}>◷</div>
-                    <div style={{ fontSize: '14.5px', fontWeight: 600, marginTop: '14px' }}>No new items yet</div>
-                    <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: '#8A7A6E', marginTop: '5px' }}>Check back soon.</div>
+                    <div style={{ fontSize: '14.5px', fontWeight: 600, marginTop: '14px' }}>{t('updates.empty_new_menu_title', 'No new items yet')}</div>
+                    <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: '#8A7A6E', marginTop: '5px' }}>{t('updates.empty_new_menu_desc', 'Check back soon.')}</div>
                   </div>
                 )}
               </div>
@@ -378,8 +380,8 @@ export default function UpdatesPage() {
                 ))}
                 {!loading && promos.length === 0 && (
                   <div style={{ marginTop: '20px', textAlign: 'center', padding: '30px 20px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '20px' }}>
-                    <div style={{ fontSize: '14.5px', fontWeight: 600 }}>No promos right now</div>
-                    <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: '#8A7A6E', marginTop: '5px' }}>Check back soon.</div>
+                    <div style={{ fontSize: '14.5px', fontWeight: 600 }}>{t('updates.empty_promo_title', 'No promos right now')}</div>
+                    <div style={{ fontSize: '12.5px', lineHeight: 1.5, color: '#8A7A6E', marginTop: '5px' }}>{t('updates.empty_promo_desc', 'Check back soon.')}</div>
                   </div>
                 )}
               </div>

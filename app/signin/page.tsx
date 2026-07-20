@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import PhoneLayout from '@/components/ui/PhoneLayout';
 import { useMember } from '@/context/MemberContext';
 import { Eye, EyeOff } from 'lucide-react';
+import { useUiText } from '@/context/UiTextContext';
 
 export default function LoginPage() {
   const router = useRouter();
   const { refreshMember } = useMember();
+  const { t } = useUiText();
   const [method, setMethod] = useState<'whatsapp' | 'memberId'>('whatsapp');
   const [auth, setAuth] = useState<'otp' | 'password'>('otp');
 
@@ -107,13 +109,13 @@ export default function LoginPage() {
           <div style={{ width: '60px', height: '60px', borderRadius: '20px', background: '#3B2A22', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 12px 26px -12px rgba(59,42,34,.6)' }}>
             <span style={{ fontSize: '22px', fontWeight: 700, color: '#E9C9A6', letterSpacing: '-.02em' }}>RR</span>
           </div>
-          <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.26em', color: '#A67C52', marginTop: '14px' }}>ROEMAH ROTI</div>
+          <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.26em', color: '#A67C52', marginTop: '14px' }}>{t('auth.brand', 'ROEMAH ROTI')}</div>
         </div>
 
         <div style={{ marginTop: '30px' }}>
-          <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-.03em' }}>{otpStep ? 'Verify WhatsApp' : 'Welcome back'}</div>
+          <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-.03em' }}>{otpStep ? t('auth.verify_title', 'Verify WhatsApp') : t('auth.signin_title', 'Welcome back')}</div>
           <div style={{ fontSize: '14px', lineHeight: 1.55, color: '#8A7A6E', marginTop: '7px' }}>
-            {otpStep ? `Enter the 6-digit code sent to ${phone}` : 'Access your Roemah Roti Insider membership.'}
+            {otpStep ? `${t('auth.verify_subtitle', 'Enter the 6-digit code sent to')} ${phone}` : t('auth.signin_subtitle', 'Access your Roemah Roti Insider membership.')}
           </div>
         </div>
 
@@ -227,7 +229,7 @@ export default function LoginPage() {
             </div>
 
             <button onClick={() => router.push('/register')} style={{ width: '100%', textAlign: 'center', padding: '15px', border: '1px solid #E0D5C6', background: 'transparent', borderRadius: '15px', fontSize: '14px', fontWeight: 600, color: '#3B2A22', cursor: 'pointer' }}>
-              Become a Member
+              {t('auth.btn_create_account', 'Become a Member')}
             </button>
           </>
         )}

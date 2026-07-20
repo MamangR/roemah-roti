@@ -10,6 +10,75 @@ import { LogOut, Type, ChevronDown, ChevronRight, RotateCcw, Search, Check, Sett
 // ─── Text field definitions grouped by page ──────────────────────────────────
 const TEXT_GROUPS = [
   {
+    id: 'landing',
+    label: 'Landing Page',
+    description: 'The main promotional homepage.',
+    fields: [
+      { key: 'landing.nav_benefits', label: 'Nav: Benefits' },
+      { key: 'landing.nav_how_it_works', label: 'Nav: How it works' },
+      { key: 'landing.nav_join', label: 'Nav: Join now' },
+      { key: 'landing.logo_text', label: 'Logo Text' },
+      { key: 'landing.logo_sub', label: 'Logo Subtitle' },
+      { key: 'landing.hero_tag', label: 'Hero Tag' },
+      { key: 'landing.hero_title_1', label: 'Hero Title 1' },
+      { key: 'landing.hero_title_em', label: 'Hero Title Highlighted' },
+      { key: 'landing.hero_title_2', label: 'Hero Title 2' },
+      { key: 'landing.hero_desc', label: 'Hero Description' },
+      { key: 'landing.hero_btn_primary', label: 'Hero Primary CTA' },
+      { key: 'landing.hero_btn_secondary', label: 'Hero Secondary CTA' },
+      { key: 'landing.social_proof_count', label: 'Social Proof Count' },
+      { key: 'landing.social_proof_text', label: 'Social Proof Text' },
+      { key: 'landing.benefits_label', label: 'Benefits Section Label' },
+      { key: 'landing.benefits_title_1', label: 'Benefits Title 1' },
+      { key: 'landing.benefits_title_2', label: 'Benefits Title 2' },
+      { key: 'landing.benefits_sub', label: 'Benefits Subtitle' },
+      { key: 'landing.benefit_1_title', label: 'Benefit 1 Title' },
+      { key: 'landing.benefit_1_desc', label: 'Benefit 1 Description' },
+      { key: 'landing.benefit_2_title', label: 'Benefit 2 Title' },
+      { key: 'landing.benefit_2_desc', label: 'Benefit 2 Description' },
+      { key: 'landing.benefit_3_title', label: 'Benefit 3 Title' },
+      { key: 'landing.benefit_3_desc', label: 'Benefit 3 Description' },
+      { key: 'landing.benefit_4_title', label: 'Benefit 4 Title' },
+      { key: 'landing.benefit_4_desc', label: 'Benefit 4 Description' },
+      { key: 'landing.how_label', label: 'How It Works Label' },
+      { key: 'landing.how_title', label: 'How It Works Title' },
+      { key: 'landing.how_sub', label: 'How It Works Subtitle' },
+      { key: 'landing.how_step1_title', label: 'Step 1 Title' },
+      { key: 'landing.how_step1_desc', label: 'Step 1 Description' },
+      { key: 'landing.how_step2_title', label: 'Step 2 Title' },
+      { key: 'landing.how_step2_desc', label: 'Step 2 Description' },
+      { key: 'landing.how_step3_title', label: 'Step 3 Title' },
+      { key: 'landing.how_step3_desc', label: 'Step 3 Description' },
+      { key: 'landing.testi_label', label: 'Testimonials Label' },
+      { key: 'landing.testi_title_1', label: 'Testimonials Title 1' },
+      { key: 'landing.testi_title_2', label: 'Testimonials Title 2' },
+      { key: 'landing.testi_sub', label: 'Testimonials Subtitle' },
+      { key: 'landing.testi_stat1_num', label: 'Stat 1 Value' },
+      { key: 'landing.testi_stat1_label', label: 'Stat 1 Label' },
+      { key: 'landing.testi_stat2_num', label: 'Stat 2 Value' },
+      { key: 'landing.testi_stat2_label', label: 'Stat 2 Label' },
+      { key: 'landing.testi_stat3_num', label: 'Stat 3 Value' },
+      { key: 'landing.testi_stat3_label', label: 'Stat 3 Label' },
+      { key: 'landing.testi_1_name', label: 'Testimonial 1 Name' },
+      { key: 'landing.testi_1_role', label: 'Testimonial 1 Role' },
+      { key: 'landing.testi_1_quote', label: 'Testimonial 1 Quote' },
+      { key: 'landing.testi_2_name', label: 'Testimonial 2 Name' },
+      { key: 'landing.testi_2_role', label: 'Testimonial 2 Role' },
+      { key: 'landing.testi_2_quote', label: 'Testimonial 2 Quote' },
+      { key: 'landing.cta_title_1', label: 'Bottom CTA Title 1' },
+      { key: 'landing.cta_title_2', label: 'Bottom CTA Title 2' },
+      { key: 'landing.cta_sub', label: 'Bottom CTA Subtitle' },
+      { key: 'landing.cta_btn', label: 'Bottom CTA Button' },
+      { key: 'landing.footer_text', label: 'Footer Copyright Text' },
+      { key: 'landing.footer_link_1', label: 'Footer Link 1' },
+      { key: 'landing.footer_url_1', label: 'Footer Link 1 URL' },
+      { key: 'landing.footer_link_2', label: 'Footer Link 2' },
+      { key: 'landing.footer_url_2', label: 'Footer Link 2 URL' },
+      { key: 'landing.footer_link_3', label: 'Footer Link 3' },
+      { key: 'landing.footer_url_3', label: 'Footer Link 3 URL' },
+    ]
+  },
+  {
     id: 'visits',
     label: 'Visits / Dashboard',
     description: 'Main customer dashboard — greetings, labels, and CTAs.',
@@ -50,6 +119,19 @@ const TEXT_GROUPS = [
     ]
   },
   {
+    id: 'updates',
+    label: 'Updates',
+    description: 'Updates page — titles, filters, and empty states.',
+    fields: [
+      { key: 'updates.page_title', label: 'Page heading' },
+      { key: 'updates.filter_all', label: 'Filter: All' },
+      { key: 'updates.filter_news', label: 'Filter: News' },
+      { key: 'updates.filter_promos', label: 'Filter: Promos' },
+      { key: 'updates.empty_title', label: 'Empty State Title' },
+      { key: 'updates.empty_desc', label: 'Empty State Description' },
+    ]
+  },
+  {
     id: 'referral',
     label: 'Referral',
     description: 'Referral program — page titles, labels, and instructions.',
@@ -68,8 +150,19 @@ const TEXT_GROUPS = [
     label: 'Profile',
     description: 'Profile page — menu item labels.',
     fields: [
-      { key: 'profile.personal_info', label: 'Personal info menu item' },
-      { key: 'profile.membership_details', label: 'Membership details menu item' },
+      { key: 'profile.personal_info', label: 'Personal info item' },
+      { key: 'profile.membership_details', label: 'Membership details item' },
+      { key: 'profile.btn_edit_profile', label: 'Edit Profile item' },
+      { key: 'profile.btn_save_changes', label: 'Save Changes button' },
+      { key: 'profile.label_full_name', label: 'Full Name label' },
+      { key: 'profile.label_phone', label: 'Phone Number label' },
+      { key: 'profile.label_email', label: 'Email label' },
+      { key: 'profile.label_dob', label: 'Date of Birth label' },
+      { key: 'profile.label_member_id', label: 'Member ID label' },
+      { key: 'profile.label_tier', label: 'Tier label' },
+      { key: 'profile.label_member_since', label: 'Member Since label' },
+      { key: 'profile.label_home_outlet', label: 'Home Outlet label' },
+      { key: 'profile.label_referral_code', label: 'Referral Code label' },
     ]
   },
   {
@@ -81,6 +174,34 @@ const TEXT_GROUPS = [
       { key: 'membership.page_title', label: 'Page heading' },
       { key: 'membership.page_subtitle', label: 'Page intro text' },
       { key: 'membership.tier_note', label: 'Bottom tier permanence note' },
+    ]
+  },
+  {
+    id: 'auth',
+    label: 'Authentication',
+    description: 'Login and registration screens.',
+    fields: [
+      { key: 'auth.welcome_back', label: 'Sign-in Title' },
+      { key: 'auth.signin_subtitle', label: 'Sign-in Subtitle' },
+      { key: 'auth.email_label', label: 'Email Field Label' },
+      { key: 'auth.password_label', label: 'Password Field Label' },
+      { key: 'auth.btn_signin', label: 'Sign-in Button' },
+      { key: 'auth.register_prompt', label: 'Register Prompt Text' },
+      { key: 'auth.register_link', label: 'Register Link Text' },
+      { key: 'auth.register_title', label: 'Register Title' },
+      { key: 'auth.register_subtitle', label: 'Register Subtitle' },
+      { key: 'auth.name_label', label: 'Name Field Label' },
+      { key: 'auth.phone_label', label: 'Phone Field Label' },
+      { key: 'auth.btn_register', label: 'Register Button' },
+      { key: 'auth.signin_prompt', label: 'Sign-in Prompt Text' },
+      { key: 'auth.signin_link', label: 'Sign-in Link Text' },
+      { key: 'auth.btn_logout', label: 'Logout Button' },
+      { key: 'auth.logged_out_title', label: 'Logged Out Title' },
+      { key: 'auth.logged_out_desc', label: 'Logged Out Description' },
+      { key: 'auth.btn_login_again', label: 'Login Again Button' },
+      { key: 'auth.logout_sheet_title', label: 'Logout Confirmation Title' },
+      { key: 'auth.logout_sheet_desc', label: 'Logout Confirmation Desc' },
+      { key: 'auth.btn_cancel', label: 'Cancel Button' },
     ]
   },
 ];
@@ -107,8 +228,9 @@ function EditUiPage() {
   const [savedOverrides, setSavedOverrides] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [resetModalOpen, setResetModalOpen] = useState(false);
   const [saveToast, setSaveToast] = useState<string | null>(null);
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['visits']));
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
 
   // Load overrides from API
@@ -198,6 +320,33 @@ function EditUiPage() {
     setTimeout(() => setSaveToast(null), 2500);
   };
 
+  const resetAllToDefault = async () => {
+    setSaving(true);
+    try {
+      const payload: Record<string, string> = {};
+      for (const key of Object.keys(savedOverrides)) {
+        payload[key] = '';
+      }
+      const res = await fetch('/api/admin/ui-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ overrides: payload }),
+      });
+
+      if (res.ok) {
+        setOverrides({});
+        setSavedOverrides({});
+        setSaveToast('All fields reset to default');
+      } else {
+        setSaveToast('Failed to reset');
+      }
+    } catch {
+      setSaveToast('Error resetting fields');
+    }
+    setSaving(false);
+    setTimeout(() => setSaveToast(null), 2500);
+  };
+
   // Filter fields by search
   const filteredGroups = TEXT_GROUPS.map(group => ({
     ...group,
@@ -213,7 +362,7 @@ function EditUiPage() {
   // ─── Sidebar navigation items ──────────────────────────────────────────────
   const sidebarItems = [
     { label: 'Settings', icon: <Settings size={15} />, active: false, onClick: () => router.push('/admin/settings') },
-    { label: 'Edit UI', icon: <Type size={15} />, active: true, onClick: () => {} },
+    { label: 'Edit UI', icon: <Type size={15} />, active: true, onClick: () => { } },
   ];
 
   const renderSidebar = (isMobile: boolean) => (
@@ -290,6 +439,18 @@ function EditUiPage() {
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#A67C52' }}></span>{customizedCount} customized
                   </span>
                 )}
+                <div
+                  onClick={() => setResetModalOpen(true)}
+                  style={{
+                    padding: '10px 12px', borderRadius: '14px', cursor: 'pointer',
+                    background: '#F8F4EE', color: '#7A6A5F', border: '1px solid #EFE8DE',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all .2s ease'
+                  }}
+                  title="Reset all to default"
+                >
+                  <RotateCcw size={18} />
+                </div>
                 <div
                   onClick={hasChanges && !saving ? saveAll : undefined}
                   style={{
@@ -383,21 +544,43 @@ function EditUiPage() {
                               </div>
                             )}
                           </div>
-                          <input
-                            type="text"
-                            value={currentValue}
-                            onChange={(e) => handleChange(field.key, e.target.value)}
-                            placeholder={defaultValue}
-                            style={{
-                              width: '100%', boxSizing: 'border-box',
-                              background: customized ? '#FFFDF8' : '#FFFFFF',
-                              border: `1px solid ${customized ? '#E9C9A6' : '#E6DDD0'}`,
-                              borderRadius: '12px',
-                              padding: '11px 13px', fontSize: '13.5px', color: '#3B2A22',
-                              outline: 'none',
-                              transition: 'border-color .15s ease',
-                            }}
-                          />
+                          {defaultValue.length > 50 ? (
+                            <textarea
+                              value={currentValue}
+                              onChange={(e) => handleChange(field.key, e.target.value)}
+                              placeholder={defaultValue}
+                              rows={3}
+                              style={{
+                                width: '100%', boxSizing: 'border-box',
+                                background: customized ? '#FFFDF8' : '#FFFFFF',
+                                border: `1px solid ${customized ? '#E9C9A6' : '#E6DDD0'}`,
+                                borderRadius: '12px',
+                                padding: '11px 13px', fontSize: '13.5px', color: '#3B2A22',
+                                outline: 'none',
+                                transition: 'border-color .15s ease',
+                                resize: 'vertical',
+                                minHeight: '70px',
+                                fontFamily: 'inherit',
+                                lineHeight: '1.4'
+                              }}
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              value={currentValue}
+                              onChange={(e) => handleChange(field.key, e.target.value)}
+                              placeholder={defaultValue}
+                              style={{
+                                width: '100%', boxSizing: 'border-box',
+                                background: customized ? '#FFFDF8' : '#FFFFFF',
+                                border: `1px solid ${customized ? '#E9C9A6' : '#E6DDD0'}`,
+                                borderRadius: '12px',
+                                padding: '11px 13px', fontSize: '13.5px', color: '#3B2A22',
+                                outline: 'none',
+                                transition: 'border-color .15s ease',
+                              }}
+                            />
+                          )}
                           <div style={{ fontSize: '11px', color: '#A08A7B', marginTop: '5px' }}>
                             Default: <span style={{ fontWeight: 500, color: '#8A7A6E' }}>{defaultValue}</span>
                           </div>
@@ -443,6 +626,24 @@ function EditUiPage() {
               </div>
               <div style={{ flex: 1 }}>
                 <div onClick={() => { setLogoutModalOpen(false); logout(); }} style={{ padding: '10px 16px', borderRadius: '14px', fontSize: '13px', fontWeight: 600, textAlign: 'center', cursor: 'pointer', background: '#A67C52', color: '#fff', boxShadow: '0 14px 26px -14px rgba(166, 124, 82, 0.9)' }}>Sign Out</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset modal */}
+      {resetModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(43, 30, 24, 0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div style={{ width: '380px', background: '#FFFFFF', borderRadius: '22px', padding: '26px', boxShadow: '0 30px 60px -20px rgba(0, 0, 0, 0.5)' }}>
+            <div style={{ fontSize: '18px', fontWeight: 600, color: '#3B2A22', textAlign: 'center' }}>Reset all to default?</div>
+            <div style={{ fontSize: '13.5px', color: '#7A6A5F', textAlign: 'center', marginTop: '12px' }}>This will remove all your customizations and restore the original text across the entire app. This action cannot be undone.</div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '26px' }}>
+              <div style={{ flex: 1 }}>
+                <div onClick={() => setResetModalOpen(false)} style={{ padding: '10px 16px', borderRadius: '14px', fontSize: '13px', fontWeight: 600, textAlign: 'center', cursor: 'pointer', background: 'transparent', color: '#3B2A22', border: '1px solid #E0D5C6' }}>Cancel</div>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div onClick={() => { setResetModalOpen(false); resetAllToDefault(); }} style={{ padding: '10px 16px', borderRadius: '14px', fontSize: '13px', fontWeight: 600, textAlign: 'center', cursor: 'pointer', background: '#FF6B6B', color: '#fff', boxShadow: '0 14px 26px -14px rgba(255, 107, 107, 0.7)' }}>Yes, reset all</div>
               </div>
             </div>
           </div>
