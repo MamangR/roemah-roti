@@ -66,7 +66,7 @@ function RewardManagementPage() {
   const router = useRouter();
   const { adminUser, hasPermission } = useAdminAuth();
   const canManageRewards = hasPermission('manage_rewards');
-  const [screen, setScreen] = useState<'list' | 'form' | 'redeem' | 'history'>('list');
+  const [screen, setScreen] = useState<'list' | 'form' | 'redeem' | 'history' | 'birthday_config'>('list');
   const [rewards, setRewards] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
@@ -220,7 +220,7 @@ function RewardManagementPage() {
 
   const filteredRewards = rewards.filter(r => {
     const matchStatus = listFilter === 'all' || r.status === listFilter;
-    const matchTier = tierFilters.length === 0 || (!r.targetTiers?.length || r.targetTiers.some(t => tierFilters.includes(t)));
+    const matchTier = tierFilters.length === 0 || (!r.targetTiers?.length || r.targetTiers.some((t: string) => tierFilters.includes(t)));
     return matchStatus && matchTier && !r.id.startsWith('SYSTEM_');
   });
 

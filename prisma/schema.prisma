@@ -267,3 +267,13 @@ model CashierPermission {
   updatedAt   DateTime @updatedAt
 }
 
+// ─── UI Text Overrides ────────────────────────────────────────────────────────
+// Admin-editable text strings for customer-facing pages.
+// Each row stores one override; the key matches a UI text identifier
+// (e.g. "visits.greeting_morning") and value holds the custom wording.
+model UiTextOverride {
+  key       String   @id          // e.g. "visits.greeting_morning"
+  value     String   @db.Text     // the custom text value
+  updatedAt DateTime @updatedAt
+}
+

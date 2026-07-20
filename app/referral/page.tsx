@@ -5,10 +5,12 @@ import PhoneLayout from '@/components/ui/PhoneLayout';
 import BottomNav from '@/components/ui/BottomNav';
 import { useRouter } from 'next/navigation';
 import { useMember } from '@/context/MemberContext';
+import { useUiText } from '@/context/UiTextContext';
 
 export default function ReferralPage() {
   const router = useRouter();
   const { member } = useMember();
+  const { t } = useUiText();
   const [view, _setView] = useState<'referral' | 'friend' | 'success'>('referral');
   const setView = (newView: 'referral' | 'friend' | 'success') => {
     _setView(newView);
@@ -145,19 +147,19 @@ export default function ReferralPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div onClick={() => router.push('/visits')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
               <div>
-                <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>Referral Program</div>
+                <div style={{ fontSize: '22px', fontWeight: 600, letterSpacing: '-.02em' }}>{t('referral.page_title', 'Referral Program')}</div>
               </div>
             </div>
-            <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px', marginLeft: '2px' }}>Share Roemah Roti with someone you trust.</div>
+            <div style={{ fontSize: '13.5px', color: '#8A7A6E', marginTop: '8px', marginLeft: '2px' }}>{t('referral.page_subtitle', 'Share Roemah Roti with someone you trust.')}</div>
 
             {/* SECTION 1: referral code */}
             <div style={{ position: 'relative', marginTop: '20px', borderRadius: '26px', background: '#3B2A22', color: '#F8F4EE', padding: '24px 22px 22px', overflow: 'hidden', boxShadow: '0 18px 40px -18px rgba(59,42,34,.55)' }}>
               <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px)', backgroundSize: '11px 11px', opacity: .6 }}></div>
               <div style={{ position: 'absolute', top: '-60px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(166,124,82,.35),transparent 68%)', pointerEvents: 'none' }}></div>
-              <div style={{ position: 'relative', fontSize: '10px', fontWeight: 600, letterSpacing: '.24em', color: 'rgba(248,244,238,.6)' }}>YOUR REFERRAL CODE</div>
+              <div style={{ position: 'relative', fontSize: '10px', fontWeight: 600, letterSpacing: '.24em', color: 'rgba(248,244,238,.6)' }}>{t('referral.code_label', 'YOUR REFERRAL CODE')}</div>
               <div style={{ position: 'relative', marginTop: '14px', fontSize: '32px', fontWeight: 600, letterSpacing: '.05em', fontVariantNumeric: 'tabular-nums', color: '#E9C9A6' }}>{code}</div>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '18px', paddingTop: '16px', borderTop: '1px solid rgba(248,244,238,.12)' }}>
-                <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'rgba(248,244,238,.62)', maxWidth: '200px' }}>Give this code to a friend when they sign up.</div>
+                <div style={{ fontSize: '12px', lineHeight: 1.5, color: 'rgba(248,244,238,.62)', maxWidth: '200px' }}>{t('referral.code_instruction', 'Give this code to a friend when they sign up.')}</div>
                 <div onClick={() => {
                   if (typeof navigator !== 'undefined') {
                     navigator.clipboard.writeText(code);
@@ -169,7 +171,7 @@ export default function ReferralPage() {
 
             {/* SECTION 2: share link */}
             <div style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '20px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
-              <div style={{ fontSize: '15px', fontWeight: 600 }}>Share Your Link</div>
+              <div style={{ fontSize: '15px', fontWeight: 600 }}>{t('referral.share_title', 'Share Your Link')}</div>
               <div style={{ marginTop: '12px', background: '#F8F4EE', borderRadius: '14px', padding: '13px 14px', fontSize: '13px', fontWeight: 500, color: '#4A3830', wordBreak: 'break-all', fontVariantNumeric: 'tabular-nums' }}>{link}</div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
                 <div onClick={() => setShareOpen(true)} style={{ flex: 1, textAlign: 'center', background: '#A67C52', color: '#FFFCF7', padding: '14px', borderRadius: '14px', fontSize: '14.5px', fontWeight: 600, cursor: 'pointer', boxShadow: '0 14px 26px -16px rgba(166,124,82,.9)', transition: 'transform .12s ease' }}>Share</div>
@@ -185,7 +187,7 @@ export default function ReferralPage() {
             {/* SECTION 3: progress */}
             <div style={{ marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '20px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <div style={{ fontSize: '15px', fontWeight: 600 }}>Referral Progress</div>
+                <div style={{ fontSize: '15px', fontWeight: 600 }}>{t('referral.progress_title', 'Referral Progress')}</div>
                 <div style={{ fontSize: '12px', color: '#A08A7B' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{qualifying}</span> / {goalCount} friends</div>
               </div>
               <div style={{ position: 'relative', marginTop: '16px', height: '14px', borderRadius: '999px', background: '#F1EBE1', overflow: 'hidden' }}>
@@ -197,7 +199,7 @@ export default function ReferralPage() {
 
             {/* SECTION 4: joined friends */}
             <div style={{ marginTop: '24px' }}>
-              <div style={{ fontSize: '15px', fontWeight: 600, marginLeft: '2px' }}>Friends Who Joined</div>
+              <div style={{ fontSize: '15px', fontWeight: 600, marginLeft: '2px' }}>{t('referral.friends_title', 'Friends Who Joined')}</div>
               {friends.map((f, i) => (
                 <div key={i} onClick={f.open} style={{ marginTop: '12px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '15px 16px', display: 'flex', alignItems: 'center', gap: '13px', cursor: 'pointer', boxShadow: '0 8px 22px -20px rgba(59,42,34,.4)', transition: 'transform .14s ease' }}>
                   <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 600, color: '#A67C52' }}>{f.initial}</div>

@@ -6,15 +6,18 @@ import BottomNav from '@/components/ui/BottomNav';
 import { useRouter } from 'next/navigation';
 import { useMember } from '@/context/MemberContext';
 import PageTransition from '@/components/ui/PageTransition';
+import { useUiText } from '@/context/UiTextContext';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { member, logout } = useMember();
+  const { t } = useUiText();
   const [view, _setView] = useState<'main' | 'personal' | 'membership' | 'edit' | 'loggedOut'>('main');
   const setView = (newView: 'main' | 'personal' | 'membership' | 'edit' | 'loggedOut') => {
     _setView(newView);
     if (typeof window !== 'undefined') sessionStorage.setItem('profile_view', newView);
   };
+
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -91,14 +94,14 @@ export default function ProfilePage() {
                 <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"></path></svg>
                 </div>
-                <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>Personal Information</div>
+                <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>{t('profile.personal_info', 'Personal Information')}</div>
                 <div style={{ fontSize: '16px', color: '#C4B6A9' }}>›</div>
               </div>
               <div onClick={() => setView('membership')} style={{ display: 'flex', alignItems: 'center', gap: '13px', padding: '16px 17px', cursor: 'pointer', borderBottom: '1px solid #F2ECE3' }}>
                 <div style={{ width: '38px', height: '38px', borderRadius: '11px', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"></rect><path d="M3 10h18 M7 15h4"></path></svg>
                 </div>
-                <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>Membership Information</div>
+                <div style={{ flex: 1, fontSize: '14.5px', fontWeight: 600 }}>{t('profile.membership_details', 'Membership Information')}</div>
                 <div style={{ fontSize: '16px', color: '#C4B6A9' }}>›</div>
               </div>
               <div onClick={() => { setForm({ ...profile }); setView('edit'); }} style={{ display: 'flex', alignItems: 'center', gap: '13px', padding: '16px 17px', cursor: 'pointer' }}>

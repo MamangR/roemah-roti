@@ -63,7 +63,7 @@ export default function SettingsPageWrapper() {
   return <SettingsPage />;
 }
 
-import { LogOut } from 'lucide-react';
+import { LogOut, Type } from 'lucide-react';
 
 function SettingsPage() {
   const router = useRouter();
@@ -101,6 +101,10 @@ function SettingsPage() {
                 <div style={{ width: '15px', height: '15px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', top: '5px', left: '2px', width: '7px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div><div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div></div>
                 <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
               </div>
+              <div onClick={() => { setSidebarOpen(false); router.push('/admin/settings/edit-ui'); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: 'rgba(248, 244, 238, 0.72)', cursor: 'pointer' }}>
+                <Type size={15} />
+                <span style={{ fontSize: '14px', fontWeight: 600 }}>Edit UI</span>
+              </div>
               {/* Logout Button */}
               <div onClick={() => setLogoutModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: '#FF6B6B', cursor: 'pointer', marginTop: '4px' }}>
                 <LogOut size={16} strokeWidth={2} />
@@ -132,6 +136,10 @@ function SettingsPage() {
               <div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div>
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
+          </div>
+          <div onClick={() => router.push('/admin/settings/edit-ui')} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: 'rgba(248, 244, 238, 0.72)', cursor: 'pointer' }}>
+            <Type size={15} />
+            <span style={{ fontSize: '14px', fontWeight: 600 }}>Edit UI</span>
           </div>
           {/* Logout Button */}
           <div onClick={() => setLogoutModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: '#FF6B6B', cursor: 'pointer', marginTop: '4px' }}>

@@ -6,6 +6,7 @@ import BottomNav from '@/components/ui/BottomNav';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import PageTransition from '@/components/ui/PageTransition';
+import { useUiText } from '@/context/UiTextContext';
 
 const slideVariants = {
   initial: (d: number) => ({
@@ -30,6 +31,7 @@ const NOTES = [
 
 export default function MembershipPage() {
   const router = useRouter();
+  const { t } = useUiText();
   const [view, _setView] = useState<'main' | 'detail'>('main');
   const [direction, setDirection] = useState(0);
 
@@ -71,12 +73,12 @@ export default function MembershipPage() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
                   </div>
                   <div>
-                    <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.12em', color: '#A08A7B', textTransform: 'uppercase' }}>GOOD TO KNOW</div>
-                    <div style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '2px', color: '#3B2A22' }}>How benefits work</div>
+                    <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.12em', color: '#A08A7B', textTransform: 'uppercase' }}>{t('membership.page_label', 'GOOD TO KNOW')}</div>
+                    <div style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '2px', color: '#3B2A22' }}>{t('membership.page_title', 'How benefits work')}</div>
                   </div>
                 </div>
                 <div style={{ fontSize: '14.5px', lineHeight: 1.5, color: '#7A6A5F', marginTop: '12px' }}>
-                  Nothing to keep track of — here's the whole idea in three plain notes.
+                  {t('membership.page_subtitle', 'Nothing to keep track of \u2014 here\'s the whole idea in three plain notes.')}
                 </div>
 
                 <div style={{ marginTop: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -100,7 +102,7 @@ export default function MembershipPage() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="3" ry="3"></rect><rect x="8" y="10" width="8" height="4" rx="1" ry="1"></rect></svg>
                   </div>
                   <div style={{ fontSize: '14px', color: '#4A6548', lineHeight: 1.5, fontWeight: 500 }}>
-                    And your tier never goes down. However far you've come, it stays yours. See you soon.
+                    {t('membership.tier_note', 'And your tier never goes down. However far you\'ve come, it stays yours. See you soon.')}
                   </div>
                 </div>
 

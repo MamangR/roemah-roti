@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import PageTransition from '@/components/ui/PageTransition';
 import { useMember } from '@/context/MemberContext';
 import { useRouter } from 'next/navigation';
+import { useUiText } from '@/context/UiTextContext';
 type Entry = {
   id: string;
   type: 'visit' | 'earned' | 'redeemed';
@@ -121,6 +122,7 @@ const slideVariants = {
 export default function VisitsPage() {
   const router = useRouter();
   const { member } = useMember();
+  const { t } = useUiText();
   const [view, _setView] = useState<'dashboard' | 'history' | 'detail' | 'roadmap' | 'tier_detail'>('dashboard');
   const [direction, setDirection] = useState(0);
 
@@ -171,9 +173,10 @@ export default function VisitsPage() {
 
   React.useEffect(() => {
     const hour = new Date().getHours();
-    if (hour >= 12 && hour < 17) setGreeting('Good afternoon,');
-    else if (hour >= 17) setGreeting('Good evening,');
-  }, []);
+    if (hour >= 12 && hour < 17) setGreeting(t('visits.greeting_afternoon', 'Good afternoon,'));
+    else if (hour >= 17) setGreeting(t('visits.greeting_evening', 'Good evening,'));
+    else setGreeting(t('visits.greeting_morning', 'Good morning,'));
+  }, [t]);
 
   React.useEffect(() => {
     async function loadNextReward() {
@@ -305,7 +308,7 @@ export default function VisitsPage() {
                   <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px)', backgroundSize: '11px 11px', opacity: .6 }}></div>
                   <div style={{ position: 'absolute', top: '-60px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle,rgba(166,124,82,.35),transparent 68%)', pointerEvents: 'none' }}></div>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.28em', color: 'rgba(248,244,238,.72)' }}>ROEMAH ROTI</div>
+                    <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.28em', color: 'rgba(248,244,238,.72)' }}>{t('visits.brand_label', 'ROEMAH ROTI')}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(166,124,82,.9)', color: '#2A1E18', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px' }}><span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2A1E18', opacity: .65 }}></span>{currentTier}</div>
                   </div>
 
@@ -313,7 +316,7 @@ export default function VisitsPage() {
                     <div>
                       <div style={{ fontSize: '21px', fontWeight: 600, letterSpacing: '-.02em' }}>{member?.firstName || 'User'}</div>
                       <div style={{ marginTop: '4px', fontSize: '12.5px', color: 'rgba(248,244,238,.6)', fontVariantNumeric: 'tabular-nums' }}>{member?.id || 'RR-00000'}</div>
-                      <div style={{ marginTop: '2px', fontSize: '12px', color: 'rgba(248,244,238,.5)' }}>Member since {member?.since || 'Unknown'}</div>
+                      <div style={{ marginTop: '2px', fontSize: '12px', color: 'rgba(248,244,238,.5)' }}>{t('visits.member_since_prefix', 'Member since')} {member?.since || 'Unknown'}</div>
                     </div>
 
                     <div
@@ -334,17 +337,17 @@ export default function VisitsPage() {
                   {/* Referral Code sub-section inside Membership Card */}
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '22px', paddingTop: '18px', borderTop: '1px solid rgba(248,244,238,.12)' }}>
                     <div>
-                      <div style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.14em', color: 'rgba(248,244,238,.5)' }}>REFERRAL CODE</div>
+                      <div style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.14em', color: 'rgba(248,244,238,.5)' }}>{t('visits.referral_code_label', 'REFERRAL CODE')}</div>
                       <div style={{ fontSize: '15px', fontWeight: 600, marginTop: '4px', letterSpacing: '.06em', color: '#E9C9A6', fontVariantNumeric: 'tabular-nums' }}>{member?.referralCode || 'S04217-RR'}</div>
                     </div>
-                    <div onClick={() => router.push('/referral')} style={{ cursor: 'pointer', background: 'rgba(166,124,82,.9)', color: '#2A1E18', fontSize: '12px', fontWeight: 600, padding: '9px 14px', borderRadius: '12px' }}>Invite Friends</div>
+                    <div onClick={() => router.push('/referral')} style={{ cursor: 'pointer', background: 'rgba(166,124,82,.9)', color: '#2A1E18', fontSize: '12px', fontWeight: 600, padding: '9px 14px', borderRadius: '12px' }}>{t('visits.invite_friends_button', 'Invite Friends')}</div>
                   </div>
                 </div>
 
                 {/* LIFETIME SPEND CARD */}
                 <div onClick={() => setView('roadmap')} style={{ cursor: 'pointer', marginTop: '16px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '24px', padding: '20px 20px 22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', transition: 'transform .14s ease' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.12em', color: '#A08A7B' }}>LIFETIME SPEND</div>
+                    <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.12em', color: '#A08A7B' }}>{t('visits.lifetime_spend_label', 'LIFETIME SPEND')}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', background: '#B98A5E', color: '#2A1E18', fontSize: '11px', fontWeight: 600, padding: '4px 10px', borderRadius: '999px' }}>
                       <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#2A1E18', opacity: .7 }}></span>{currentTier}
                     </div>
@@ -365,8 +368,8 @@ export default function VisitsPage() {
                     </div>
                     <div style={{ fontSize: '12.5px', color: '#7A6A5F', lineHeight: 1.4 }}>
                       {currentTier === 'Inner Circle'
-                        ? 'You have reached the highest tier!'
-                        : <><span style={{ color: '#3B2A22' }}>more in lifetime spend until <span style={{ fontWeight: 600 }}>{nextTier}</span>.</span> No rush &mdash; it adds up over time.</>}
+                        ? t('visits.max_tier_message', 'You have reached the highest tier!')
+                        : <><span style={{ color: '#3B2A22' }}>{t('visits.tier_progress_suffix', 'more in lifetime spend until')} <span style={{ fontWeight: 600 }}>{nextTier}</span>.</span> {t('visits.tier_progress_note', 'No rush \u2014 it adds up over time.')}</>}
                     </div>
                   </div>
                 </div>
@@ -388,7 +391,7 @@ export default function VisitsPage() {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                        <div style={{ fontSize: '14px', fontWeight: 600 }}>Visit Progress</div>
+                        <div style={{ fontSize: '14px', fontWeight: 600 }}>{t('visits.visit_progress_label', 'Visit Progress')}</div>
                         <div style={{ fontSize: '12px', color: '#A08A7B' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{member?.totalVisits || 0}</span> / {goal} visits</div>
                       </div>
                       <div style={{ position: 'relative', marginTop: '12px', height: '10px', borderRadius: '999px', background: '#F1EBE1', overflow: 'hidden' }}>
@@ -399,7 +402,7 @@ export default function VisitsPage() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '14px' }}>
                     <div style={{ fontSize: '12.5px', color: '#7A6A5F' }}><span style={{ fontWeight: 600, color: '#3B2A22' }}>{Math.max(0, goal - (member?.totalVisits || 0))} more visits</span> until your next reward: <span style={{ fontWeight: 600, color: '#3B2A22' }}>{rewardName}</span>.</div>
-                    <div onClick={() => setView('history')} style={{ fontSize: '12px', fontWeight: 600, color: '#A67C52', cursor: 'pointer', flex: 'none', paddingLeft: '10px' }}>View History</div>
+                    <div onClick={() => setView('history')} style={{ fontSize: '12px', fontWeight: 600, color: '#A67C52', cursor: 'pointer', flex: 'none', paddingLeft: '10px' }}>{t('visits.view_history_link', 'View History')}</div>
                   </div>
                 </div>
 
@@ -409,8 +412,8 @@ export default function VisitsPage() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 3.5 1 5.5 2 7H4c1-1.5 2-3.5 2-7z"></path><path d="M10 19a2 2 0 0 0 4 0"></path></svg>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '15px', fontWeight: 600 }}>Updates</div>
-                    <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>New menu, promos, and announcements.</div>
+                    <div style={{ fontSize: '15px', fontWeight: 600 }}>{t('visits.updates_title', 'Updates')}</div>
+                    <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>{t('visits.updates_subtitle', 'New menu, promos, and announcements.')}</div>
                   </div>
                   <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg></div>
                 </div>
@@ -421,8 +424,8 @@ export default function VisitsPage() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A67C52" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M3 20a6 6 0 0 1 12 0"></path><path d="M17 6a3 3 0 0 1 0 6 M21 20a6 6 0 0 0-4-5.6"></path></svg>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '15px', fontWeight: 600 }}>Refer a Friend</div>
-                    <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>Share something you trust.</div>
+                    <div style={{ fontSize: '15px', fontWeight: 600 }}>{t('visits.refer_friend_title', 'Refer a Friend')}</div>
+                    <div style={{ fontSize: '12px', color: '#8A7A6E', marginTop: '2px' }}>{t('visits.refer_friend_subtitle', 'Share something you trust.')}</div>
                   </div>
                   <div style={{ color: '#C4B6A9', display: 'flex' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg></div>
                 </div>
@@ -435,11 +438,11 @@ export default function VisitsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div onClick={() => setView('dashboard')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flex: 'none', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
                   <div>
-                    <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.12em', color: '#A08A7B' }}>ROEMAH ROTI · MEMBERSHIP</div>
-                    <div style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '2px' }}>Your journey</div>
+                    <div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.12em', color: '#A08A7B' }}>{t('visits.brand_label', 'ROEMAH ROTI')} · MEMBERSHIP</div>
+                    <div style={{ fontSize: '24px', fontWeight: 600, letterSpacing: '-.02em', marginTop: '2px' }}>{t('visits.roadmap_title', 'Your journey')}</div>
                   </div>
                 </div>
-                <div style={{ fontSize: '14px', lineHeight: 1.5, color: '#7A6A5F', marginTop: '14px' }}>Four tiers, one step at a time. Everything you've reached stays yours.</div>
+                <div style={{ fontSize: '14px', lineHeight: 1.5, color: '#7A6A5F', marginTop: '14px' }}>{t('visits.roadmap_subtitle', 'Four tiers, one step at a time. Everything you\u2019ve reached stays yours.')}</div>
 
                 <div style={{ position: 'relative', marginTop: '30px', paddingLeft: '12px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>

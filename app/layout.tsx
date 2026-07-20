@@ -2,6 +2,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import "./roemah-replicas.css";
 import { MemberProvider } from "@/context/MemberContext";
+import { UiTextProvider } from "@/context/UiTextContext";
 import type { Metadata, Viewport } from "next";
 
 export const viewport: Viewport = {
@@ -25,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body>
-        <MemberProvider>
-          {children}
-        </MemberProvider>
+        <UiTextProvider>
+          <MemberProvider>
+            {children}
+          </MemberProvider>
+        </UiTextProvider>
       </body>
     </html>
   );
