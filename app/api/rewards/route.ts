@@ -88,8 +88,13 @@ export async function POST(request: NextRequest) {
       const expiresAtLabel = lastDayOfMonth.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
 
-      // Fetch SYSTEM_BIRTHDAY config if available
-      const bdayConfig = await prisma.rewardTemplate.findUnique({ where: { id: 'SYSTEM_BIRTHDAY' }, include: { menuItem: true } });
+      let currentTier = 'Insider';
+      if (member.lifetimeSpend >= 5000000) currentTier = 'Inner Circle';
+      else if (member.lifetimeSpend >= 2000000) currentTier = 'Neighbor';
+      else if (member.lifetimeSpend >= 1000000) currentTier = 'Familiar';
+
+      const tierId = `SYSTEM_BIRTHDAY_${currentTier.toUpperCase().replace(' ', '_')}`;
+      const bdayConfig = await prisma.rewardTemplate.findUnique({ where: { id: tierId }, include: { menuItem: true } });
       const bdayName = bdayConfig?.name || bdayConfig?.menuItem?.name || 'Birthday Treat Box';
       const bdayDesc = bdayConfig?.desc || bdayConfig?.menuItem?.shortDesc || 'A curated box of four seasonal pastries, our gift to you this birthday month.';
 
@@ -99,7 +104,7 @@ export async function POST(request: NextRequest) {
           where: { memberId_rewardType: { memberId, rewardType: 'birthday_treat' } },
           create: {
             memberId,
-            sourceTemplateId: 'SYSTEM_BIRTHDAY',
+            sourceTemplateId: tierId,
             rewardType: 'birthday_treat',
             title: bdayName,
             type: 'Birthday Reward',

@@ -212,7 +212,10 @@ export async function getMenuItemsAdmin() {
 
 export async function getRewardsAdmin() {
   await checkAdmin();
-  return await prisma.rewardTemplate.findMany({ orderBy: { createdAt: 'desc' } });
+  return await prisma.rewardTemplate.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { menuItem: true }
+  });
 }
 
 export async function getPublicTemplates() {
@@ -226,7 +229,7 @@ export async function getPublicTemplates() {
   });
 }
 
-export async function saveReward(data: { id: string, name: string | null, desc: string | null, visitsRequired: number, status: string, validityDays: number | null, menuItemId: string | null }) {
+export async function saveReward(data: { id: string, name: string | null, desc: string | null, visitsRequired: number, status: string, validityDays: number | null, menuItemId: string | null, targetTiers?: string[] }) {
   await checkAdmin();
 
   await prisma.rewardTemplate.upsert({
@@ -237,7 +240,8 @@ export async function saveReward(data: { id: string, name: string | null, desc: 
       visitsRequired: data.visitsRequired,
       status: data.status,
       validityDays: data.validityDays,
-      menuItemId: data.menuItemId
+      menuItemId: data.menuItemId,
+      targetTiers: data.targetTiers || []
     },
     create: {
       id: data.id,
@@ -246,7 +250,8 @@ export async function saveReward(data: { id: string, name: string | null, desc: 
       visitsRequired: data.visitsRequired,
       status: data.status,
       validityDays: data.validityDays,
-      menuItemId: data.menuItemId
+      menuItemId: data.menuItemId,
+      targetTiers: data.targetTiers || []
     }
   });
 
@@ -264,6 +269,11 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
   const member = await prisma.member.findUnique({ where: { id: memberId } });
   if (!member) throw new Error('Member not found');
 
+  let currentTier = 'Insider';
+  if (member.lifetimeSpend >= 5000000) currentTier = 'Inner Circle';
+  else if (member.lifetimeSpend >= 2000000) currentTier = 'Neighbor';
+  else if (member.lifetimeSpend >= 1000000) currentTier = 'Familiar';
+
   const redeemedAt = new Date();
 
   await prisma.$transaction(async (tx) => {
@@ -276,6 +286,9 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
       });
       if (!template) throw new Error('Template not found');
       if (member.totalVisits < template.visitsRequired) throw new Error('Not enough visits');
+      if (template.targetTiers && template.targetTiers.length > 0 && !template.targetTiers.includes(currentTier)) {
+        throw new Error('Reward is not available for this membership tier');
+      }
 
       rewardTitle = template.name || template.menuItem?.name || 'Reward';
 
@@ -307,7 +320,9 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
       await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
     } else if (type === 'birthday') {
       rewardTitle = 'Birthday Treat Box';
-      const sysBday = await tx.rewardTemplate.findUnique({ where: { id: 'SYSTEM_BIRTHDAY' }, include: { menuItem: true } });
+      const tierId = `SYSTEM_BIRTHDAY_${currentTier.toUpperCase().replace(' ', '_')}`;
+      let sysBday = await tx.rewardTemplate.findUnique({ where: { id: tierId }, include: { menuItem: true } });
+
       if (sysBday) {
         rewardTitle = sysBday.name || sysBday.menuItem?.name || rewardTitle;
       }

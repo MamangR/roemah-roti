@@ -98,6 +98,7 @@ model RewardTemplate {
   validityDays   Int?     @default(30)
   menuItemId     String?
   menuItem       NewMenu? @relation(fields: [menuItemId], references: [id])
+  targetTiers    String[] @default([]) // Empty means all tiers
 
   issuedRewards  MemberReward[]
 

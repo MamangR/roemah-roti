@@ -157,9 +157,15 @@ export default function RewardsPage() {
     }
   });
 
+  let currentTier = 'Insider';
+  const spend = member?.lifetimeSpend || 0;
+  if (spend >= 5000000) currentTier = 'Inner Circle';
+  else if (spend >= 2000000) currentTier = 'Neighbor';
+  else if (spend >= 1000000) currentTier = 'Familiar';
+
   // Build visit-based reward cards, excluding already-redeemed templates entirely
   const rawRewardsList: RewardItem[] = templates
-    .filter((t: any) => !redeemedTemplateIds.has(t.id) && !t.id.startsWith('SYSTEM_'))
+    .filter((t: any) => !redeemedTemplateIds.has(t.id) && !t.id.startsWith('SYSTEM_') && (!t.targetTiers?.length || t.targetTiers.includes(currentTier)))
     .map((t: any) => ({
       id: t.id,
       cat: 'Visit Reward',
@@ -231,12 +237,13 @@ export default function RewardsPage() {
     }
   }
 
-  const sysBdayTemplate = templates.find((t: any) => t.id === 'SYSTEM_BIRTHDAY');
+  const tierId = `SYSTEM_BIRTHDAY_${currentTier.toUpperCase().replace(' ', '_')}`;
+  const sysBdayTemplate = templates.find((t: any) => t.id === tierId);
   const rawBirthdayItem: RewardItem = {
     id: 'birthday',
     cat: 'Birthday Reward',
-    name: loading ? 'Loading...' : (bdayDb?.title ?? sysBdayTemplate?.name ?? sysBdayTemplate?.menuItem?.name ?? 'Birthday Treat Box'),
-    desc: loading ? 'Loading birthday reward details...' : (bdayDb?.description ?? sysBdayTemplate?.desc ?? sysBdayTemplate?.menuItem?.shortDesc ?? 'A curated box of four seasonal pastries, our gift to you this birthday month.'),
+    name: loading ? 'Loading...' : (sysBdayTemplate?.name || sysBdayTemplate?.menuItem?.name || bdayDb?.title || 'Birthday Treat Box'),
+    desc: loading ? 'Loading birthday reward details...' : (sysBdayTemplate?.desc || sysBdayTemplate?.menuItem?.shortDesc || bdayDb?.description || 'A curated box of four seasonal pastries, our gift to you this birthday month.'),
     imageUrl: sysBdayTemplate?.menuItem?.imageUrl || null,
     base: bdayBase,
     need: bdayNeed,

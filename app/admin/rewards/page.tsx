@@ -137,9 +137,10 @@ function RewardManagementPage() {
   }, [screen, router]);
 
   const [listFilter, setListFilter] = useState('all');
+  const [tierFilters, setTierFilters] = useState<string[]>([]);
   const [formMode, setFormMode] = useState<'create' | 'edit' | 'system'>('create');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState({ name: '', desc: '', visitsRequired: '', status: 'Aktif', validityDays: '30', menuItemId: '' });
+  const [draft, setDraft] = useState<{name: string, desc: string, visitsRequired: string, status: string, validityDays: string, menuItemId: string, targetTiers: string[]}>({ name: '', desc: '', visitsRequired: '', status: 'Aktif', validityDays: '30', menuItemId: '', targetTiers: [] });
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
@@ -217,7 +218,11 @@ function RewardManagementPage() {
 
   const normalizeDigits = (s: string) => (s || '').replace(/\D/g, '');
 
-  const filteredRewards = rewards.filter(r => (listFilter === 'all' || r.status === listFilter) && !r.id.startsWith('SYSTEM_'));
+  const filteredRewards = rewards.filter(r => {
+    const matchStatus = listFilter === 'all' || r.status === listFilter;
+    const matchTier = tierFilters.length === 0 || (!r.targetTiers?.length || r.targetTiers.some(t => tierFilters.includes(t)));
+    return matchStatus && matchTier && !r.id.startsWith('SYSTEM_');
+  });
 
   const qRedeem = redeemSearchQuery.trim().toLowerCase();
   const qRedeemDigits = normalizeDigits(redeemSearchQuery);
@@ -228,19 +233,34 @@ function RewardManagementPage() {
   const redeemSelectedMember = members.find(m => m.id === redeemSelectedId);
   let combinedRows: any[] = [];
   if (redeemSelectedMember) {
+    let currentTier = 'Insider';
+    if (redeemSelectedMember.lifetimeSpend >= 5000000) currentTier = 'Inner Circle';
+    else if (redeemSelectedMember.lifetimeSpend >= 2000000) currentTier = 'Neighbor';
+    else if (redeemSelectedMember.lifetimeSpend >= 1000000) currentTier = 'Familiar';
+
     const templateRows = rewards.filter(r => r.status === 'Aktif' && !r.id.startsWith('SYSTEM_')).map(r => {
       const alreadyRedeemed = history.some(h => h.rawMemberId === redeemSelectedMember.id && (h.sourceTemplateId === r.id || (h.rewardType || '').startsWith(r.id + '_')));
-      const eligible = !alreadyRedeemed && redeemSelectedMember.visits >= r.visitsRequired;
+      
+      let isTierEligible = true;
+      if (r.targetTiers && r.targetTiers.length > 0) {
+        isTierEligible = r.targetTiers.includes(currentTier);
+      }
+
+      const eligible = !alreadyRedeemed && redeemSelectedMember.visits >= r.visitsRequired && isTierEligible;
+      
+      let statusText = eligible ? 'Siap ditukar' : `Butuh ${Math.max(0, r.visitsRequired - redeemSelectedMember.visits)} kunjungan lagi`;
+      if (!isTierEligible) statusText = 'Tier tidak sesuai';
+
       return {
         ...r,
         type: 'template',
         eligible,
         alreadyRedeemed,
-        statusText: eligible ? 'Siap ditukar' : `Butuh ${r.visitsRequired - redeemSelectedMember.visits} kunjungan lagi`,
+        statusText,
         cardBg: eligible ? '#FFFFFF' : '#F8F4EE',
-        cardOpacity: 1
+        cardOpacity: eligible ? 1 : 0.7
       };
-    }).filter(r => !r.alreadyRedeemed);
+    }).filter(r => !r.alreadyRedeemed && r.statusText !== 'Tier tidak sesuai');
 
     combinedRows = [...templateRows];
 
@@ -252,9 +272,14 @@ function RewardManagementPage() {
       const alreadyRedeemed = bdayReward?.redeemedAt != null;
       const eligible = !alreadyRedeemed && isBirthdayMonth;
       if (!alreadyRedeemed) {
+        let bName = bdayReward?.title || 'Birthday Treat Box';
+            const tierId = `SYSTEM_BIRTHDAY_${currentTier.toUpperCase().replace(' ', '_')}`;
+            const sysBday = rewards.find(rw => rw.id === tierId);
+            if (sysBday) bName = sysBday.name || sysBday.menuItem?.name || bName;
+
         combinedRows.push({
           id: 'birthday',
-          name: bdayReward?.title || 'Birthday Treat Box',
+          name: bName,
           type: 'birthday',
           visitsRequired: 0,
           eligible,
@@ -394,7 +419,7 @@ function RewardManagementPage() {
                 <div><div style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '.22em', color: 'var(--text-on-hero-dim)' }}>ROEMAH ROTI</div><div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-on-hero)', marginTop: '2px' }}>{adminUser?.role === 'cashier' ? 'Cashier Menu' : 'Dashboard'}</div></div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
-                <div onClick={() => { setScreen('list'); setEditingId(null); setSidebarOpen(false); }} style={navItemStyle((screen === 'list' || screen === 'form') && formMode !== 'system')}><div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Reward</span></div>
+                <div onClick={() => { setScreen('list'); setEditingId(null); setSidebarOpen(false); }} style={navItemStyle(screen === 'list' || (screen === 'form' && formMode !== 'system'))}><div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span><span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Reward</span></div>
                 <div onClick={() => { setScreen('redeem'); setRedeemStep('search'); setEditingId(null); setSidebarOpen(false); }} style={navItemStyle(screen === 'redeem')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '3.4px', top: '2.4px', width: '6.5px', height: '8.5px', borderRight: '1.6px solid currentColor', borderBottom: '1.6px solid currentColor', transform: 'rotate(45deg)' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Redeem Reward</span></div>
                 <div onClick={() => { setScreen('history'); setEditingId(null); setSidebarOpen(false); }} style={navItemStyle(screen === 'history')}><div style={{ width: '16px', height: '16px', border: '1.6px solid currentColor', borderRadius: '50%', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', left: '7px', top: '3px', width: '1.4px', height: '5px', background: 'currentColor' }}></div><div style={{ position: 'absolute', left: '7px', top: '7.4px', width: '4px', height: '1.4px', background: 'currentColor' }}></div></div><span style={{ fontSize: '14px', fontWeight: 600 }}>Riwayat Redeem</span></div>
 
@@ -403,8 +428,8 @@ function RewardManagementPage() {
 
                   <div onClick={() => {
                     const r = rewards.find(rw => rw.id === 'SYSTEM_REFERRAL');
-                    if (r) { setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '' }); }
-                    else { setDraft({ name: '', desc: '', visitsRequired: '1', status: 'Aktif', validityDays: '30', menuItemId: '' }); }
+                    if (r) { setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '', targetTiers: r.targetTiers || [] }); }
+                    else { setDraft({ name: '', desc: '', visitsRequired: '1', status: 'Aktif', validityDays: '30', menuItemId: '', targetTiers: [] }); }
                     setEditingId('SYSTEM_REFERRAL'); setFormMode('system'); setScreen('form'); setSidebarOpen(false);
                   }} style={navItemStyle(editingId === 'SYSTEM_REFERRAL' && screen === 'form')}>
                     <LinkIcon size={16} strokeWidth={2} />
@@ -412,11 +437,8 @@ function RewardManagementPage() {
                   </div>
 
                   <div onClick={() => {
-                    const r = rewards.find(rw => rw.id === 'SYSTEM_BIRTHDAY');
-                    if (r) { setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '' }); }
-                    else { setDraft({ name: '', desc: '', visitsRequired: '0', status: 'Aktif', validityDays: '30', menuItemId: '' }); }
-                    setEditingId('SYSTEM_BIRTHDAY'); setFormMode('system'); setScreen('form'); setSidebarOpen(false);
-                  }} style={navItemStyle(editingId === 'SYSTEM_BIRTHDAY' && screen === 'form')}>
+                    setScreen('birthday_config'); setSidebarOpen(false);
+                  }} style={navItemStyle((screen === 'birthday_config' || (typeof editingId === 'string' && editingId.startsWith('SYSTEM_BIRTHDAY') && screen === 'form')))}>
                     <Cake size={16} strokeWidth={2} />
                     <span style={{ fontSize: '14px', fontWeight: 600 }}>Birthday Reward</span>
                   </div>
@@ -444,7 +466,7 @@ function RewardManagementPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '22px' }}>
-            <div onClick={() => { setScreen('list'); setEditingId(null); }} style={navItemStyle((screen === 'list' || screen === 'form') && formMode !== 'system')}>
+            <div onClick={() => { setScreen('list'); setEditingId(null); }} style={navItemStyle(screen === 'list' || (screen === 'form' && formMode !== 'system'))}>
               <div style={{ width: '16px', height: '12px', flex: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
                 <span style={{ height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></span>
@@ -471,8 +493,8 @@ function RewardManagementPage() {
 
               <div onClick={() => {
                 const r = rewards.find(rw => rw.id === 'SYSTEM_REFERRAL');
-                if (r) { setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '' }); }
-                else { setDraft({ name: '', desc: '', visitsRequired: '1', status: 'Aktif', validityDays: '30', menuItemId: '' }); }
+                if (r) { setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '', targetTiers: r.targetTiers || [] }); }
+                else { setDraft({ name: '', desc: '', visitsRequired: '1', status: 'Aktif', validityDays: '30', menuItemId: '', targetTiers: [] }); }
                 setEditingId('SYSTEM_REFERRAL'); setFormMode('system'); setScreen('form');
               }} style={navItemStyle(editingId === 'SYSTEM_REFERRAL' && screen === 'form')}>
                 <LinkIcon size={16} strokeWidth={2} />
@@ -480,11 +502,8 @@ function RewardManagementPage() {
               </div>
 
               <div onClick={() => {
-                const r = rewards.find(rw => rw.id === 'SYSTEM_BIRTHDAY');
-                if (r) { setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '' }); }
-                else { setDraft({ name: '', desc: '', visitsRequired: '0', status: 'Aktif', validityDays: '30', menuItemId: '' }); }
-                setEditingId('SYSTEM_BIRTHDAY'); setFormMode('system'); setScreen('form');
-              }} style={navItemStyle(editingId === 'SYSTEM_BIRTHDAY' && screen === 'form')}>
+                setScreen('birthday_config');
+              }} style={navItemStyle((screen === 'birthday_config' || (typeof editingId === 'string' && editingId.startsWith('SYSTEM_BIRTHDAY') && screen === 'form')))}>
                 <Cake size={16} strokeWidth={2} />
                 <span style={{ fontSize: '14px', fontWeight: 600 }}>Birthday Reward</span>
               </div>
@@ -518,12 +537,24 @@ function RewardManagementPage() {
                     <div style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '6px' }}>{filteredRewards.length} dari {rewards.length} reward</div>
                   </div>
                   <div style={{ width: '190px', opacity: canManageRewards ? 1 : 0.4, pointerEvents: canManageRewards ? 'auto' : 'none' }}>
-                    <Button variant="primary" onClick={() => { setFormMode('create'); setDraft({ name: '', desc: '', visitsRequired: '', status: 'Aktif', validityDays: '30', menuItemId: '' }); setScreen('form'); }}>+ Tambah Reward</Button>
+                    <Button variant="primary" onClick={() => { setFormMode('create'); setDraft({ name: '', desc: '', visitsRequired: '', status: 'Aktif', validityDays: '30', menuItemId: '', targetTiers: [] }); setScreen('form'); }}>+ Tambah Reward</Button>
                   </div>
                 </div>
 
-                <div style={{ marginTop: '22px', maxWidth: '420px' }}>
-                  <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Aktif', label: 'Aktif' }, { value: 'Nonaktif', label: 'Nonaktif' }]} value={listFilter} onChange={setListFilter} />
+                <div style={{ marginTop: '22px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+                  <div style={{ width: '220px', flex: 'none' }}>
+                    <SegmentedToggle options={[{ value: 'all', label: 'Semua' }, { value: 'Aktif', label: 'Aktif' }, { value: 'Nonaktif', label: 'Nonaktif' }]} value={listFilter} onChange={setListFilter} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)', fontWeight: 600, marginRight: '4px' }}>Tiers:</span>
+                    {['Insider', 'Familiar', 'Neighbor', 'Inner Circle'].map(t => (
+                      <button key={t} onClick={() => {
+                        setTierFilters(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+                      }} style={{ background: tierFilters.includes(t) ? 'var(--caramel)' : 'var(--surface-page)', color: tierFilters.includes(t) ? '#FFF' : 'var(--text-secondary)', border: `1px solid ${tierFilters.includes(t) ? 'var(--caramel)' : 'var(--border-divider)'}`, borderRadius: '99px', padding: '6px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}>
+                        {t}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div style={{ marginTop: '22px', background: 'var(--surface-card)', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
@@ -533,7 +564,7 @@ function RewardManagementPage() {
                   {filteredRewards.map(r => {
                     const pill = statusPill(r.status);
                     return (
-                      <div key={r.id} className="rm-row" onClick={(e) => { if (!canManageRewards) return; e.stopPropagation(); setFormMode('edit'); setEditingId(r.id); setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '' }); setScreen('form'); }} style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr .9fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid var(--border-divider)', alignItems: 'center', fontSize: '13.5px', color: 'var(--text-body)', cursor: canManageRewards ? 'pointer' : 'default' }}>
+                      <div key={r.id} className="rm-row" onClick={(e) => { if (!canManageRewards) return; e.stopPropagation(); setFormMode('edit'); setEditingId(r.id); setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '', targetTiers: r.targetTiers || [] }); setScreen('form'); }} style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr .9fr 1fr', gap: '10px', padding: '15px 20px', borderTop: '1px solid var(--border-divider)', alignItems: 'center', fontSize: '13.5px', color: 'var(--text-body)', cursor: canManageRewards ? 'pointer' : 'default' }}>
                         <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{r.name}</div>
                         <div style={{ color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>{r.visitsRequired} kunjungan</div>
                         <div>
@@ -542,13 +573,59 @@ function RewardManagementPage() {
                           </span>
                         </div>
                         <div style={{ display: 'flex', gap: '14px', opacity: canManageRewards ? 1 : 0.4, pointerEvents: canManageRewards ? 'auto' : 'none' }}>
-                          <span onClick={(e) => { e.stopPropagation(); setFormMode('edit'); setEditingId(r.id); setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '' }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--caramel)', cursor: 'pointer' }}>Edit</span>
+                          <span onClick={(e) => { e.stopPropagation(); setFormMode('edit'); setEditingId(r.id); setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '', targetTiers: r.targetTiers || [] }); setScreen('form'); }} style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--caramel)', cursor: 'pointer' }}>Edit</span>
                           <span onClick={(e) => { e.stopPropagation(); setDeleteTarget(r); setDeleteConfirmOpen(true); }} style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--text-secondary)', cursor: 'pointer' }}>Hapus</span>
                         </div>
                       </div>
                     );
                   })}
                   {filteredRewards.length === 0 && <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: '14px', borderTop: '1px solid var(--border-divider)' }}>Tidak ada reward dengan status ini.</div>}
+                </div>
+              </div>
+            )}
+
+            {screen === 'birthday_config' && (
+              <div style={{ padding: '52px 40px 60px', animation: 'rmFade .3s cubic-bezier(.22,1,.36,1)' }}>
+                <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>Birthday Rewards</div>
+                <div style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '6px' }}>Konfigurasi reward ulang tahun untuk masing-masing tier.</div>
+                <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {['Insider', 'Familiar', 'Neighbor', 'Inner Circle'].map(tier => {
+                    const rId = `SYSTEM_BIRTHDAY_${tier.toUpperCase().replace(' ', '_')}`;
+                    const r = rewards.find(rw => rw.id === rId);
+                    const pill = r ? statusPill(r.status) : { bg: '#EAE1D5', color: 'var(--text-secondary)' };
+                    
+                    return (
+                      <div key={tier} className="rm-row" onClick={() => {
+                        if (r) { setDraft({ ...r, visitsRequired: String(r.visitsRequired), validityDays: String(r.validityDays || 30), menuItemId: r.menuItemId || '', targetTiers: [tier] }); }
+                        else { setDraft({ name: '', desc: '', visitsRequired: '0', status: 'Aktif', validityDays: '30', menuItemId: '', targetTiers: [tier] }); }
+                        setEditingId(rId); setFormMode('system'); setScreen('form');
+                      }} style={{ display: 'flex', alignItems: 'center', gap: '20px', background: 'var(--surface-card)', border: '1px solid var(--border-card)', borderRadius: 'var(--radius-lg)', padding: '20px', boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+                            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>{tier}</div>
+                            {r && (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', background: pill.bg, color: pill.color, fontSize: '10px', fontWeight: 600, padding: '3px 8px', borderRadius: '999px', textTransform: 'uppercase' }}>
+                                <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: pill.color }}></span>{r.status}
+                              </span>
+                            )}
+                          </div>
+                          
+                          {r ? (
+                            <>
+                              <div style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)', marginBottom: '4px' }}>{r.name || r.menuItem?.name || 'Birthday Treat Box'}</div>
+                              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>{r.desc || r.menuItem?.shortDesc || 'Tidak ada deskripsi.'}</div>
+                              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '8px', fontWeight: 500 }}>Berlaku {r.validityDays || 30} hari</div>
+                            </>
+                          ) : (
+                            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>Belum diatur. Silakan atur reward ulang tahun untuk tier ini.</div>
+                          )}
+                        </div>
+                        <div style={{ flex: 'none', background: 'var(--linen)', width: '40px', height: '40px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -562,7 +639,7 @@ function RewardManagementPage() {
                   <div style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--text-secondary)' }}>Batal, kembali ke Daftar Reward</div>
                 </div>
                 <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
-                  {formMode === 'create' ? 'Tambah Reward Baru' : (formMode === 'system' ? (editingId === 'SYSTEM_REFERRAL' ? 'Pengaturan Referral Reward' : 'Pengaturan Birthday Reward') : 'Edit Reward')}
+                  {formMode === 'create' ? 'Tambah Reward Baru' : (formMode === 'system' ? (editingId === 'SYSTEM_REFERRAL' ? 'Pengaturan Referral Reward' : `Pengaturan Birthday Reward (${draft.targetTiers[0] || 'Umum'})`) : 'Edit Reward')}
                 </div>
                 <div style={{ fontSize: '15px', color: 'var(--text-secondary)', marginTop: '6px' }}>{formMode === 'create' ? 'Lengkapi detail reward di bawah ini.' : 'Ubah detail reward dan syaratnya.'}</div>
 
@@ -578,8 +655,27 @@ function RewardManagementPage() {
                   </div>
                   <Input label="NAMA REWARD (OPSIONAL OVERRIDE)" placeholder="Kosongkan untuk memakai nama menu" value={draft.name || ''} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
                   <Input label="DESKRIPSI SINGKAT (OPSIONAL OVERRIDE)" placeholder="Kosongkan untuk memakai deskripsi menu" value={draft.desc || ''} onChange={(e: any) => setDraft({ ...draft, desc: e.target.value })} />
-                  {editingId !== 'SYSTEM_BIRTHDAY' && (
+                  {!(typeof editingId === 'string' && editingId.startsWith('SYSTEM_BIRTHDAY')) && (
                     <Input label={editingId === 'SYSTEM_REFERRAL' ? 'SYARAT REFERRAL' : 'SYARAT KUNJUNGAN'} type="number" placeholder={editingId === 'SYSTEM_REFERRAL' ? '1' : '10'} value={draft.visitsRequired} onChange={(e: any) => setDraft({ ...draft, visitsRequired: e.target.value })} />
+                  )}
+                  {formMode !== 'system' && (
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: 'var(--text-label)', textTransform: 'uppercase', marginBottom: '8px' }}>TARGET TIERS (KOSONG = SEMUA TIER)</div>
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        {['Insider', 'Familiar', 'Neighbor', 'Inner Circle'].map(tier => {
+                          const isSelected = draft.targetTiers.includes(tier);
+                          return (
+                            <label key={tier} style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '14px', color: 'var(--text-primary)' }}>
+                              <input type="checkbox" checked={isSelected} onChange={(e) => {
+                                if (e.target.checked) setDraft({ ...draft, targetTiers: [...draft.targetTiers, tier] });
+                                else setDraft({ ...draft, targetTiers: draft.targetTiers.filter(t => t !== tier) });
+                              }} style={{ accentColor: 'var(--caramel)', width: '16px', height: '16px' }} />
+                              {tier}
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                   <Input label="MASA BERLAKU (HARI)" type="number" placeholder="Contoh: 30" value={draft.validityDays} onChange={(e: any) => setDraft({ ...draft, validityDays: e.target.value })} />
 
@@ -605,16 +701,17 @@ function RewardManagementPage() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-                  <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setScreen('list')}>Batal</Button></div>
+                  <div style={{ flex: 1 }}><Button variant="outline" onClick={() => setScreen(typeof editingId === 'string' && editingId.startsWith('SYSTEM_BIRTHDAY') ? 'birthday_config' : 'list')}>Batal</Button></div>
                   <div style={{ flex: 1 }}><Button variant="primary" onClick={async () => {
                     if (!draft.menuItemId) {
                       alert('Item Menu wajib dipilih!');
                       return;
                     }
-                    const record = { id: formMode === 'create' ? 'rw' + Date.now() : editingId!, name: draft.name || null, desc: draft.desc || null, visitsRequired: parseInt(draft.visitsRequired, 10) || 0, status: draft.status, validityDays: parseInt(draft.validityDays, 10) || 30, menuItemId: draft.menuItemId };
+                    const record = { id: formMode === 'create' ? 'rw' + Date.now() : editingId!, name: draft.name || null, desc: draft.desc || null, visitsRequired: parseInt(draft.visitsRequired, 10) || 0, status: draft.status, validityDays: parseInt(draft.validityDays, 10) || 30, menuItemId: draft.menuItemId, targetTiers: draft.targetTiers };
                     await saveReward(record);
                     setRewards(await getRewardsAdmin());
                     if (formMode !== 'system') setScreen('list');
+                    else if (typeof editingId === 'string' && editingId.startsWith('SYSTEM_BIRTHDAY')) setScreen('birthday_config');
                     else alert('Perubahan berhasil disimpan!');
                   }}>Simpan</Button></div>
                 </div>
