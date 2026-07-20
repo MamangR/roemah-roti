@@ -320,18 +320,23 @@ export default function VisitsPage() {
                       <div style={{ marginTop: '2px', fontSize: '12px', color: 'rgba(248,244,238,.5)' }}>{t('visits.member_since_prefix', 'Member since')} {member?.since || 'Unknown'}</div>
                     </div>
 
-                    <div
-                      onClick={() => setShowQrModal(true)}
-                      style={{ padding: '8px', background: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                    >
-                      <QRCodeSVG
-                        value={member?.id || ''}
-                        size={72}
-                        bgColor={"#ffffff"}
-                        fgColor={"#3B2A22"}
-                        level={"L"}
-                        includeMargin={false}
-                      />
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+                      <div
+                        onClick={() => setShowQrModal(true)}
+                        style={{ padding: '8px', background: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                      >
+                        <QRCodeSVG
+                          value={member?.id || ''}
+                          size={72}
+                          bgColor={"#ffffff"}
+                          fgColor={"#3B2A22"}
+                          level={"L"}
+                          includeMargin={false}
+                        />
+                      </div>
+                      <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '.05em', color: 'rgba(248,244,238,.45)', textTransform: 'uppercase' }}>
+                        {t('visits.tap_to_scan', 'Tap to scan')}
+                      </span>
                     </div>
                   </div>
 

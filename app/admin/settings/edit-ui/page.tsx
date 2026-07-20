@@ -102,6 +102,7 @@ const TEXT_GROUPS = [
       { key: 'visits.refer_friend_subtitle', label: 'Referral card subtitle' },
       { key: 'visits.roadmap_title', label: 'Membership roadmap title' },
       { key: 'visits.roadmap_subtitle', label: 'Membership roadmap description' },
+      { key: 'visits.tap_to_scan', label: 'Barcode "Tap to scan" label' },
     ]
   },
   {

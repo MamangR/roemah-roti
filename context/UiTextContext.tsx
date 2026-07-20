@@ -88,6 +88,7 @@ export const UI_TEXT_DEFAULTS: Record<string, string> = {
   'visits.refer_friend_subtitle': 'Share something you trust.',
   'visits.roadmap_title': 'Your journey',
   'visits.roadmap_subtitle': 'Four tiers, one step at a time. Everything you\u2019ve reached stays yours.',
+  'visits.tap_to_scan': 'Tap to scan',
 
   // /rewards
   'rewards.page_title': 'Your Rewards',
