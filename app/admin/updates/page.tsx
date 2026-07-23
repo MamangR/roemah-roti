@@ -108,6 +108,28 @@ function UpdatesManagementPage() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
+  const [syncing, setSyncing] = useState(false);
+  const [syncSearch, setSyncSearch] = useState('');
+  const [syncCategory, setSyncCategory] = useState('All');
+  const handleSyncProducts = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch('/api/admin/sync-products', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert(`Synced ${data.syncedCount} products successfully.`);
+        const nm = await fetch('/api/updates?type=newMenu').then(r => r.json());
+        setNewMenuItems(Array.isArray(nm) ? nm : []);
+      } else {
+        alert(`Sync failed: ${data.error}`);
+      }
+    } catch (err) {
+      alert('Failed to connect to sync endpoint.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   // ─── Fetch all three lists on mount ─────────────────────────────────────────
   useEffect(() => {
     async function loadAll() {
@@ -611,36 +633,54 @@ function UpdatesManagementPage() {
                     <div>5 products synced</div>
                     <div>2 products failed to sync</div>
                   </div>
-                  <Button variant="primary" style={{ padding: '14px 24px' }}>Sync products</Button>
+                  <Button variant="primary" style={{ padding: '14px 24px' }} disabled={syncing} onClick={handleSyncProducts}>
+                    {syncing ? 'Syncing...' : 'Sync products'}
+                  </Button>
                 </div>
               </div>
 
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '16px 20px', display: 'flex', gap: '16px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.15)', flexWrap: 'wrap' }}>
-                <input type="text" placeholder="Search by product name or SKU" style={{ flex: 1, minWidth: '250px', background: 'transparent', border: '1px solid #E6DDD0', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', outline: 'none' }} />
-                <div style={{ border: '1px solid #E6DDD0', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: '#FFFFFF', minWidth: '160px' }}>
-                  <span>Category — all</span>
-                </div>
-              </div>
+              {(() => {
+                const uniqueCategories = ['All', ...Array.from(new Set(newMenuItems.map(p => p.category || 'Uncategorized'))).sort()];
+                const filteredProducts = newMenuItems.filter(p => {
+                  const matchSearch = syncSearch === '' || 
+                    (p.name?.toLowerCase().includes(syncSearch.toLowerCase())) || 
+                    (p.sku?.toLowerCase().includes(syncSearch.toLowerCase()));
+                  const matchCategory = syncCategory === 'All' || p.category === syncCategory || (!p.category && syncCategory === 'Uncategorized');
+                  return matchSearch && matchCategory;
+                });
+                
+                return (
+                  <>
+                    <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '18px', padding: '16px 20px', display: 'flex', gap: '16px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.15)', flexWrap: 'wrap' }}>
+                      <input type="text" value={syncSearch} onChange={(e) => setSyncSearch(e.target.value)} placeholder="Search by product name or SKU" style={{ flex: 1, minWidth: '250px', background: 'transparent', border: '1px solid #E6DDD0', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', outline: 'none' }} />
+                      <select value={syncCategory} onChange={(e) => setSyncCategory(e.target.value)} style={{ border: '1px solid #E6DDD0', borderRadius: '12px', padding: '12px 16px', fontSize: '14px', cursor: 'pointer', background: '#FFFFFF', minWidth: '160px', outline: 'none' }}>
+                        {uniqueCategories.map(c => <option key={c} value={c}>{c === 'All' ? 'Category — All' : c}</option>)}
+                      </select>
+                    </div>
 
-              <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
-                <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '10px', padding: '14px 24px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
-                  <div>Product Name</div><div>SKU</div><div>Category</div><div>Price</div>
-                </div>
-                {[
-                  { name: 'Original Saltbread', sku: 'RR-BRD-001', cat: 'Bread', price: 'Rp 28.000' },
-                  { name: 'Garlic Cream Cheese Saltbread', sku: 'RR-BRD-002', cat: 'Bread', price: 'Rp 33.000' },
-                  { name: 'Fudgy Brownies', sku: 'RR-CAKE-001', cat: 'Cake', price: 'Rp 30.000' },
-                  { name: 'Kopi Roemah Roti', sku: 'RR-COF-001', cat: 'Coffee', price: 'Rp 25.000' },
-                  { name: 'Roti Baso Ayam', sku: 'RR-BRD-003', cat: 'Bread', price: 'Rp 32.000' }
-                ].map((p, i) => (
-                  <div key={i} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '10px', padding: '16px 24px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
-                    <div style={{ fontWeight: 600, color: '#3B2A22' }}>{p.name}</div>
-                    <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{p.sku}</div>
-                    <div style={{ color: '#7A6A5F' }}>{p.cat}</div>
-                    <div style={{ color: '#3B2A22', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{p.price}</div>
-                  </div>
-                ))}
-              </div>
+                    <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', overflow: 'hidden' }}>
+                      <div className="text-responsive-heading" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '10px', padding: '14px 24px', background: '#F8F4EE', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>
+                        <div>Product Name</div><div>SKU</div><div>Category</div><div>Price</div>
+                      </div>
+                      {filteredProducts.length === 0 && (
+                        <div style={{ padding: '24px', textAlign: 'center', color: '#7A6A5F' }}>
+                          {newMenuItems.length === 0 ? 'No products found. Click Sync products to fetch from Accurate POS.' : 'No products match your filter.'}
+                        </div>
+                      )}
+                      {filteredProducts.map((p, i) => (
+                        <div key={i} className="text-responsive-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '10px', padding: '16px 24px', borderTop: '1px solid #EAE1D5', alignItems: 'center', color: '#4A3830' }}>
+                          <div style={{ fontWeight: 600, color: '#3B2A22' }}>{p.name}</div>
+                          <div style={{ color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{p.sku || '-'}</div>
+                          <div style={{ color: '#7A6A5F' }}>{p.category}</div>
+                          <div style={{ color: '#3B2A22', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>Rp {(p.price || 0).toLocaleString('id-ID')}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
+
+
             </div>
           )}
 

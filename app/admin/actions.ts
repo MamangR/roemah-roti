@@ -3,6 +3,8 @@
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 
+import { getAccurateSalesData } from '@/lib/accurate';
+
 async function checkAdmin() {
   const sessionId = (await cookies()).get('rr_admin_session')?.value;
   if (!sessionId) {
@@ -48,13 +50,11 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
 
   const totalVisits = activities.filter(a => a.type === 'visit').length;
 
-  // Since we don't have POS yet, we'll mock the revenue / top products based on visits
-  // Let's pretend every visit = 1 transaction of Rp. 100,000 average
+  const { revenueSum, transactionsCount, aov, products, dailyStats } = await getAccurateSalesData(startDateStr, endDateStr);
+
   const memberTxnSum = totalVisits;
-  const nonMemberTxnSum = Math.floor(memberTxnSum * 0.4); // Mock 40% non-members
-  const transactions = memberTxnSum + nonMemberTxnSum;
-  const aov = 125000;
-  const revenueSum = transactions * aov;
+  const nonMemberTxnSum = Math.max(0, transactionsCount - memberTxnSum);
+  const transactions = transactionsCount;
 
   return {
     totalMembers,
@@ -66,7 +66,9 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
     nonMemberTxnSum,
     transactions,
     revenueSum,
-    aov
+    aov,
+    products,
+    dailyStats
   };
 }
 

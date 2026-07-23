@@ -21,48 +21,7 @@ function AdminDashboardPage() {
   const router = useRouter();
   const { adminUser } = useAdminAuth();
 
-  const DATA = {
-    today: {
-      labels: ['7AM', '8AM', '9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM'],
-      revenue: [180000, 320000, 410000, 380000, 520000, 610000, 540000, 430000, 390000, 460000, 410000, 350000, 290000, 240000],
-      visits: [8, 14, 18, 16, 22, 26, 24, 19, 17, 20, 18, 15, 12, 9],
-      newMembers: [0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1],
-      memberTxn: [3, 5, 6, 5, 7, 8, 7, 6, 5, 6, 5, 4, 3, 2],
-      nonMemberTxn: [2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 3, 2, 2, 1],
-      rewardsRedeemed: 9,
-      totalMembers: 1284,
-      activeMembers: 512,
-      products: [
-        { name: 'Original Saltbread', qty: 42, revenue: 840000, contribution: 27.4 },
-        { name: 'Choco Saltbread', qty: 35, revenue: 700000, contribution: 22.8 },
-        { name: 'Cheese Saltbread', qty: 28, revenue: 560000, contribution: 18.3 },
-        { name: 'Sourdough Loaf', qty: 18, revenue: 396000, contribution: 12.9 },
-        { name: 'Butter Croissant', qty: 24, revenue: 384000, contribution: 12.5 },
-        { name: 'Cinnamon Roll', qty: 14, revenue: 182000, contribution: 5.9 }
-      ],
-      growth: { revenue: 8.4, transactions: 5.1, aov: 3.1, itemsSold: 6.7, newMembers: 25.0, totalVisits: 11.2, rewardsRedeemed: -4.3, totalMembers: 1.8, activeMembers: 3.4, memberTransactions: 9.0, nonMemberTransactions: -2.2, memberRate: 2.6 }
-    },
-    custom: {
-      labels: ['30 Jun', '1 Jul', '2 Jul', '3 Jul', '4 Jul', '5 Jul', '6 Jul'],
-      revenue: [4200000, 4650000, 4100000, 4900000, 5300000, 4550000, 3700000],
-      visits: [118, 132, 110, 140, 155, 128, 119],
-      newMembers: [4, 6, 3, 7, 8, 4, 2],
-      memberTxn: [45, 52, 42, 55, 60, 50, 44],
-      nonMemberTxn: [24, 28, 22, 29, 31, 27, 23],
-      rewardsRedeemed: 58,
-      totalMembers: 1284,
-      activeMembers: 588,
-      products: [
-        { name: 'Original Saltbread', qty: 294, revenue: 5880000, contribution: 27.1 },
-        { name: 'Choco Saltbread', qty: 245, revenue: 4900000, contribution: 22.6 },
-        { name: 'Cheese Saltbread', qty: 196, revenue: 3920000, contribution: 18.1 },
-        { name: 'Sourdough Loaf', qty: 126, revenue: 2772000, contribution: 12.8 },
-        { name: 'Butter Croissant', qty: 168, revenue: 2688000, contribution: 12.4 },
-        { name: 'Cinnamon Roll', qty: 98, revenue: 1274000, contribution: 5.9 }
-      ],
-      growth: { revenue: 12.6, transactions: 9.8, aov: 2.5, itemsSold: 10.1, newMembers: 14.7, totalVisits: 7.9, rewardsRedeemed: -1.5, totalMembers: 6.2, activeMembers: 8.0, memberTransactions: 11.3, nonMemberTransactions: 4.0, memberRate: 1.1 }
-    }
-  };
+  // Hardcoded DATA removed. Charts and metrics are driven by liveData now.
 
   const [filter, setFilter] = useState<'today' | 'allTime' | 'custom'>('today');
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -183,10 +142,42 @@ function AdminDashboardPage() {
     });
   };
 
-  // 'allTime' reuses the 'custom' data shape for chart visuals; live metrics come from DB
-  const d = filter === 'today' ? DATA.today : DATA.custom;
-  const g = d.growth;
+  const g = {
+    revenue: 0, transactions: 0, aov: 0, itemsSold: 0, newMembers: 0, totalVisits: 0, rewardsRedeemed: 0, totalMembers: 0, activeMembers: 0, memberTransactions: 0, nonMemberTransactions: 0, memberRate: 0
+  };
 
+  const chartLabels: string[] = [];
+  const chartRevenue: number[] = [];
+  const chartVisits: number[] = [];
+  const chartMemberTxn: number[] = [];
+  const chartNonMemberTxn: number[] = [];
+  
+  if (liveData?.dailyStats) {
+    const dates = Object.keys(liveData.dailyStats).sort();
+    if (dates.length === 0) {
+      chartLabels.push('No data');
+      chartRevenue.push(0);
+      chartVisits.push(0);
+      chartMemberTxn.push(0);
+      chartNonMemberTxn.push(0);
+    }
+    const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    for (const dt of dates) {
+      const [y, m, d] = dt.split('-');
+      chartLabels.push(`${parseInt(d)} ${monthNamesShort[parseInt(m) - 1]}`);
+      const stat = liveData.dailyStats[dt];
+      chartRevenue.push(stat.revenue);
+      chartVisits.push(0); // we don't have daily visits in backend right now
+      chartMemberTxn.push(stat.count); // mock distribution
+      chartNonMemberTxn.push(0); // mock distribution
+    }
+  } else {
+    chartLabels.push('Loading');
+    chartRevenue.push(0);
+    chartVisits.push(0);
+    chartMemberTxn.push(0);
+    chartNonMemberTxn.push(0);
+  }
   const revenueSum = liveData ? liveData.revenueSum : 0;
   const visitsSum = liveData ? liveData.totalVisits : 0;
   const newMembersSum = liveData ? liveData.newMembersSum : 0;
@@ -220,7 +211,8 @@ function AdminDashboardPage() {
     mk('Member rate', fmtPct(memberRate), 'memberRate')
   ];
 
-  const products = d.products.map(p => ({
+  const rawProducts = liveData?.products || [];
+  const products = rawProducts.map((p: any) => ({
     name: p.name,
     qtyText: fmtNum(p.qty),
     revenueText: fmtIDR(p.revenue),
@@ -228,10 +220,9 @@ function AdminDashboardPage() {
     contributionText: p.contribution.toFixed(1) + '%'
   }));
 
-  const rev = buildLine(d.revenue);
-  const vis = buildBars(d.visits);
-  const nm = buildLine(d.newMembers);
-  const stk = buildStacked(d.memberTxn, d.nonMemberTxn);
+  const rev = buildLine(chartRevenue);
+  const vis = buildBars(chartVisits);
+  const stk = buildStacked(chartMemberTxn, chartNonMemberTxn);
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const firstDow = new Date(calYear, calMonth, 1).getDay();
@@ -476,11 +467,11 @@ function AdminDashboardPage() {
                 ))}
               </svg>
               <div style={{ display: 'flex', position: 'absolute', left: '10px', right: '10px', bottom: '8px', pointerEvents: 'none' }}>
-                {d.labels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
+                {chartLabels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
               </div>
               {hover?.key === 'stacked' && (
                 <div style={{ position: 'absolute', left: `${(stk.bars[hover.i].cx / 10)}%`, top: `${Math.min(stk.bars[hover.i].memY, stk.bars[hover.i].nonY) - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
-                  <div style={{ fontWeight: 600 }}>{d.labels[hover.i]}</div>
+                  <div style={{ fontWeight: 600 }}>{chartLabels[hover.i]}</div>
                   <div style={{ color: '#E9C9A6', marginTop: '3px' }}>Member: {fmtNum(stk.bars[hover.i].mv)}</div>
                   <div style={{ color: 'rgba(248, 244, 238, 0.72)', marginTop: '1px' }}>Non-Member: {fmtNum(stk.bars[hover.i].nv)}</div>
                 </div>
@@ -530,11 +521,11 @@ function AdminDashboardPage() {
                 ))}
               </svg>
               <div style={{ display: 'flex', position: 'absolute', left: '10px', right: '10px', bottom: '8px', pointerEvents: 'none' }}>
-                {d.labels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
+                {chartLabels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
               </div>
               {hover?.key === 'rev' && (
                 <div style={{ position: 'absolute', left: `${(rev.points[hover.i].x / 10)}%`, top: `${rev.points[hover.i].y - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
-                  <div style={{ fontWeight: 600 }}>{d.labels[hover.i]}</div>
+                  <div style={{ fontWeight: 600 }}>{chartLabels[hover.i]}</div>
                   <div style={{ color: '#E9C9A6', marginTop: '3px' }}>{fmtIDR(rev.points[hover.i].v)}</div>
                 </div>
               )}

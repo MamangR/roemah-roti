@@ -139,6 +139,7 @@ model StoreMapping {
 // ─── Updates ──────────────────────────────────────────────────────────────────
 model NewMenu {
   id        String   @id @default(cuid())
+  sku       String?  @unique
   name      String
   category  String
   shortDesc String
