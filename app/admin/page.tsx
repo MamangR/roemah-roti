@@ -6,6 +6,7 @@ import Head from 'next/head';
 import { getDashboardStats } from './actions';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { LockedPage } from '@/components/admin/LockedPage';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 export default function AdminDashboardPageWrapper() {
   const { adminUser, hasPermission, loading: authLoading } = useAdminAuth();
@@ -23,7 +24,7 @@ function AdminDashboardPage() {
 
   // Hardcoded DATA removed. Charts and metrics are driven by liveData now.
 
-  const [filter, setFilter] = useState<'today' | 'allTime' | 'custom'>('today');
+  const [filter, setFilter] = usePersistentState<'today' | 'allTime' | 'custom'>('admin_home_filter', 'today');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calYear, setCalYear] = useState(2026);
   const [calMonth, setCalMonth] = useState(6); // July
@@ -151,7 +152,7 @@ function AdminDashboardPage() {
   const chartVisits: number[] = [];
   const chartMemberTxn: number[] = [];
   const chartNonMemberTxn: number[] = [];
-  
+
   if (liveData?.dailyStats) {
     const dates = Object.keys(liveData.dailyStats).sort();
     if (dates.length === 0) {

@@ -155,7 +155,22 @@ export async function DELETE(request: NextRequest) {
     if (!id || !type) return Response.json({ error: 'type and id are required' }, { status: 400 });
 
     if (type === 'newMenu') {
-      await prisma.newMenu.delete({ where: { id } });
+      const item = await prisma.newMenu.findUnique({
+        where: { id },
+        include: { rewardTemplates: true }
+      });
+      if (item) {
+        if (item.rewardTemplates && item.rewardTemplates.length > 0) {
+          for (const rt of item.rewardTemplates) {
+            if (rt.id.startsWith('SYSTEM_')) {
+              await prisma.rewardTemplate.update({ where: { id: rt.id }, data: { menuItemId: null } });
+            } else {
+              await prisma.rewardTemplate.delete({ where: { id: rt.id } });
+            }
+          }
+        }
+        await prisma.newMenu.delete({ where: { id } });
+      }
     } else if (type === 'promo') {
       await prisma.promo.delete({ where: { id } });
     } else if (type === 'announcement') {

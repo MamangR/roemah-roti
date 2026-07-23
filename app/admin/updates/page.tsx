@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { LockedPage } from '@/components/admin/LockedPage';
 import { ImageSelector } from '@/components/admin/ImageSelector';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 function fmtDate(iso: string) {
   if (!iso) return '';
@@ -13,6 +14,18 @@ function fmtDate(iso: string) {
 }
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function getRelativeTime(dateIso: string) {
+  if (!dateIso) return 'Never synced';
+  const diffMs = new Date().getTime() - new Date(dateIso).getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return 'Last synced just now';
+  if (diffMins < 60) return `Last synced ${diffMins} minutes ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `Last synced ${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `Last synced ${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 }
 function statusPill(kind: string, value: string) {
   if (kind === 'newMenu') {
@@ -90,8 +103,8 @@ function UpdatesManagementPage() {
   const router = useRouter();
   const { adminUser, hasPermission } = useAdminAuth();
   const canManageUpdates = hasPermission('manage_updates');
-  const [screen, setScreen] = useState<'list' | 'form' | 'sync'>('list');
-  const [activeTab, setActiveTab] = useState('newMenu');
+  const [screen, setScreen] = usePersistentState<'list' | 'form' | 'sync'>('admin_updates_screen', 'list');
+  const [activeTab, setActiveTab] = usePersistentState('admin_updates_activeTab', 'newMenu');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [newMenuItems, setNewMenuItems] = useState<any[]>([]);
@@ -100,10 +113,10 @@ function UpdatesManagementPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
-  const [formType, setFormType] = useState('newMenu');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<any>(emptyDraft('newMenu'));
+  const [formMode, setFormMode] = usePersistentState<'add' | 'edit'>('admin_updates_formMode', 'add');
+  const [formType, setFormType] = usePersistentState('admin_updates_formType', 'newMenu');
+  const [editingId, setEditingId] = usePersistentState<string | null>('admin_updates_editingId', null);
+  const [draft, setDraft] = usePersistentState<any>('admin_updates_draft', emptyDraft('newMenu'));
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
@@ -111,6 +124,7 @@ function UpdatesManagementPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncSearch, setSyncSearch] = useState('');
   const [syncCategory, setSyncCategory] = useState('All');
+  const [syncLog, setSyncLog] = useState<any>(null);
   const handleSyncProducts = async () => {
     setSyncing(true);
     try {
@@ -118,8 +132,12 @@ function UpdatesManagementPage() {
       const data = await res.json();
       if (data.success) {
         alert(`Synced ${data.syncedCount} products successfully.`);
-        const nm = await fetch('/api/updates?type=newMenu').then(r => r.json());
+        const [nm, log] = await Promise.all([
+          fetch('/api/updates?type=newMenu').then(r => r.json()),
+          fetch('/api/admin/sync-log').then(r => r.json())
+        ]);
         setNewMenuItems(Array.isArray(nm) ? nm : []);
+        setSyncLog(log?.log || null);
       } else {
         alert(`Sync failed: ${data.error}`);
       }
@@ -135,14 +153,16 @@ function UpdatesManagementPage() {
     async function loadAll() {
       setLoading(true);
       try {
-        const [nm, pr, an] = await Promise.all([
+        const [nm, pr, an, log] = await Promise.all([
           fetch('/api/updates?type=newMenu').then(r => r.json()),
           fetch('/api/updates?type=promo').then(r => r.json()),
           fetch('/api/updates?type=announcement').then(r => r.json()),
+          fetch('/api/admin/sync-log').then(r => r.json()),
         ]);
         setNewMenuItems(Array.isArray(nm) ? nm : []);
         setPromos(Array.isArray(pr) ? pr : []);
         setAnnouncements(Array.isArray(an) ? an : []);
+        setSyncLog(log?.log || null);
       } catch (err) {
         console.error('Failed to load updates', err);
       } finally {
@@ -629,9 +649,9 @@ function UpdatesManagementPage() {
                       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#5C7B5A' }}></span>
                       Connected to Accurate
                     </div>
-                    <div>Last synced 2 hours ago</div>
-                    <div>5 products synced</div>
-                    <div>2 products failed to sync</div>
+                    <div>{getRelativeTime(syncLog?.createdAt)}</div>
+                    <div>{syncLog?.syncedCount || 0} products synced</div>
+                    <div>{syncLog?.failedCount || 0} products failed to sync</div>
                   </div>
                   <Button variant="primary" style={{ padding: '14px 24px' }} disabled={syncing} onClick={handleSyncProducts}>
                     {syncing ? 'Syncing...' : 'Sync products'}

@@ -52,7 +52,7 @@ export default function ReferralPage() {
     const t = setTimeout(() => setRevealed(true), 350);
 
     import('@/app/admin/actions').then(m => {
-      m.getSystemReward('SYSTEM_REFERRAL', 'Free Garlic Cream Cheese', 'Our thanks for a friend who joined.', 1)
+      m.getSystemReward('SYSTEM_REFERRAL', 'No Reward', 'Reward is not available right now.', 1)
         .then(res => {
           setGoalCount(res.visitsRequired || 1);
           setRewardName(res.resolvedName);
@@ -83,7 +83,8 @@ export default function ReferralPage() {
   const qualifying = rawFriends.filter((f: any) => f.status === 'Approved').length;
 
   const hasClaimed = member?.rewards?.some((r: any) => r.type === 'Referral' && r.title.includes(rewardName));
-  const baseRewardState = locallyClaimed || hasClaimed ? 'claimed' : (qualifying >= goalCount ? 'ready' : 'locked');
+  let baseRewardState = locallyClaimed || hasClaimed ? 'claimed' : (qualifying >= goalCount ? 'ready' : 'locked');
+  if (rewardName === 'No Reward') baseRewardState = 'unavailable';
 
   const pct = Math.round((Math.min(qualifying, goalCount) / goalCount) * 100);
   const remaining = Math.max(0, goalCount - qualifying);
@@ -107,7 +108,8 @@ export default function ReferralPage() {
   const rewardMap: Record<string, any> = {
     locked: { line: remaining + ' more friend' + (remaining === 1 ? '' : 's') + ' to unlock', bg: '#F5EFE6', dot: '#C9B7A6', color: '#A08A7B', ready: false, disabled: remaining + ' more friend' + (remaining === 1 ? '' : 's') + ' to unlock' },
     ready: { line: 'Ready to Claim', bg: 'rgba(122,150,116,.12)', dot: '#5C7B5A', color: '#5C7B5A', ready: true, disabled: '' },
-    claimed: { line: 'Claimed' + (claimDate ? ' on ' + claimDate : ''), bg: 'rgba(166,124,82,.10)', dot: '#A67C52', color: '#A67C52', ready: false, disabled: 'Already Claimed' }
+    claimed: { line: 'Claimed' + (claimDate ? ' on ' + claimDate : ''), bg: 'rgba(166,124,82,.10)', dot: '#A67C52', color: '#A67C52', ready: false, disabled: 'Already Claimed' },
+    unavailable: { line: 'Reward not available', bg: 'rgba(59,42,34,.06)', dot: '#A08A7B', color: '#7A6A5F', ready: false, disabled: 'Not Available' }
   };
   const rm = rewardMap[baseRewardState];
 

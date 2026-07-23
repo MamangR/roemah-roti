@@ -136,6 +136,22 @@ model StoreMapping {
   announcements Announcement[]
 }
 
+// ─── Settings & Config ───────────────────────────────────────────────────────
+model SystemSetting {
+  id        String   @id @default("singleton")
+  posConnected Boolean @default(true)
+  waConnected  Boolean @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model MessageTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // ─── Updates ──────────────────────────────────────────────────────────────────
 model NewMenu {
   id        String   @id @default(cuid())
@@ -210,6 +226,7 @@ model Activity {
   time      String?
   outlet    String?
   visitNo   String?
+  amount    Int?     // Spend amount if applicable
   reward    String?
   earnedVia String?
   status    String?  // 'ready', 'redeemed'
@@ -278,3 +295,9 @@ model UiTextOverride {
   updatedAt DateTime @updatedAt
 }
 
+model SyncLog {
+  id           String   @id @default(cuid())
+  syncedCount  Int
+  failedCount  Int
+  createdAt    DateTime @default(now())
+}

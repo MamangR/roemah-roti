@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { LockedPage } from '@/components/admin/LockedPage';
+import { usePersistentState } from '@/hooks/usePersistentState';
 import { Link as LinkIcon, Cake } from 'lucide-react';
 
 function fmtDate(iso: string) {
@@ -66,7 +67,7 @@ function RewardManagementPage() {
   const router = useRouter();
   const { adminUser, hasPermission } = useAdminAuth();
   const canManageRewards = hasPermission('manage_rewards');
-  const [screen, setScreen] = useState<'list' | 'form' | 'redeem' | 'history' | 'birthday_config'>('list');
+  const [screen, setScreen] = usePersistentState<'list' | 'form' | 'redeem' | 'history' | 'birthday_config'>('admin_rewards_screen', 'list');
   const [rewards, setRewards] = useState<any[]>([]);
   const [members, setMembers] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
@@ -136,11 +137,11 @@ function RewardManagementPage() {
     load();
   }, [screen, router]);
 
-  const [listFilter, setListFilter] = useState('all');
+  const [listFilter, setListFilter] = usePersistentState('admin_rewards_listFilter', 'all');
   const [tierFilters, setTierFilters] = useState<string[]>([]);
-  const [formMode, setFormMode] = useState<'create' | 'edit' | 'system'>('create');
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [draft, setDraft] = useState<{name: string, desc: string, visitsRequired: string, status: string, validityDays: string, menuItemId: string, targetTiers: string[]}>({ name: '', desc: '', visitsRequired: '', status: 'Aktif', validityDays: '30', menuItemId: '', targetTiers: [] });
+  const [formMode, setFormMode] = usePersistentState<'create' | 'edit' | 'system'>('admin_rewards_formMode', 'create');
+  const [editingId, setEditingId] = usePersistentState<string | null>('admin_rewards_editingId', null);
+  const [draft, setDraft] = usePersistentState<{name: string, desc: string, visitsRequired: string, status: string, validityDays: string, menuItemId: string, targetTiers: string[]}>('admin_rewards_draft', { name: '', desc: '', visitsRequired: '', status: 'Aktif', validityDays: '30', menuItemId: '', targetTiers: [] });
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);

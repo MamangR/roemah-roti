@@ -18,8 +18,10 @@ export async function POST(req: Request) {
     const items = res.d;
     let syncedCount = 0;
     let failedCount = 0;
+    let deletedCount = 0;
 
     const todayIso = new Date().toISOString().slice(0, 10);
+    const validSkus: string[] = [];
 
     for (const item of items) {
       // Only sync INVENTORY or NON_INVENTORY items
@@ -37,6 +39,8 @@ export async function POST(req: Request) {
         continue;
       }
 
+      validSkus.push(sku);
+
       try {
         await prisma.newMenu.upsert({
           where: { sku: sku },
@@ -52,7 +56,7 @@ export async function POST(req: Request) {
             category: category,
             shortDesc: '',
             longDesc: '',
-            status: 'Draft',
+            status: 'Published',
             dateAdded: todayIso,
           }
         });
@@ -63,7 +67,42 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ success: true, syncedCount, failedCount });
+    if (validSkus.length > 0) {
+      const missingItems = await prisma.newMenu.findMany({
+        where: {
+          sku: { not: null },
+          NOT: { sku: { in: validSkus } }
+        },
+        select: { id: true, sku: true, rewardTemplates: true }
+      });
+
+      for (const item of missingItems) {
+        try {
+          if (item.rewardTemplates && item.rewardTemplates.length > 0) {
+            for (const rt of item.rewardTemplates) {
+              if (rt.id.startsWith('SYSTEM_')) {
+                await prisma.rewardTemplate.update({ where: { id: rt.id }, data: { menuItemId: null } });
+              } else {
+                await prisma.rewardTemplate.delete({ where: { id: rt.id } });
+              }
+            }
+          }
+          await prisma.newMenu.delete({ where: { id: item.id } });
+          deletedCount++;
+        } catch (delErr) {
+          console.warn(`Could not delete missing item ${item.sku} (likely in use):`, delErr);
+        }
+      }
+    }
+
+    await prisma.syncLog.create({
+      data: {
+        syncedCount,
+        failedCount
+      }
+    });
+
+    return NextResponse.json({ success: true, syncedCount, failedCount, deletedCount });
   } catch (error: any) {
     console.error('Error in sync-products:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

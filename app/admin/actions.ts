@@ -86,11 +86,11 @@ export async function getMembers() {
     // Determine last activity date
     const lastActivity = m.activities.length > 0 ? m.activities[0].createdAt.toISOString().slice(0, 10) : m.createdAt.toISOString().slice(0, 10);
 
-    // Map transactions (mocked for now since we don't have POS)
+    // Map transactions
     const transactions = m.activities.filter(a => a.type === 'visit').map((a, i) => ({
       date: a.createdAt.toISOString().slice(0, 10),
-      invoice: `INV-${new Date(a.createdAt).getFullYear().toString().slice(-2)}${String(new Date(a.createdAt).getMonth() + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
-      total: 100000 + Math.floor(Math.random() * 50000),
+      invoice: a.ref || `INV-${new Date(a.createdAt).getFullYear().toString().slice(-2)}${String(new Date(a.createdAt).getMonth() + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
+      total: a.amount || 0,
       visitEarned: 1
     }));
 
@@ -115,14 +115,11 @@ export async function getMembers() {
 }
 
 export async function getSystemReward(id: string, defaultName: string, defaultDesc: string, defaultReq: number) {
-  const config = await prisma.rewardTemplate.findUnique({ where: { id }, include: { menuItem: true } });
-  if (config) {
-    return {
-      ...config,
-      resolvedName: config.name || config.menuItem?.name || defaultName,
-      resolvedDesc: config.desc || config.menuItem?.shortDesc || defaultDesc,
-      imageUrl: config.menuItem?.imageUrl
-    };
+  const template = await prisma.rewardTemplate.findUnique({ where: { id }, include: { menuItem: true } });
+  if (template) {
+    const resolvedName = template.menuItem ? (template.name || template.menuItem.name) : 'No Reward';
+    const resolvedDesc = template.menuItem ? (template.desc || template.menuItem.shortDesc) : 'Reward is not available right now.';
+    return { name: template.name, desc: template.desc, visitsRequired: template.visitsRequired, imageUrl: template.menuItem?.imageUrl, resolvedName, resolvedDesc };
   }
   return {
     id,
@@ -443,7 +440,7 @@ export async function getReferralsAdmin() {
     orderBy: { createdAt: 'desc' }
   });
 
-  const referralConfig = await getSystemReward('SYSTEM_REFERRAL', 'Free Garlic Cream Cheese', 'Our thanks for a friend who joined.', 1);
+  const referralConfig = await getSystemReward('SYSTEM_REFERRAL', 'No Reward', 'Reward is not available right now.', 1);
 
   const flatList: any[] = [];
   for (const f of friends) {

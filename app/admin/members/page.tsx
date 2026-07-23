@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { LockedPage } from '@/components/admin/LockedPage';
+import { usePersistentState } from '@/hooks/usePersistentState';
 import { Suspense } from 'react';
 
 const tx = (date: string, invoice: string, total: number, visitEarned: number) => ({ date, invoice, total, visitEarned });
@@ -124,7 +125,7 @@ function MemberManagementPage() {
   const editId = searchParams.get('edit');
   const { adminUser, hasPermission } = useAdminAuth();
 
-  const [screen, setScreen] = useState<'search' | 'list' | 'detail' | 'edit'>('list');
+  const [screen, setScreen] = usePersistentState<'search' | 'list' | 'detail' | 'edit'>('admin_members_screen', 'list');
   const [members, setMembers] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -160,7 +161,7 @@ function MemberManagementPage() {
     fetchM();
   }, [editId]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [listFilter, setListFilter] = useState('all');
+  const [listFilter, setListFilter] = usePersistentState('admin_members_listFilter', 'all');
   const [sortKey, setSortKey] = useState('name');
   const [sortDir, setSortDir] = useState('asc');
   

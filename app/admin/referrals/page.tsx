@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { LockedPage } from '@/components/admin/LockedPage';
+import { usePersistentState } from '@/hooks/usePersistentState';
 
 function fmtDate(iso: string) {
   if (!iso) return '';
@@ -67,7 +68,7 @@ export default function ReferralManagementPageWrapper() {
 function ReferralManagementPage() {
   const router = useRouter();
   const { adminUser } = useAdminAuth();
-  const [screen, setScreen] = useState<'list' | 'history' | 'detail'>('list');
+  const [screen, setScreen] = usePersistentState<'list' | 'history' | 'detail'>('admin_referrals_screen', 'list');
   const [referrals, setReferrals] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -93,10 +94,10 @@ function ReferralManagementPage() {
   }, [screen]);
 
   const [listQuery, setListQuery] = useState('');
-  const [listFilter, setListFilter] = useState('all');
+  const [listFilter, setListFilter] = usePersistentState('admin_referrals_listFilter', 'all');
 
   const [selectedReferralId, setSelectedReferralId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('referrer');
+  const [activeTab, setActiveTab] = usePersistentState('admin_referrals_activeTab', 'referrer');
   const [approveConfirmOpen, setApproveConfirmOpen] = useState(false);
   const [rejectConfirmOpen, setRejectConfirmOpen] = useState(false);
 

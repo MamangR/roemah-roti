@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     const referralConfig = await prisma.rewardTemplate.findUnique({ where: { id: 'SYSTEM_REFERRAL' }, include: { menuItem: true } });
     const goalCount = referralConfig ? referralConfig.visitsRequired : 1;
-    const rewardName = referralConfig?.name || referralConfig?.menuItem?.name || 'Free Garlic Cream Cheese';
+    const rewardName = referralConfig?.menuItem ? (referralConfig.name || referralConfig.menuItem.name) : 'No Reward';
     const rewardDesc = referralConfig?.desc || referralConfig?.menuItem?.shortDesc || 'Our thanks for a friend who joined.';
     const validityDays = referralConfig?.validityDays || 30;
 

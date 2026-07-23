@@ -95,14 +95,34 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
   // which contains the totalAmount field in the list endpoint.
   let url = '/accurate/api/sales-invoice/list.do'; 
   
-  const params: any = {
-    fields: 'id,number,transDate,totalAmount,customer',
-  };
+  let receipts: any[] = [];
+  let page = 1;
+  const pageSize = 100;
+  
+  while (true) {
+    const params: any = {
+      fields: 'id,number,transDate,totalAmount,customer',
+      'sp.page': page,
+      'sp.pageSize': pageSize
+    };
 
-  const res = await fetchAccurate(url, params);
+    const res = await fetchAccurate(url, params);
+
+    if (!res || !res.d) {
+      break;
+    }
+
+    receipts = receipts.concat(res.d);
+
+    if (res.sp && res.sp.page < res.sp.pageCount) {
+      page++;
+    } else {
+      break;
+    }
+  }
 
   // If the API call fails or env vars are missing, return 0s so the dashboard doesn't crash
-  if (!res || !res.d) {
+  if (receipts.length === 0) {
     return {
       revenueSum: 0,
       transactionsCount: 0,
@@ -112,8 +132,6 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
     };
   }
 
-  const receipts = res.d || [];
-  
   let revenueSum = 0;
   let transactionsCount = 0;
   const productMap: Record<string, { qty: number, revenue: number }> = {};
@@ -125,14 +143,18 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
 
   for (const receipt of receipts) {
     // transDate comes as string, e.g., "01/11/2023" or similar
-    let rDate = new Date(receipt.transDate);
-    // If transDate is dd/mm/yyyy
-    if (isNaN(rDate.getTime()) && typeof receipt.transDate === 'string') {
+    // Accurate typically returns dd/mm/yyyy. new Date() will silently misparse dates like 12/07/2026 as Dec 7th.
+    // So we must manually split if there is a slash.
+    let rDate: Date;
+    if (typeof receipt.transDate === 'string' && receipt.transDate.includes('/')) {
         const parts = receipt.transDate.split(/[\s/:]+/);
         if (parts.length >= 3) {
-            // assume dd/mm/yyyy
             rDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T${parts[3] || '12'}:${parts[4] || '00'}:00Z`);
+        } else {
+            rDate = new Date(receipt.transDate);
         }
+    } else {
+        rDate = new Date(receipt.transDate);
     }
 
     if (!isNaN(rDate.getTime())) {
