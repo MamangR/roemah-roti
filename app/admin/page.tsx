@@ -36,24 +36,54 @@ function AdminDashboardPage() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const [liveData, setLiveData] = useState<any>(null);
+  const [growthData, setGrowthData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       let start = appliedStart;
       let end = appliedEnd;
+      const today = new Date().toISOString().slice(0, 10);
+      let prevStart = '';
+      let prevEnd = '';
+
       if (filter === 'today') {
-        const today = new Date().toISOString().slice(0, 10);
         start = today;
         end = today;
+        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+        prevStart = yesterday;
+        prevEnd = yesterday;
       } else if (filter === 'allTime') {
         start = '2020-01-01';
-        end = new Date().toISOString().slice(0, 10);
+        end = today;
+      } else {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        
+        const pEnd = new Date(startDate.getTime() - 86400000);
+        const pStart = new Date(pEnd.getTime() - (diffDays - 1) * 86400000);
+        
+        prevStart = pStart.toISOString().slice(0, 10);
+        prevEnd = pEnd.toISOString().slice(0, 10);
       }
+
       try {
+        setIsLoading(true);
         const data = await getDashboardStats(start, end);
         setLiveData(data);
+        
+        if (filter !== 'allTime' && prevStart && prevEnd) {
+          const prevData = await getDashboardStats(prevStart, prevEnd);
+          setGrowthData(prevData);
+        } else {
+          setGrowthData(null);
+        }
       } catch (err) {
         console.error(err);
+      } finally {
+        setIsLoading(false);
       }
     }
     load();
@@ -63,15 +93,31 @@ function AdminDashboardPage() {
   const fmtIDR = (n: number) => 'Rp' + Math.round(n).toLocaleString('id-ID');
   const fmtNum = (n: number) => Math.round(n).toLocaleString('id-ID');
   const fmtPct = (n: number) => n.toFixed(1) + '%';
+  const getNiceMax = (maxValue: number) => {
+    if (maxValue <= 0) return 3;
+    const power = Math.pow(10, Math.floor(Math.log10(maxValue)));
+    const fraction = maxValue / power;
+    let step;
+    if (fraction <= 1.5) step = 0.5;
+    else if (fraction <= 3) step = 1;
+    else if (fraction <= 6) step = 2;
+    else if (fraction <= 9) step = 3;
+    else step = 4;
+    let actualStep = step * power;
+    if (actualStep < 1) actualStep = 1;
+    return actualStep * 3;
+  };
+
   const fmtCompact = (n: number) => {
-    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'jt';
-    if (n >= 1000) return (n / 1000).toFixed(0) + 'rb';
+    if (n >= 1000000 && n % 1000000 === 0) return (n / 1000000) + 'M';
+    if (n >= 1000 && n % 1000 === 0) return (n / 1000) + 'K';
     return Math.round(n).toString();
   };
   const pad = (n: number) => n < 10 ? '0' + n : '' + n;
   const iso = (y: number, m: number, d: number) => y + '-' + pad(m + 1) + '-' + pad(d);
 
-  const growthParts = (g: number) => {
+  const growthParts = (g: number | null) => {
+    if (g === null) return null;
     const up = g >= 0;
     const upColor = '#A67C52';
     return {
@@ -84,8 +130,8 @@ function AdminDashboardPage() {
   };
 
   const buildLine = (values: number[]) => {
-    const padL = 10, padR = 10, padT = 24, padB = 40, w = 1000, h = 280;
-    const max = Math.max(...values) * 1.15 || 1;
+    const padL = 34, padR = 20, padT = 24, padB = 40, w = 1000, h = 280;
+    const max = getNiceMax(Math.max(...values) || 1);
     const innerW = w - padL - padR, innerH = h - padT - padB;
     const n = values.length;
     const points = values.map((v, i) => ({
@@ -100,8 +146,8 @@ function AdminDashboardPage() {
   };
 
   const buildBars = (values: number[]) => {
-    const padL = 10, padR = 10, padT = 24, padB = 40, w = 1000, h = 280, gap = 0.4;
-    const max = Math.max(...values) * 1.15 || 1;
+    const padL = 34, padR = 20, padT = 24, padB = 40, w = 1000, h = 280, gap = 0.4;
+    const max = getNiceMax(Math.max(...values) || 1);
     const innerW = w - padL - padR, innerH = h - padT - padB;
     const n = values.length;
     const slot = innerW / n;
@@ -114,9 +160,9 @@ function AdminDashboardPage() {
   };
 
   const buildStacked = (memberArr: number[], nonArr: number[]) => {
-    const padL = 10, padR = 10, padT = 24, padB = 40, w = 1000, h = 280, gap = 0.4;
+    const padL = 34, padR = 20, padT = 24, padB = 40, w = 1000, h = 280, gap = 0.4;
     const totals = memberArr.map((v, i) => v + nonArr[i]);
-    const max = Math.max(...totals) * 1.15 || 1;
+    const max = getNiceMax(Math.max(...totals) || 1);
     const innerW = w - padL - padR, innerH = h - padT - padB;
     const n = memberArr.length;
     const slot = innerW / n;
@@ -130,10 +176,22 @@ function AdminDashboardPage() {
       const memY = nonY - mh;
       return { x, w: barW, cx: x + barW / 2, memY, memH: mh, nonY, nonH: nh, mv, nv, i };
     });
-    return { bars, baseline: padT + innerH };
+    return { bars, baseline: padT + innerH, max, padT, innerH };
   };
 
-  const gridLines = (padT: number, innerH: number) => [0, 1, 2, 3].map(i => padT + (innerH / 3) * i);
+  const renderGridLines = (padT: number, innerH: number, max: number, isCurrency: boolean = false) => {
+    return [0, 1, 2, 3].map(i => {
+      const gy = padT + (innerH / 3) * i;
+      const val = max * ((3 - i) / 3);
+      const valStr = val === 0 ? '0' : (isCurrency ? 'Rp' + fmtCompact(val) : fmtCompact(val));
+      return (
+        <g key={`g${i}`}>
+          <line x1="0" x2="1000" y1={gy} y2={gy} style={{ stroke: '#EAE1D5', strokeWidth: 1, strokeDasharray: '4 4' }}></line>
+          <text x="0" y={gy - 6} style={{ fill: '#A08A7B', fontSize: '10px', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{valStr}</text>
+        </g>
+      );
+    });
+  };
   const colBounds = (xs: number[], wTotal: number) => {
     const n = xs.length;
     return xs.map((x, i) => {
@@ -143,15 +201,12 @@ function AdminDashboardPage() {
     });
   };
 
-  const g = {
-    revenue: 0, transactions: 0, aov: 0, itemsSold: 0, newMembers: 0, totalVisits: 0, rewardsRedeemed: 0, totalMembers: 0, activeMembers: 0, memberTransactions: 0, nonMemberTransactions: 0, memberRate: 0
-  };
-
   const chartLabels: string[] = [];
   const chartRevenue: number[] = [];
   const chartVisits: number[] = [];
   const chartMemberTxn: number[] = [];
   const chartNonMemberTxn: number[] = [];
+  const chartNewMembers: number[] = [];
 
   if (liveData?.dailyStats) {
     const dates = Object.keys(liveData.dailyStats).sort();
@@ -161,6 +216,7 @@ function AdminDashboardPage() {
       chartVisits.push(0);
       chartMemberTxn.push(0);
       chartNonMemberTxn.push(0);
+      chartNewMembers.push(0);
     }
     const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     for (const dt of dates) {
@@ -168,9 +224,10 @@ function AdminDashboardPage() {
       chartLabels.push(`${parseInt(d)} ${monthNamesShort[parseInt(m) - 1]}`);
       const stat = liveData.dailyStats[dt];
       chartRevenue.push(stat.revenue);
-      chartVisits.push(0); // we don't have daily visits in backend right now
-      chartMemberTxn.push(stat.count); // mock distribution
-      chartNonMemberTxn.push(0); // mock distribution
+      chartVisits.push(stat.visits || 0);
+      chartMemberTxn.push(stat.visits || 0);
+      chartNonMemberTxn.push(Math.max(0, stat.count - (stat.visits || 0)));
+      chartNewMembers.push(stat.newMembers || 0);
     }
   } else {
     chartLabels.push('Loading');
@@ -178,6 +235,7 @@ function AdminDashboardPage() {
     chartVisits.push(0);
     chartMemberTxn.push(0);
     chartNonMemberTxn.push(0);
+    chartNewMembers.push(0);
   }
   const revenueSum = liveData ? liveData.revenueSum : 0;
   const visitsSum = liveData ? liveData.totalVisits : 0;
@@ -186,12 +244,49 @@ function AdminDashboardPage() {
   const nonMemberTxnSum = liveData ? liveData.nonMemberTxnSum : 0;
   const transactions = liveData ? liveData.transactions : 0;
   const aov = liveData ? liveData.aov : 0;
-  const itemsSold = Math.round(transactions * 3.4);
+  const itemsSold = liveData ? liveData.itemsSold : 0;
   const memberRate = transactions > 0 ? (memberTxnSum / transactions) * 100 : 0;
+  const rewardsRedeemed = liveData ? liveData.rewardsRedeemed : 0;
+  const totalMembers = liveData ? liveData.totalMembers : 0;
+  const activeMembers = liveData ? liveData.activeMembers : 0;
+
+  const prevRevSum = growthData ? growthData.revenueSum : 0;
+  const prevVisitsSum = growthData ? growthData.totalVisits : 0;
+  const prevNewMembersSum = growthData ? growthData.newMembersSum : 0;
+  const prevMemberTxnSum = growthData ? growthData.memberTxnSum : 0;
+  const prevNonMemberTxnSum = growthData ? growthData.nonMemberTxnSum : 0;
+  const prevTransactions = growthData ? growthData.transactions : 0;
+  const prevAov = growthData ? growthData.aov : 0;
+  const prevItemsSold = growthData ? growthData.itemsSold : 0;
+  const prevRewardsRedeemed = growthData ? growthData.rewardsRedeemed : 0;
+  const prevTotalMembers = growthData ? growthData.totalMembers : 0;
+  const prevActiveMembers = growthData ? growthData.activeMembers : 0;
+  const prevMemberRate = prevTransactions > 0 ? (prevMemberTxnSum / prevTransactions) * 100 : 0;
+
+  const calcG = (curr: number, prev: number) => {
+    if (!liveData || !growthData || filter === 'allTime') return null;
+    if (prev === 0) return curr === 0 ? 0 : 100;
+    return ((curr - prev) / prev) * 100;
+  };
+
+  const g = {
+    revenue: calcG(revenueSum, prevRevSum),
+    transactions: calcG(transactions, prevTransactions),
+    aov: calcG(aov, prevAov),
+    itemsSold: calcG(itemsSold, prevItemsSold),
+    newMembers: calcG(newMembersSum, prevNewMembersSum),
+    totalVisits: calcG(visitsSum, prevVisitsSum),
+    rewardsRedeemed: calcG(rewardsRedeemed, prevRewardsRedeemed),
+    totalMembers: calcG(totalMembers, prevTotalMembers),
+    activeMembers: calcG(activeMembers, prevActiveMembers),
+    memberTransactions: calcG(memberTxnSum, prevMemberTxnSum),
+    nonMemberTransactions: calcG(nonMemberTxnSum, prevNonMemberTxnSum),
+    memberRate: calcG(memberRate, prevMemberRate)
+  };
 
   const mk = (label: string, value: string, gkey: keyof typeof g) => {
     const gp = growthParts(g[gkey]);
-    return { label, value, ...gp };
+    return { label, value, gp };
   };
 
   const businessMetrics = [
@@ -201,12 +296,12 @@ function AdminDashboardPage() {
     mk('Items sold', fmtNum(itemsSold), 'itemsSold'),
     mk('New members', fmtNum(newMembersSum), 'newMembers'),
     mk('Total visits', fmtNum(visitsSum), 'totalVisits'),
-    mk('Rewards redeemed', fmtNum(liveData ? liveData.rewardsRedeemed : 0), 'rewardsRedeemed')
+    mk('Rewards redeemed', fmtNum(rewardsRedeemed), 'rewardsRedeemed')
   ];
 
   const memberMetrics = [
-    mk('Total members', fmtNum(liveData ? liveData.totalMembers : 0), 'totalMembers'),
-    mk('Active members (30-day)', fmtNum(liveData ? liveData.activeMembers : 0), 'activeMembers'),
+    mk('Total members', fmtNum(totalMembers), 'totalMembers'),
+    mk('Active members (30-day)', fmtNum(activeMembers), 'activeMembers'),
     mk('Member transactions', fmtNum(memberTxnSum), 'memberTransactions'),
     mk('Non-member transactions', fmtNum(nonMemberTxnSum), 'nonMemberTransactions'),
     mk('Member rate', fmtPct(memberRate), 'memberRate')
@@ -224,6 +319,7 @@ function AdminDashboardPage() {
   const rev = buildLine(chartRevenue);
   const vis = buildBars(chartVisits);
   const stk = buildStacked(chartMemberTxn, chartNonMemberTxn);
+  const newMem = buildLine(chartNewMembers);
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const firstDow = new Date(calYear, calMonth, 1).getDay();
@@ -416,14 +512,21 @@ function AdminDashboardPage() {
           <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Bisnis</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '16px' }}>
             {businessMetrics.map((m, i) => (
-              <div key={i} style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
+              <div key={i} className="dashboard-card" style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
                 <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>{m.label}</div>
-                <div style={{ fontSize: '26px', fontWeight: 600, letterSpacing: '-0.01em', color: '#3B2A22', marginTop: '10px', fontVariantNumeric: 'tabular-nums' }}>{m.value}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
-                  <div style={m.arrowStyle as any}></div>
-                  <span style={{ fontSize: '12px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.growthColor }}>{m.growthText}</span>
-                  <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs sebelumnya</span>
+                <div style={{ fontSize: '26px', fontWeight: 600, letterSpacing: '-0.01em', color: '#3B2A22', marginTop: '10px', fontVariantNumeric: 'tabular-nums' }}>
+                  {isLoading ? <div className="skeleton-shimmer" style={{ width: '80px', height: '32px', borderRadius: '6px' }}></div> : m.value}
                 </div>
+                {m.gp && !isLoading && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
+                    <div style={m.gp.arrowStyle as any}></div>
+                    <span style={{ fontSize: '12px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.gp.growthColor }}>{m.gp.growthText}</span>
+                    <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs sebelumnya</span>
+                  </div>
+                )}
+                {m.gp && isLoading && (
+                  <div style={{ marginTop: '10px' }}><div className="skeleton-shimmer" style={{ width: '120px', height: '16px', borderRadius: '4px' }}></div></div>
+                )}
               </div>
             ))}
           </div>
@@ -434,32 +537,39 @@ function AdminDashboardPage() {
           <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Member</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '16px', marginBottom: '16px' }}>
             {memberMetrics.map((m, i) => (
-              <div key={i} style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
+              <div key={i} className="dashboard-card" style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
                 <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>{m.label}</div>
-                <div style={{ fontSize: '26px', fontWeight: 600, letterSpacing: '-0.01em', color: '#3B2A22', marginTop: '10px', fontVariantNumeric: 'tabular-nums' }}>{m.value}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
-                  <div style={m.arrowStyle as any}></div>
-                  <span style={{ fontSize: '12px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.growthColor }}>{m.growthText}</span>
-                  <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs sebelumnya</span>
+                <div style={{ fontSize: '26px', fontWeight: 600, letterSpacing: '-0.01em', color: '#3B2A22', marginTop: '10px', fontVariantNumeric: 'tabular-nums' }}>
+                  {isLoading ? <div className="skeleton-shimmer" style={{ width: '80px', height: '32px', borderRadius: '6px' }}></div> : m.value}
                 </div>
+                {m.gp && !isLoading && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '10px' }}>
+                    <div style={m.gp.arrowStyle as any}></div>
+                    <span style={{ fontSize: '12px', fontWeight: 600, fontVariantNumeric: 'tabular-nums', color: m.gp.growthColor }}>{m.gp.growthText}</span>
+                    <span style={{ fontSize: '12px', color: '#A08A7B' }}>vs sebelumnya</span>
+                  </div>
+                )}
+                {m.gp && isLoading && (
+                  <div style={{ marginTop: '10px' }}><div className="skeleton-shimmer" style={{ width: '120px', height: '16px', borderRadius: '4px' }}></div></div>
+                )}
               </div>
             ))}
           </div>
 
-          <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
+          <div className="dashboard-card" style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', opacity: isLoading ? 0.6 : 1, transition: 'opacity 0.2s, transform 0.3s' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
               <div style={{ fontSize: '13px', fontWeight: 600, color: '#3B2A22' }}>Transaksi Member vs Non-Member</div>
               <div style={{ display: 'flex', gap: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#A67C52' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Member</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#F1EBE1', border: '1px solid #E6DDD0' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Non-Member</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><div style={{ width: '9px', height: '9px', borderRadius: '2px', background: '#DCD3C6', border: '1px solid #CFC3B3' }}></div><span style={{ fontSize: '12px', color: '#7A6A5F' }}>Non-Member</span></div>
               </div>
             </div>
             <div style={{ position: 'relative' }}>
               <svg viewBox="0 0 1000 280" preserveAspectRatio="none" style={{ width: '100%', height: '280px', display: 'block' }}>
-                {gridLines(24, 280 - 24 - 40).map((gy, i) => <line key={`g${i}`} x1="10" x2="990" y1={gy} y2={gy} style={{ stroke: '#EAE1D5', strokeWidth: 1 }}></line>)}
+                {renderGridLines(stk.padT, stk.innerH, stk.max, false)}
                 {stk.bars.map((b, i) => (
                   <g key={`b${i}`}>
-                    <rect x={b.x} y={b.nonY} width={b.w} height={b.nonH} rx="3" style={{ fill: '#F1EBE1', stroke: '#E6DDD0', strokeWidth: 1, pointerEvents: 'none' }}></rect>
+                    <rect x={b.x} y={b.nonY} width={b.w} height={b.nonH} rx="3" style={{ fill: '#DCD3C6', stroke: '#CFC3B3', strokeWidth: 1, pointerEvents: 'none' }}></rect>
                     <rect x={b.x} y={b.memY} width={b.w} height={b.memH} rx="3" style={{ fill: '#A67C52', pointerEvents: 'none' }}></rect>
                   </g>
                 ))}
@@ -467,10 +577,10 @@ function AdminDashboardPage() {
                   <rect key={`c${i}`} x={c.left} y={0} width={c.width} height={280} style={{ fill: 'transparent' }} onMouseEnter={() => setHover({ key: 'stacked', i })} onMouseLeave={() => setHover(null)}></rect>
                 ))}
               </svg>
-              <div style={{ display: 'flex', position: 'absolute', left: '10px', right: '10px', bottom: '8px', pointerEvents: 'none' }}>
-                {chartLabels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: '8px', pointerEvents: 'none' }}>
+                {stk.bars.map((b, i) => <div key={i} className="chart-label" style={{ position: 'absolute', left: `${b.cx / 10}%`, transform: 'translateX(-50%)', textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{chartLabels[i]}</div>)}
               </div>
-              {hover?.key === 'stacked' && (
+              {hover?.key === 'stacked' && stk.bars[hover.i] && (
                 <div style={{ position: 'absolute', left: `${(stk.bars[hover.i].cx / 10)}%`, top: `${Math.min(stk.bars[hover.i].memY, stk.bars[hover.i].nonY) - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
                   <div style={{ fontWeight: 600 }}>{chartLabels[hover.i]}</div>
                   <div style={{ color: '#E9C9A6', marginTop: '3px' }}>Member: {fmtNum(stk.bars[hover.i].mv)}</div>
@@ -484,7 +594,7 @@ function AdminDashboardPage() {
         {/* PRODUCT PERFORMANCE */}
         <section style={{ marginBottom: '44px' }}>
           <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Performa Produk</div>
-          <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', overflow: 'hidden' }}>
+          <div className="dashboard-card" style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', overflow: 'hidden', opacity: isLoading ? 0.6 : 1, transition: 'opacity 0.2s, transform 0.3s' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '2.4fr 1fr 1.2fr 1.4fr', padding: '14px 22px', borderBottom: '1px solid #EAE1D5' }}>
               <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B' }}>Produk Terlaris</div>
               <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right' }}>Jumlah Terjual</div>
@@ -510,10 +620,10 @@ function AdminDashboardPage() {
         {/* REVENUE TREND */}
         <section style={{ marginBottom: '44px' }}>
           <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Tren Pendapatan</div>
-          <div style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)' }}>
+          <div className="dashboard-card" style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', opacity: isLoading ? 0.6 : 1, transition: 'opacity 0.2s, transform 0.3s' }}>
             <div style={{ position: 'relative' }}>
               <svg viewBox="0 0 1000 280" preserveAspectRatio="none" style={{ width: '100%', height: '280px', display: 'block' }}>
-                {gridLines(rev.padT, rev.innerH).map((gy, i) => <line key={`g${i}`} x1="10" x2="990" y1={gy} y2={gy} style={{ stroke: '#EAE1D5', strokeWidth: 1 }}></line>)}
+                {renderGridLines(rev.padT, rev.innerH, rev.max, false)}
                 <path d={rev.areaPath} style={{ fill: '#A67C52', opacity: 0.12, stroke: 'none', pointerEvents: 'none' }}></path>
                 <path d={rev.path} style={{ fill: 'none', stroke: '#A67C52', strokeWidth: 2.5, pointerEvents: 'none' }}></path>
                 {rev.points.map((pt, i) => <circle key={`pt${i}`} cx={pt.x} cy={pt.y} r="3.5" style={{ fill: '#FFFFFF', stroke: '#A67C52', strokeWidth: 2, pointerEvents: 'none' }}></circle>)}
@@ -521,13 +631,68 @@ function AdminDashboardPage() {
                   <rect key={`c${i}`} x={c.left} y={0} width={c.width} height={280} style={{ fill: 'transparent' }} onMouseEnter={() => setHover({ key: 'rev', i })} onMouseLeave={() => setHover(null)}></rect>
                 ))}
               </svg>
-              <div style={{ display: 'flex', position: 'absolute', left: '10px', right: '10px', bottom: '8px', pointerEvents: 'none' }}>
-                {chartLabels.map((lbl, i) => <div key={i} className="chart-label" style={{ flex: 1, textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{lbl}</div>)}
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: '8px', pointerEvents: 'none' }}>
+                {rev.points.map((pt, i) => <div key={i} className="chart-label" style={{ position: 'absolute', left: `${pt.x / 10}%`, transform: 'translateX(-50%)', textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{chartLabels[i]}</div>)}
               </div>
-              {hover?.key === 'rev' && (
+              {hover?.key === 'rev' && rev.points[hover.i] && (
                 <div style={{ position: 'absolute', left: `${(rev.points[hover.i].x / 10)}%`, top: `${rev.points[hover.i].y - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
                   <div style={{ fontWeight: 600 }}>{chartLabels[hover.i]}</div>
                   <div style={{ color: '#E9C9A6', marginTop: '3px' }}>{fmtIDR(rev.points[hover.i].v)}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* VISIT TREND */}
+        <section style={{ marginBottom: '44px' }}>
+          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Tren Kunjungan Member</div>
+          <div className="dashboard-card" style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', opacity: isLoading ? 0.6 : 1, transition: 'opacity 0.2s, transform 0.3s' }}>
+            <div style={{ position: 'relative' }}>
+              <svg viewBox="0 0 1000 280" preserveAspectRatio="none" style={{ width: '100%', height: '280px', display: 'block' }}>
+                {renderGridLines(vis.padT, vis.innerH, vis.max, false)}
+                {vis.bars.map((b, i) => (
+                  <g key={`vb${i}`}>
+                    <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="3" style={{ fill: '#758D70', pointerEvents: 'none' }}></rect>
+                  </g>
+                ))}
+                {colBounds(vis.bars.map(b => b.cx), 1000).map((c, i) => (
+                  <rect key={`c${i}`} x={c.left} y={0} width={c.width} height={280} style={{ fill: 'transparent' }} onMouseEnter={() => setHover({ key: 'vis', i })} onMouseLeave={() => setHover(null)}></rect>
+                ))}
+              </svg>
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: '8px', pointerEvents: 'none' }}>
+                {vis.bars.map((b, i) => <div key={i} className="chart-label" style={{ position: 'absolute', left: `${b.cx / 10}%`, transform: 'translateX(-50%)', textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{chartLabels[i]}</div>)}
+              </div>
+              {hover?.key === 'vis' && vis.bars[hover.i] && (
+                <div style={{ position: 'absolute', left: `${(vis.bars[hover.i].cx / 10)}%`, top: `${vis.bars[hover.i].y - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
+                  <div style={{ fontWeight: 600 }}>{chartLabels[hover.i]}</div>
+                  <div style={{ color: '#E9C9A6', marginTop: '3px' }}>{fmtNum(vis.bars[hover.i].v)} Kunjungan</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* NEW MEMBER TREND */}
+        <section style={{ marginBottom: '44px' }}>
+          <div style={{ fontSize: '20px', letterSpacing: '-0.02em', fontWeight: 600, color: '#3B2A22', marginBottom: '16px' }}>Tren Member Baru</div>
+          <div className="dashboard-card" style={{ background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59,42,34,.35)', opacity: isLoading ? 0.6 : 1, transition: 'opacity 0.2s, transform 0.3s' }}>
+            <div style={{ position: 'relative' }}>
+              <svg viewBox="0 0 1000 280" preserveAspectRatio="none" style={{ width: '100%', height: '280px', display: 'block' }}>
+                {renderGridLines(newMem.padT, newMem.innerH, newMem.max, false)}
+                <path d={newMem.path} style={{ fill: 'none', stroke: '#3B2A22', strokeWidth: 2.5, pointerEvents: 'none' }}></path>
+                {newMem.points.map((pt, i) => <circle key={`pt${i}`} cx={pt.x} cy={pt.y} r="3.5" style={{ fill: '#FFFFFF', stroke: '#3B2A22', strokeWidth: 2, pointerEvents: 'none' }}></circle>)}
+                {colBounds(newMem.points.map(p => p.x), 1000).map((c, i) => (
+                  <rect key={`c${i}`} x={c.left} y={0} width={c.width} height={280} style={{ fill: 'transparent' }} onMouseEnter={() => setHover({ key: 'newMem', i })} onMouseLeave={() => setHover(null)}></rect>
+                ))}
+              </svg>
+              <div style={{ position: 'absolute', left: 0, right: 0, bottom: '8px', pointerEvents: 'none' }}>
+                {newMem.points.map((pt, i) => <div key={i} className="chart-label" style={{ position: 'absolute', left: `${pt.x / 10}%`, transform: 'translateX(-50%)', textAlign: 'center', color: '#A08A7B', fontVariantNumeric: 'tabular-nums' }}>{chartLabels[i]}</div>)}
+              </div>
+              {hover?.key === 'newMem' && newMem.points[hover.i] && (
+                <div style={{ position: 'absolute', left: `${(newMem.points[hover.i].x / 10)}%`, top: `${newMem.points[hover.i].y - 12}px`, transform: 'translate(-50%,-100%)', background: '#3B2A22', color: 'rgba(248, 244, 238, 0.92)', padding: '9px 13px', borderRadius: '8px', fontSize: '11px', whiteSpace: 'nowrap', pointerEvents: 'none', boxShadow: '0 18px 40px -18px rgba(59, 42, 34, 0.55)', zIndex: 5 }}>
+                  <div style={{ fontWeight: 600 }}>{chartLabels[hover.i]}</div>
+                  <div style={{ color: '#E9C9A6', marginTop: '3px' }}>{fmtNum(newMem.points[hover.i].v)} Member Baru</div>
                 </div>
               )}
             </div>

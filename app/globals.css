@@ -511,3 +511,19 @@ button {
     font-size: 13.5px !important;
   }
 }
+.dashboard-card {
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.dashboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -16px rgba(59,42,34,.45) !important;
+}
+.skeleton-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #EFE8DE 4%, #F8F4EE 25%, #EFE8DE 36%);
+  background-size: 1000px 100%;
+}
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}

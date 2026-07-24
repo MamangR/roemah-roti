@@ -128,12 +128,14 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
       transactionsCount: 0,
       aov: 0,
       products: [],
-      dailyStats: {}
+      dailyStats: {},
+      itemsSold: 0
     };
   }
 
   let revenueSum = 0;
   let transactionsCount = 0;
+  let itemsSold = 0;
   const productMap: Record<string, { qty: number, revenue: number }> = {};
   const dailyStats: Record<string, { revenue: number, count: number }> = {};
   
@@ -198,6 +200,7 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
           const name = item.item?.name || item.itemName || 'Unknown Item';
           const qty = item.quantity || 1;
           const itemRev = item.totalPrice || (item.unitPrice * qty) || 0;
+          itemsSold += qty;
 
           if (!productMap[name]) productMap[name] = { qty: 0, revenue: 0 };
           productMap[name].qty += qty;
@@ -224,6 +227,7 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
     transactionsCount,
     aov: transactionsCount > 0 ? revenueSum / transactionsCount : 0,
     products,
-    dailyStats
+    dailyStats,
+    itemsSold
   };
 }

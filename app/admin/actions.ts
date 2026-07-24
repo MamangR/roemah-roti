@@ -31,12 +31,14 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
   const members = await prisma.member.findMany({
     where: { createdAt: { gte: start, lte: end } }
   });
-  const totalMembers = await prisma.member.count();
+  const totalMembers = await prisma.member.count({
+    where: { createdAt: { lte: end } }
+  });
 
   const activeMembers = await prisma.activity.groupBy({
     by: ['memberId'],
     where: {
-      createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // Active in last 30 days
+      createdAt: { gte: new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000), lte: end } // Active in 30 days prior to end date
     }
   });
 
@@ -50,7 +52,25 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
 
   const totalVisits = activities.filter(a => a.type === 'visit').length;
 
-  const { revenueSum, transactionsCount, aov, products, dailyStats } = await getAccurateSalesData(startDateStr, endDateStr);
+  const { revenueSum, transactionsCount, aov, products, dailyStats, itemsSold } = await getAccurateSalesData(startDateStr, endDateStr);
+
+  members.forEach(m => {
+    const dt = m.createdAt.toISOString().slice(0, 10);
+    if (!dailyStats[dt]) {
+      dailyStats[dt] = { count: 0, revenue: 0, newMembers: 0, visits: 0 };
+    }
+    dailyStats[dt].newMembers = (dailyStats[dt].newMembers || 0) + 1;
+  });
+
+  activities.forEach(a => {
+    if (a.type === 'visit') {
+      const dt = a.createdAt.toISOString().slice(0, 10);
+      if (!dailyStats[dt]) {
+        dailyStats[dt] = { count: 0, revenue: 0, newMembers: 0, visits: 0 };
+      }
+      dailyStats[dt].visits = (dailyStats[dt].visits || 0) + 1;
+    }
+  });
 
   const memberTxnSum = totalVisits;
   const nonMemberTxnSum = Math.max(0, transactionsCount - memberTxnSum);
@@ -68,7 +88,8 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
     revenueSum,
     aov,
     products,
-    dailyStats
+    dailyStats,
+    itemsSold
   };
 }
 
