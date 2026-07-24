@@ -3,17 +3,15 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const latestLog = await prisma.syncLog.findFirst({
-      orderBy: { createdAt: 'desc' }
+    const logs = await prisma.syncLog.findMany({
+      where: { type: 'connection' },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
     });
 
-    if (!latestLog) {
-      return NextResponse.json({ success: true, log: null });
-    }
-
-    return NextResponse.json({ success: true, log: latestLog });
+    return NextResponse.json({ success: true, logs });
   } catch (error: any) {
-    console.error('Error fetching sync-log:', error);
+    console.error('Error fetching sync-logs:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

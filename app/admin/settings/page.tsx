@@ -16,6 +16,7 @@ const PERMISSIONS = [
   { id: 'manage_settings', label: 'Manage settings', cashierDefault: false },
   { id: 'manage_pos', label: 'Manage POS integration', cashierDefault: false },
   { id: 'manage_whatsapp', label: 'Manage WhatsApp API', cashierDefault: false },
+  { id: 'edit_ui', label: 'Edit application UI', cashierDefault: false },
 ];
 
 function fmtLogTime(iso: string) {
@@ -67,16 +68,69 @@ import { LogOut, Type } from 'lucide-react';
 
 function SettingsPage() {
   const router = useRouter();
-  const { adminUser, permissions, refreshPermissions, logout } = useAdminAuth();
+  const { adminUser, permissions, refreshPermissions, logout, hasPermission } = useAdminAuth();
 
-  const [posConnected, setPosConnected] = useState(true);
-  const [storeMappings, setStoreMappings] = useState(SEED_MAPPINGS);
+  const [posConnected, setPosConnected] = useState(false);
+  const [storeMappings, setStoreMappings] = useState<any[]>([]);
   const [editingMappingId, setEditingMappingId] = useState<string | null>(null);
   const [mappingDraft, setMappingDraft] = useState<any>(null);
-  const syncLogs = SEED_SYNC_LOGS;
+  const [syncLogs, setSyncLogs] = useState<any[]>([]);
+  const [posLoading, setPosLoading] = useState(false);
 
   const [waConnected, setWaConnected] = useState(true);
   const [templates, setTemplates] = useState(SEED_TEMPLATES);
+
+  React.useEffect(() => {
+    async function loadData() {
+      try {
+        const [setRes, mapRes, logRes] = await Promise.all([
+          fetch('/api/admin/settings').then(r => r.json()),
+          fetch('/api/admin/store-mappings').then(r => r.json()),
+          fetch('/api/admin/sync-log').then(r => r.json())
+        ]);
+        if (setRes.setting) {
+          setPosConnected(setRes.setting.posConnected);
+          setWaConnected(setRes.setting.waConnected);
+        }
+        if (Array.isArray(mapRes)) setStoreMappings(mapRes);
+        if (logRes.logs) setSyncLogs(logRes.logs);
+      } catch (err) {
+        console.error('Failed to load settings data', err);
+      }
+    }
+    loadData();
+  }, []);
+
+  const togglePos = async () => {
+    setPosLoading(true);
+    try {
+      if (posConnected) {
+        await fetch('/api/admin/pos/disconnect', { method: 'POST' });
+        setPosConnected(false);
+      } else {
+        const res = await fetch('/api/admin/pos/connect', { method: 'POST' });
+        const data = await res.json();
+        if (data.success) {
+          setPosConnected(true);
+        } else {
+          setPosConnected(false);
+          alert('Failed to connect to Accurate POS: ' + data.error);
+        }
+      }
+      
+      const [mapRes, logRes] = await Promise.all([
+        fetch('/api/admin/store-mappings').then(r => r.json()),
+        fetch('/api/admin/sync-log').then(r => r.json())
+      ]);
+      if (Array.isArray(mapRes)) setStoreMappings(mapRes);
+      if (logRes.logs) setSyncLogs(logRes.logs);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setPosLoading(false);
+    }
+  };
+
 
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [templateModalMode, setTemplateModalMode] = useState<'add' | 'edit'>('add');
@@ -101,7 +155,7 @@ function SettingsPage() {
                 <div style={{ width: '15px', height: '15px', border: '1.6px solid currentColor', borderRadius: '4px', flex: 'none', position: 'relative' }}><div style={{ position: 'absolute', top: '5px', left: '2px', width: '7px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div><div style={{ position: 'absolute', top: '8.5px', left: '2px', width: '5px', height: '1.6px', background: 'currentColor', borderRadius: '1px' }}></div></div>
                 <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
               </div>
-              <div onClick={() => { setSidebarOpen(false); router.push('/admin/settings/edit-ui'); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: 'rgba(248, 244, 238, 0.72)', cursor: 'pointer' }}>
+              <div onClick={() => { if (hasPermission('edit_ui')) { setSidebarOpen(false); router.push('/admin/settings/edit-ui'); } }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: 'rgba(248, 244, 238, 0.72)', cursor: hasPermission('edit_ui') ? 'pointer' : 'not-allowed', opacity: hasPermission('edit_ui') ? 1 : 0.5 }}>
                 <Type size={15} />
                 <span style={{ fontSize: '14px', fontWeight: 600 }}>Edit UI</span>
               </div>
@@ -137,7 +191,7 @@ function SettingsPage() {
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Settings</span>
           </div>
-          <div onClick={() => router.push('/admin/settings/edit-ui')} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: 'rgba(248, 244, 238, 0.72)', cursor: 'pointer' }}>
+          <div onClick={() => { if (hasPermission('edit_ui')) router.push('/admin/settings/edit-ui'); }} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', color: 'rgba(248, 244, 238, 0.72)', cursor: hasPermission('edit_ui') ? 'pointer' : 'not-allowed', opacity: hasPermission('edit_ui') ? 1 : 0.5 }}>
             <Type size={15} />
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Edit UI</span>
           </div>
@@ -202,7 +256,7 @@ function SettingsPage() {
             </div>
 
             {/* POS */}
-            <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px' }}>
+            <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px', opacity: hasPermission('manage_pos') ? 1 : 0.5, pointerEvents: hasPermission('manage_pos') ? 'auto' : 'none' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>POS Integration</div>
@@ -213,7 +267,9 @@ function SettingsPage() {
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: posConnected ? '#5A6A54' : '#7A6A5F' }}></span>{posConnected ? 'Connected' : 'Disconnected'}
                   </span>
                   <div style={{ width: '120px' }}>
-                    <Button variant="outline" onClick={() => setPosConnected(!posConnected)}>{posConnected ? 'Disconnect' : 'Connect'}</Button>
+                    <Button variant="outline" onClick={togglePos} style={{ opacity: posLoading ? 0.6 : 1, pointerEvents: posLoading ? 'none' : 'auto' }}>
+                      {posLoading ? 'Wait...' : (posConnected ? 'Disconnect' : 'Connect')}
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -222,12 +278,7 @@ function SettingsPage() {
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                 <div style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.08em', color: '#A08A7B', textTransform: 'uppercase' }}>Store / outlet mapping</div>
-                <span onClick={() => {
-                  const id = 'sm' + Date.now();
-                  setStoreMappings([...storeMappings, { id, name: '', posId: '' }]);
-                  setEditingMappingId(id);
-                  setMappingDraft({ name: '', posId: '' });
-                }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>+ Add outlet</span>
+                <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', opacity: 0.5, cursor: 'not-allowed' }}>+ Add outlet</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {storeMappings.map(sm => (
@@ -256,8 +307,8 @@ function SettingsPage() {
                           <div style={{ fontSize: '12.5px', color: '#7A6A5F', marginTop: '2px', fontVariantNumeric: 'tabular-nums' }}>POS ID · {sm.posId}</div>
                         </div>
                         <div style={{ display: 'flex', gap: '14px', flex: 'none' }}>
-                          <span onClick={() => { setEditingMappingId(sm.id); setMappingDraft({ name: sm.name, posId: sm.posId }); }} style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', cursor: 'pointer' }}>Edit</span>
-                          <span onClick={() => setStoreMappings(storeMappings.filter(m => m.id !== sm.id))} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', cursor: 'pointer' }}>Delete</span>
+                          <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#A67C52', opacity: 0.5, cursor: 'not-allowed' }}>Edit</span>
+                          <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#7A6A5F', opacity: 0.5, cursor: 'not-allowed' }}>Delete</span>
                         </div>
                       </div>
                     )}
@@ -285,7 +336,7 @@ function SettingsPage() {
               <div style={{ maxHeight: '180px', overflowY: 'auto', border: '1px solid #E6DDD0', borderRadius: '14px' }}>
                 {syncLogs.map(lg => (
                   <div key={lg.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', padding: '10px 14px', borderTop: '1px solid #EAE1D5' }}>
-                    <span style={{ fontSize: '12.5px', color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtLogTime(lg.time)}</span>
+                    <span style={{ fontSize: '12.5px', color: '#7A6A5F', fontVariantNumeric: 'tabular-nums' }}>{fmtLogTime(lg.createdAt)}</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: lg.status === 'Success' ? '#5C7B5A' : '#A08A7B' }}>
                       <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: lg.status === 'Success' ? '#5C7B5A' : '#A08A7B' }}></span>{lg.status}
                     </span>
@@ -295,7 +346,7 @@ function SettingsPage() {
             </div>
 
             {/* WhatsApp */}
-            <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px' }}>
+            <div style={{ marginTop: '22px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', padding: '22px', opacity: hasPermission('manage_whatsapp') ? 1 : 0.5, pointerEvents: hasPermission('manage_whatsapp') ? 'auto' : 'none' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
                 <div>
                   <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-0.02em', color: '#3B2A22' }}>WhatsApp API</div>

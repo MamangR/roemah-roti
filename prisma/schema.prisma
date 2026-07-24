@@ -297,7 +297,9 @@ model UiTextOverride {
 
 model SyncLog {
   id           String   @id @default(cuid())
-  syncedCount  Int
-  failedCount  Int
+  type         String   @default("sync")
+  status       String   @default("Success")
+  syncedCount  Int      @default(0)
+  failedCount  Int      @default(0)
   createdAt    DateTime @default(now())
 }
