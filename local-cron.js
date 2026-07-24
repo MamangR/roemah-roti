@@ -10,14 +10,19 @@ cron.schedule('0 12 * * *', async () => {
   
   try {
     // Assuming the Next.js server is running on localhost:3000
-    const res = await fetch('http://localhost:3000/api/cron/update-status');
-    const data = await res.json();
+    const [resStatus, resSync] = await Promise.all([
+      fetch('http://localhost:3000/api/cron/update-status'),
+      fetch('http://localhost:3000/api/admin/sync-pos')
+    ]);
     
-    if (res.ok) {
-      console.log('Status update successful:', data);
-    } else {
-      console.error('Status update failed:', data);
-    }
+    const dataStatus = await resStatus.json();
+    const dataSync = await resSync.json();
+    
+    if (resStatus.ok) console.log('Status update successful:', dataStatus);
+    else console.error('Status update failed:', dataStatus);
+
+    if (resSync.ok) console.log('POS Sync successful:', dataSync);
+    else console.error('POS Sync failed:', dataSync);
   } catch (error) {
     console.error('Could not reach the server. Make sure Next.js (npm run dev/start) is running on port 3000.');
     console.error(error.message);

@@ -231,6 +231,7 @@ model Activity {
   earnedVia String?
   status    String?  // 'ready', 'redeemed'
   ref       String?
+  posTransactionId String?
 
   storeMappingId   String?
   storeMapping     StoreMapping? @relation(fields: [storeMappingId], references: [id])

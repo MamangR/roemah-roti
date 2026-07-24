@@ -337,7 +337,9 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
         }
       });
 
-      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
+      // Pass -template.visitsRequired instead of (1 - template.visitsRequired)
+      // The +1 visit will be added when the POS sync completes
+      await handleRedemptionVisit(tx, memberId, member.totalVisits, -template.visitsRequired, redeemedAt, newReward.id);
     } else if (type === 'birthday') {
       rewardTitle = 'Birthday Treat Box';
       const tierId = `SYSTEM_BIRTHDAY_${currentTier.toUpperCase().replace(' ', '_')}`;
@@ -383,12 +385,12 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
           date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
           outlet: 'Roemah Roti',
-          reward: rewardTitle,
-          ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+          reward: rewardTitle
         }
       });
 
-      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+      // Pass 0 instead of 1. The +1 visit will be added when the POS sync completes.
+      await handleRedemptionVisit(tx, memberId, member.totalVisits, 0, redeemedAt, bdayRewardId);
     } else if (type === 'member_reward') {
       const existing = await tx.memberReward.findUnique({ where: { id: targetId } });
       if (!existing || existing.memberId !== member.id) throw new Error('Reward not found');
@@ -409,12 +411,12 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
           date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
           outlet: 'Roemah Roti',
-          reward: rewardTitle,
-          ref: `REF-${Math.floor(100000 + Math.random() * 900000)}`
+          reward: rewardTitle
         }
       });
 
-      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+      // Pass 0 instead of 1
+      await handleRedemptionVisit(tx, memberId, member.totalVisits, 0, redeemedAt, targetId);
     }
 
     await tx.member.update({
@@ -425,6 +427,9 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
     });
 
   });
+
+  // Kick off an async POS sync after redemption
+  fetch(process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/sync-pos` : 'http://localhost:3000/api/admin/sync-pos', { method: 'POST' }).catch(() => {});
 
   return { success: true };
 }
@@ -506,7 +511,7 @@ export async function rejectReferralAdmin(friendId: string) {
   return { success: true };
 }
 
-export async function handleRedemptionVisit(tx: any, memberId: string, oldVisits: number, visitsDiff: number, redeemedAt: Date) {
+export async function handleRedemptionVisit(tx: any, memberId: string, oldVisits: number, visitsDiff: number, redeemedAt: Date, memberRewardId?: string) {
   const newVisits = oldVisits + visitsDiff;
 
   await tx.member.update({
@@ -521,7 +526,9 @@ export async function handleRedemptionVisit(tx: any, memberId: string, oldVisits
       date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       outlet: 'Roemah Roti',
-      visitNo: `Visit #${newVisits}`
+      visitNo: `Visit #${newVisits + 1}`, // the +1 represents the current visit being processed
+      status: 'Pending POS',
+      memberRewardId
     }
   });
 }
