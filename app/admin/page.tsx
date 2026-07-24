@@ -601,7 +601,7 @@ function AdminDashboardPage() {
               <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right' }}>Pendapatan</div>
               <div style={{ fontSize: '11px', letterSpacing: '0.1em', fontWeight: 600, textTransform: 'uppercase', color: '#A08A7B', textAlign: 'right', paddingLeft: '16px' }}>Kontribusi</div>
             </div>
-            {products.map((p, i) => (
+            {products.map((p: any, i: number) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2.4fr 1fr 1.2fr 1.4fr', padding: '16px 22px', alignItems: 'center', borderBottom: '1px solid #EAE1D5' }}>
                 <div style={{ fontSize: '15px', fontWeight: 500, color: '#3B2A22' }}>{p.name}</div>
                 <div style={{ fontSize: '15px', color: '#4A3830', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{p.qtyText}</div>

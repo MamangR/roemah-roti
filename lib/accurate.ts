@@ -137,7 +137,7 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
   let transactionsCount = 0;
   let itemsSold = 0;
   const productMap: Record<string, { qty: number, revenue: number }> = {};
-  const dailyStats: Record<string, { revenue: number, count: number }> = {};
+  const dailyStats: Record<string, { revenue: number, count: number, newMembers?: number, visits?: number }> = {};
   
   // Convert target start/end to comparable dates
   const startD = new Date(startIso + 'T00:00:00Z');
