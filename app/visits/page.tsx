@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useUiText } from '@/context/UiTextContext';
 type Entry = {
   id: string;
-  type: 'visit' | 'earned' | 'redeemed';
+  type: 'visit' | 'earned' | 'redeemed' | 'manual_visit';
   date: string;
   time?: string;
   outlet?: string;
