@@ -165,7 +165,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', marginBottom: '7px' }}>PHONE NUMBER</div>
-                <input className="p-input" style={{ width: '100%', boxSizing: 'border-box', fontFamily: "'Inter', sans-serif", fontSize: '14px', color: '#3B2A22', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '13px 14px', outline: 'none' }} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
+                <input className="p-input" disabled style={{ width: '100%', boxSizing: 'border-box', fontFamily: "'Inter', sans-serif", fontSize: '14px', color: '#A08A7B', background: '#F8F4EE', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '13px 14px', outline: 'none', cursor: 'not-allowed' }} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} />
               </div>
               <div>
                 <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', marginBottom: '7px' }}>EMAIL</div>

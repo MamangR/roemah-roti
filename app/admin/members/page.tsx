@@ -59,10 +59,10 @@ const Button = ({ variant, onClick, children, style }: any) => {
   );
 };
 
-const Input = ({ label, placeholder, value, onChange }: any) => (
+const Input = ({ label, placeholder, value, onChange, disabled }: any) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
     <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.1em', color: '#A08A7B', textTransform: 'uppercase' }}>{label}</div>
-    <input value={value} onChange={onChange} placeholder={placeholder} style={{ background: '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '12px 14px', fontSize: '15px', color: '#3B2A22', outline: 'none' }} />
+    <input value={value} onChange={onChange} placeholder={placeholder} disabled={disabled} style={{ background: disabled ? '#F8F4EE' : '#FFFFFF', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '12px 14px', fontSize: '15px', color: disabled ? '#A08A7B' : '#3B2A22', outline: 'none', cursor: disabled ? 'not-allowed' : 'text' }} />
   </div>
 );
 
@@ -576,7 +576,7 @@ function MemberManagementPage() {
               <div style={{ marginTop: '28px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Data Pribadi</div>
                 <Input label="NAMA" value={draft.name} onChange={(e: any) => setDraft({ ...draft, name: e.target.value })} />
-                <Input label="NO. HP / WHATSAPP" value={draft.wa} onChange={(e: any) => setDraft({ ...draft, wa: e.target.value })} />
+                <Input label="NO. HP / WHATSAPP" value={draft.wa} disabled={true} onChange={(e: any) => setDraft({ ...draft, wa: e.target.value })} />
                 <div style={{ height: '1px', background: '#EAE1D5', margin: '4px 0' }}></div>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Status Member</div>
                 <SegmentedToggle options={[{ value: 'Active', label: 'Aktif' }, { value: 'Suspended', label: 'Ditangguhkan' }, { value: 'Archived', label: 'Diarsipkan' }]} value={draft.status} onChange={(v: any) => setDraft({ ...draft, status: v })} />
