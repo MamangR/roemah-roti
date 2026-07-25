@@ -18,7 +18,7 @@ type Entry = {
   visitNo?: string;
   reward?: string;
   earnedVia?: string;
-  status?: 'ready' | 'redeemed';
+  status?: 'ready' | 'redeemed' | 'visit_earned' | 'no_visit';
   ref?: string;
 };
 
