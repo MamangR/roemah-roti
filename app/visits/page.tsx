@@ -20,6 +20,7 @@ type Entry = {
   earnedVia?: string;
   status?: 'ready' | 'redeemed' | 'visit_earned' | 'no_visit';
   ref?: string;
+  amount?: number;
 };
 
 const getMembershipTiers = (t: any) => [
