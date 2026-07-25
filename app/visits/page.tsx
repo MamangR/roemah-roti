@@ -279,7 +279,7 @@ export default function VisitsPage() {
     if (e.type === 'redeemed') {
       return { ...common, title: e.reward + ' — Redeemed', meta: e.outlet, dot: '#A67C52', tag: 'Redeemed', tagBg: 'rgba(166,124,82,.14)', tagColor: '#A67C52' };
     }
-    return { ...common, title: 'Unknown', tag: null };
+    return { ...common, title: 'Unknown', meta: '', dot: 'transparent', tag: null, tagBg: 'transparent', tagColor: 'transparent' };
   };
 
   const entries = (member?.activities || []).map((e: any) => enrich(e));
