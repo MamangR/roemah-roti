@@ -35,6 +35,21 @@ function StatusPill({ bg, color, label }: { bg: string, color: string, label: st
   );
 }
 
+function getTierName(lifetimeSpend: number) {
+  if (lifetimeSpend >= 5000000) return 'Inner Circle';
+  if (lifetimeSpend >= 2000000) return 'Neighbor';
+  if (lifetimeSpend >= 1000000) return 'Familiar';
+  return 'Insider';
+}
+
+function TierPill({ tier }: { tier: string }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', fontSize: '11px', fontWeight: 600, padding: '5px 11px', borderRadius: '999px', background: 'rgba(166,124,82,.12)', color: '#A67C52' }}>
+      {tier}
+    </span>
+  );
+}
+
 const Button = ({ variant, onClick, children, style }: any) => {
   const isPri = variant === 'primary';
   return (
@@ -131,7 +146,31 @@ function MemberManagementPage() {
 
   const [publicTemplates, setPublicTemplates] = useState<any[]>([]);
 
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
+  const handleSync = async () => {
+    setIsSyncing(true);
+    setSyncMessage(null);
+    try {
+      const res = await fetch('/api/cron/sync-spend');
+      const data = await res.json();
+      if (res.ok) {
+        if (data.newPurchasesCount > 0) {
+          setSyncMessage(`Berhasil: ${data.newPurchasesCount} transaksi baru.`);
+        } else {
+          setSyncMessage('Semua data sudah up-to-date.');
+        }
+      } else {
+        setSyncMessage('Gagal melakukan sinkronisasi.');
+      }
+    } catch (e) {
+      setSyncMessage('Terjadi kesalahan koneksi.');
+    } finally {
+      setIsSyncing(false);
+      setTimeout(() => setSyncMessage(null), 4000);
+    }
+  };
   useEffect(() => {
     async function fetchM() {
       try {
@@ -192,10 +231,17 @@ function MemberManagementPage() {
       setBarcodeInput('');
     }
   };
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = usePersistentState<string | null>('admin_members_selected_id', null);
   const [cameFrom, setCameFrom] = useState<'list' | 'search'>('list');
-
+  const [isDeleting, setIsDeleting] = useState(false);
   const [draft, setDraft] = useState<any>(null);
+
+  useEffect(() => {
+    if (members.length > 0) {
+      if (screen === 'detail' && !selectedId) setScreen('list');
+      if (screen === 'edit' && !draft) setScreen('list');
+    }
+  }, [screen, selectedId, draft, members, setScreen]);
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [newMember, setNewMember] = useState({ name: '', wa: '' });
@@ -316,8 +362,26 @@ function MemberManagementPage() {
             </div>
             <span style={{ fontSize: '14px', fontWeight: 600 }}>Daftar Member</span>
           </div>
+          
+          {/* Sync Button */}
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div onClick={isSyncing ? undefined : handleSync} style={{ display: 'flex', alignItems: 'center', gap: '11px', padding: '11px 12px', borderRadius: '12px', cursor: isSyncing ? 'default' : 'pointer', background: 'transparent', color: 'rgba(248, 244, 238, 0.72)' }}>
+              <div style={{ width: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 'none' }}>
+                <svg className={isSyncing ? 'animate-spin' : ''} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.92-10.26l5.08 2.69"/>
+                </svg>
+              </div>
+              <span style={{ fontSize: '14px', fontWeight: 600 }}>Sinkronisasi Data</span>
+            </div>
+            {syncMessage && (
+              <div style={{ marginTop: '4px', fontSize: '11px', color: '#E9C9A6', padding: '0 12px', lineHeight: 1.4 }}>
+                {syncMessage}
+              </div>
+            )}
+          </div>
         </div>
         <div style={{ flex: 1 }}></div>
+
         <div style={{ padding: '12px', fontSize: '11px', lineHeight: 1.5, color: 'rgba(248, 244, 238, 0.5)' }}>Alat Staf · Penggunaan Internal<br />{members.length} Member terdaftar</div>
       </div>
 
@@ -426,7 +490,7 @@ function MemberManagementPage() {
             </div>
           )}
 
-          {screen === 'detail' && (
+          {screen === 'detail' && selectedMember && (
             <div style={{ maxWidth: '920px', margin: '0 auto', padding: '52px 40px 60px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
                 <div onClick={() => setScreen(cameFrom)} style={{ width: '36px', height: '36px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22', flex: 'none' }}>
@@ -441,6 +505,7 @@ function MemberManagementPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>{selectedMember.name}</div>
                       <StatusPill bg={selectedMember.pillBg} color={selectedMember.pillColor} label={selectedMember.statusLabel} />
+                      <TierPill tier={getTierName(selectedMember.lifetimeSpend || 0)} />
                     </div>
                     <div style={{ fontSize: '13.5px', color: '#7A6A5F', marginTop: '5px', fontVariantNumeric: 'tabular-nums' }}>{selectedMember.memberId} · {selectedMember.wa}</div>
                   </div>
@@ -501,13 +566,12 @@ function MemberManagementPage() {
                 <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#7A6A5F' }}>Batal, kembali ke Member Detail</div>
               </div>
               <div style={{ fontSize: '27px', fontWeight: 600, letterSpacing: '-0.03em', color: '#3B2A22' }}>Edit Member</div>
-              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px' }}>{draft.memberId} · {draft.wa}</div>
+              <div style={{ fontSize: '15px', color: '#7A6A5F', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {draft.memberId} · {draft.wa}
+                <TierPill tier={getTierName(draft.lifetimeSpend || 0)} />
+              </div>
 
-              {draft.hasVisitToday && (
-                <div style={{ marginTop: '16px', padding: '12px 16px', background: 'rgba(255, 193, 7, 0.15)', borderRadius: '12px', border: '1px solid #FFC107', color: '#856404', fontSize: '14px', fontWeight: 600 }}>
-                  ⚠️ Member ini sudah mendapatkan 1 visit hari ini.
-                </div>
-              )}
+
 
               <div style={{ marginTop: '28px', background: '#FFFFFF', border: '1px solid #EFE8DE', borderRadius: '22px', padding: '22px', boxShadow: '0 10px 26px -20px rgba(59, 42, 34, 0.35)', display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Data Pribadi</div>
@@ -520,7 +584,14 @@ function MemberManagementPage() {
                 <div style={{ fontSize: '14px', fontWeight: 600, color: '#3B2A22' }}>Koreksi Visit</div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8F4EE', borderRadius: '14px', padding: '14px 16px', opacity: hasPermission('add_visits') ? 1 : 0.6 }}>
                   <div>
-                    <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Visit saat ini</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B', textTransform: 'uppercase' }}>Visit saat ini</div>
+                      {draft.hasVisitToday && (
+                        <div style={{ padding: '4px 8px', background: 'rgba(255, 193, 7, 0.15)', borderRadius: '6px', border: '1px solid rgba(255, 193, 7, 0.5)', color: '#856404', fontSize: '10px', fontWeight: 600 }}>
+                          ⚠️ Sudah dapat 1 visit hari ini
+                        </div>
+                      )}
+                    </div>
                     <div style={{ fontSize: '22px', fontWeight: 600, color: '#3B2A22', marginTop: '3px', fontVariantNumeric: 'tabular-nums' }}>{draft.visits} / {draft.goal}</div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>

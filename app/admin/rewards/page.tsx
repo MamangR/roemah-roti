@@ -164,7 +164,7 @@ function RewardManagementPage() {
     const val = barcodeInput.trim();
     if (!val) return;
     
-    const parts = val.split(':');
+    const parts = val.split('-');
     if (parts.length === 3 && parts[0] === 'REWARD') {
       const parsedMemberId = parts[1];
       const parsedRewardId = parts[2];

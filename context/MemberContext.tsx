@@ -85,6 +85,16 @@ export function MemberProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchMember();
+    // Expose a global hook so other components (like on-demand sync) can trigger a refresh 
+    // without needing to pass context deeply or when context is tricky
+    if (typeof window !== 'undefined') {
+      (window as any).__memberRefreshHook = fetchMember;
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).__memberRefreshHook;
+      }
+    };
   }, []);
 
   // Simple auth guard for internal pages

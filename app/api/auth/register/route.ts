@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
+import { createAccurateCustomer } from '@/lib/accurate';
 
 export async function POST(req: Request) {
   try {
@@ -55,6 +56,9 @@ export async function POST(req: Request) {
           referralCode: userReferralCode,
         }
       });
+      
+      // Create customer in Accurate POS asynchronously
+      createAccurateCustomer(member.name, member.id).catch(console.error);
       
       if (referralCode) {
         const referrer = await prisma.member.findUnique({ where: { referralCode } });

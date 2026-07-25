@@ -11,7 +11,7 @@ function generateSignature(timestamp: string, secret: string) {
   return hmac.digest('base64');
 }
 
-export async function fetchAccurate(endpoint: string, params: Record<string, string> = {}) {
+export async function fetchAccurate(endpoint: string, params: Record<string, any> = {}, options: { method?: string } = {}) {
   const token = process.env.ACCURATE_API_TOKEN;
   const secret = process.env.ACCURATE_SIGNATURE_SECRET;
   let baseUrl = process.env.ACCURATE_BASE_URL || 'https://account.accurate.id';
@@ -57,18 +57,30 @@ export async function fetchAccurate(endpoint: string, params: Record<string, str
   }
 
   const url = new URL(endpoint, baseUrl);
-  for (const [k, v] of Object.entries(params)) {
-    url.searchParams.append(k, v);
+  const method = options.method || 'GET';
+  let body = undefined;
+  
+  const fetchHeaders: Record<string, string> = {
+    'Authorization': `Bearer ${token}`,
+    'X-Api-Timestamp': timestamp,
+    'X-Api-Signature': signature,
+  };
+
+  if (method === 'GET') {
+    for (const [k, v] of Object.entries(params)) {
+      url.searchParams.append(k, String(v));
+    }
+  } else {
+    // Pass as JSON
+    fetchHeaders['Content-Type'] = 'application/json';
+    body = JSON.stringify(params);
   }
 
   try {
     const res = await fetch(url.toString(), {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'X-Api-Timestamp': timestamp,
-        'X-Api-Signature': signature,
-      },
+      method: method,
+      headers: fetchHeaders,
+      body: body,
       redirect: 'follow', // Handles 308 permanent redirect
     });
 
@@ -230,4 +242,22 @@ export async function getAccurateSalesData(startIso: string, endIso: string) {
     dailyStats,
     itemsSold
   };
+}
+
+export async function createAccurateCustomer(name: string, phone: string) {
+  try {
+    const res = await fetchAccurate('/accurate/api/customer/save.do', {
+      name: name,
+      customerNo: phone,
+      mobilePhone: phone
+    }, { method: 'POST' });
+    
+    if (res && res.d && res.d.id) {
+      console.log(`Created customer in Accurate with ID: ${res.d.id}`);
+      return res.d;
+    }
+  } catch (err) {
+    console.error("Failed to create customer in Accurate:", err);
+  }
+  return null;
 }

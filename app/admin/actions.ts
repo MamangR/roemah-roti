@@ -50,7 +50,7 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
     where: { redeemedAt: { not: null }, updatedAt: { gte: start, lte: end } }
   });
 
-  const totalVisits = activities.filter(a => a.type === 'visit').length;
+  const totalVisits = activities.filter(a => a.type === 'visit' || a.type === 'manual_visit').length;
 
   const { revenueSum, transactionsCount, aov, products, dailyStats, itemsSold } = await getAccurateSalesData(startDateStr, endDateStr);
 
@@ -63,7 +63,7 @@ export async function getDashboardStats(startDateStr: string, endDateStr: string
   });
 
   activities.forEach(a => {
-    if (a.type === 'visit') {
+    if (a.type === 'visit' || a.type === 'manual_visit') {
       const dt = a.createdAt.toISOString().slice(0, 10);
       if (!dailyStats[dt]) {
         dailyStats[dt] = { count: 0, revenue: 0, newMembers: 0, visits: 0 };
@@ -108,12 +108,21 @@ export async function getMembers() {
     const lastActivity = m.activities.length > 0 ? m.activities[0].createdAt.toISOString().slice(0, 10) : m.createdAt.toISOString().slice(0, 10);
 
     // Map transactions
-    const transactions = m.activities.filter(a => a.type === 'visit').map((a, i) => ({
-      date: a.createdAt.toISOString().slice(0, 10),
-      invoice: a.ref || `INV-${new Date(a.createdAt).getFullYear().toString().slice(-2)}${String(new Date(a.createdAt).getMonth() + 1).padStart(2, '0')}-${String(i + 1).padStart(3, '0')}`,
-      total: a.amount || 0,
-      visitEarned: 1
-    }));
+    const visitsByDate = new Set<string>();
+    const transactions = m.activities.filter(a => a.type === 'visit' && a.amount !== null && a.amount > 0).map((a, i) => {
+      const dt = a.createdAt.toISOString().slice(0, 10);
+      let visitEarned = 0;
+      if (!visitsByDate.has(dt)) {
+        visitEarned = 1;
+        visitsByDate.add(dt);
+      }
+      return {
+        date: dt,
+        invoice: a.ref || '-',
+        total: a.amount || 0,
+        visitEarned
+      };
+    });
 
     return {
       id: m.id,
@@ -130,7 +139,7 @@ export async function getMembers() {
       rewards: m.rewards,
       birthdayInput: m.birthdayInput,
       rawPhone: m.rawPhone,
-      hasVisitToday: m.activities.some(a => a.type === 'visit' && a.createdAt >= new Date(new Date().setHours(0, 0, 0, 0)))
+      hasVisitToday: m.activities.some(a => (a.type === 'visit' || a.type === 'manual_visit') && a.createdAt >= new Date(new Date().setHours(0, 0, 0, 0)))
     };
   });
 }
@@ -175,6 +184,24 @@ export async function saveMember(id: string, data: { name: string; wa: string; s
   });
 
   if (oldMember && data.visits > oldMember.totalVisits) {
+    const visitsDiff = data.visits - oldMember.totalVisits;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    for(let i = 0; i < visitsDiff; i++) {
+        await prisma.activity.create({
+          data: {
+            memberId: id,
+            type: 'manual_visit',
+            date: dateStr,
+            time: timeStr,
+            outlet: 'Manual (Admin)',
+            visitNo: `Visit #${oldMember.totalVisits + i + 1}`
+          }
+        });
+    }
+
     // If this is their first visit(s), auto-approve any pending referral
     if (oldMember.totalVisits === 0 && data.visits > 0) {
       const pendingReferral = await prisma.referredFriend.findFirst({
@@ -337,7 +364,7 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
         }
       });
 
-      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
+
     } else if (type === 'birthday') {
       rewardTitle = 'Birthday Treat Box';
       const tierId = `SYSTEM_BIRTHDAY_${currentTier.toUpperCase().replace(' ', '_')}`;
@@ -388,7 +415,7 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
         }
       });
 
-      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+
     } else if (type === 'member_reward') {
       const existing = await tx.memberReward.findUnique({ where: { id: targetId } });
       if (!existing || existing.memberId !== member.id) throw new Error('Reward not found');
@@ -414,7 +441,7 @@ export async function redeemRewardAdmin(memberId: string, targetId: string, type
         }
       });
 
-      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+
     }
 
     await tx.member.update({
@@ -506,23 +533,5 @@ export async function rejectReferralAdmin(friendId: string) {
   return { success: true };
 }
 
-export async function handleRedemptionVisit(tx: any, memberId: string, oldVisits: number, visitsDiff: number, redeemedAt: Date) {
-  const newVisits = oldVisits + visitsDiff;
 
-  await tx.member.update({
-    where: { id: memberId },
-    data: { totalVisits: newVisits, status: 'Active' }
-  });
-
-  await tx.activity.create({
-    data: {
-      memberId,
-      type: 'visit',
-      date: redeemedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      time: redeemedAt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      outlet: 'Roemah Roti',
-      visitNo: `Visit #${newVisits}`
-    }
-  });
-}
 

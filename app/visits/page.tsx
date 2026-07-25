@@ -137,6 +137,32 @@ export default function VisitsPage() {
   };
 
   React.useEffect(() => {
+    // Silent background polling: micro-sync every 5 seconds
+    const syncData = async () => {
+      try {
+        const res = await fetch('/api/cron/sync-spend');
+        if (res.ok) {
+           const data = await res.json();
+           // Only refresh UI if there were new purchases found to avoid unnecessary re-renders
+           if (data.newPurchasesCount > 0) {
+             // @ts-ignore
+             if (window.__memberRefreshHook) window.__memberRefreshHook(); 
+           }
+        }
+      } catch (e) {}
+    };
+
+    // Run immediately on mount
+    syncData();
+
+    // Then run silently every 5 seconds
+    const intervalId = setInterval(syncData, 5000);
+
+    // Cleanup interval when user leaves the page
+    return () => clearInterval(intervalId);
+  }, []);
+
+  React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedView = sessionStorage.getItem('visits_view');
       if (savedView) _setView(savedView as any);
@@ -222,8 +248,21 @@ export default function VisitsPage() {
       dateFull: e.date,
       open: () => { setSelId(e.id); setView('detail'); }
     };
+    if (e.type === 'manual_visit') {
+      return { ...common, title: 'Visit added by cashier +1', meta: e.outlet || 'Manual', dot: '#A08A7B', tag: 'Visit Recorded', tagBg: '#F1EBE1', tagColor: '#A08A7B' };
+    }
     if (e.type === 'visit') {
-      return { ...common, title: e.visitNo, meta: e.outlet, dot: '#A08A7B', tag: 'Visit Recorded', tagBg: '#F1EBE1', tagColor: '#A08A7B' };
+      const isEarned = e.status === 'visit_earned';
+      const formattedAmount = e.amount ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(e.amount) : '';
+      return { 
+        ...common, 
+        title: e.reward || 'Transaction', 
+        meta: e.ref ? `${e.ref} • ${formattedAmount}` : (e.outlet || ''), 
+        dot: '#A08A7B', 
+        tag: isEarned ? 'Visit Recorded' : null, 
+        tagBg: isEarned ? '#F1EBE1' : 'transparent', 
+        tagColor: isEarned ? '#A08A7B' : 'transparent' 
+      };
     }
     if (e.type === 'earned') {
       return {
@@ -236,7 +275,10 @@ export default function VisitsPage() {
       };
     }
     // redeemed
-    return { ...common, title: e.reward + ' — Redeemed', meta: e.outlet, dot: '#A67C52', tag: 'Redeemed', tagBg: 'rgba(166,124,82,.14)', tagColor: '#A67C52' };
+    if (e.type === 'redeemed') {
+      return { ...common, title: e.reward + ' — Redeemed', meta: e.outlet, dot: '#A67C52', tag: 'Redeemed', tagBg: 'rgba(166,124,82,.14)', tagColor: '#A67C52' };
+    }
+    return { ...common, title: 'Unknown', tag: null };
   };
 
   const entries = (member?.activities || []).map((e: any) => enrich(e));
@@ -245,9 +287,7 @@ export default function VisitsPage() {
 
   const isDashboard = view === 'dashboard';
   const isHistory = view === 'history';
-  const isVisitDetail = view === 'detail' && sel?.type === 'visit';
-  const isEarnedDetail = view === 'detail' && sel?.type === 'earned';
-  const isRedeemedDetail = view === 'detail' && sel?.type === 'redeemed';
+  const isDetail = view === 'detail';
   const isRoadmap = view === 'roadmap';
   const isTierDetail = view === 'tier_detail';
   const showNav = true;
@@ -364,8 +404,7 @@ export default function VisitsPage() {
                   </div>
 
                   <div style={{ position: 'relative', marginTop: '14px', height: '8px', borderRadius: '4px', background: '#F1EBE1', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(90deg,transparent 0,transparent calc(${100 / 8}% - 1.5px),#fff calc(${100 / 8}% - 1.5px),#fff ${100 / 8}%)`, zIndex: 2 }}></div>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (lifetimeSpend / nextTierThreshold) * 100)}%`, background: '#B98A5E', borderRadius: '4px', zIndex: 1 }}></div>
+                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, (lifetimeSpend / nextTierThreshold) * 100)}%`, background: '#B98A5E', borderRadius: '4px', zIndex: 1, transition: 'width 0.5s ease-out' }}></div>
                   </div>
 
                   <div style={{ marginTop: '18px', background: '#F8F4EE', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -401,8 +440,7 @@ export default function VisitsPage() {
                         <div style={{ fontSize: '12px', color: '#A08A7B' }}><span style={{ color: '#A67C52', fontWeight: 600 }}>{member?.totalVisits || 0}</span> / {goal} visits</div>
                       </div>
                       <div style={{ position: 'relative', marginTop: '12px', height: '10px', borderRadius: '999px', background: '#F1EBE1', overflow: 'hidden' }}>
-                        <div style={{ position: 'absolute', inset: 0, backgroundImage: `repeating-linear-gradient(90deg,transparent 0,transparent calc(${100 / goal}% - 1.5px),rgba(255,255,255,.9) calc(${100 / goal}% - 1.5px),rgba(255,255,255,.9) ${100 / goal}%)`, zIndex: 2 }}></div>
-                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, ((member?.totalVisits || 0) / (goal || 1)) * 100)}%`, background: 'linear-gradient(90deg,#B98A5E,#A67C52)', borderRadius: '999px', zIndex: 1 }}></div>
+                        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.min(100, ((member?.totalVisits || 0) / (goal || 1)) * 100)}%`, background: 'linear-gradient(90deg,#B98A5E,#A67C52)', borderRadius: '999px', zIndex: 1, transition: 'width 0.5s ease-out' }}></div>
                       </div>
                     </div>
                   </div>
@@ -637,7 +675,7 @@ export default function VisitsPage() {
                         </div>
                         <div style={{ fontSize: '11.5px', color: '#A08A7B', marginTop: '4px', marginLeft: '13px' }}>{e.meta}</div>
                       </div>
-                      <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.04em', padding: '4px 9px', borderRadius: '999px', background: e.tagBg, color: e.tagColor, flex: 'none', whiteSpace: 'nowrap' }}>{e.tag}</span>
+                      {e.tag && <span style={{ fontSize: '9.5px', fontWeight: 600, letterSpacing: '.04em', padding: '4px 9px', borderRadius: '999px', background: e.tagBg, color: e.tagColor, flex: 'none', whiteSpace: 'nowrap' }}>{e.tag}</span>}
                     </div>
                   ))}
 
@@ -652,80 +690,57 @@ export default function VisitsPage() {
               </div>
             )}
 
-            {/* VISIT DETAIL */}
-            {isVisitDetail && sel && (
-              <div style={{ padding: '8px 22px 110px' }}>
+            {/* UNIFIED HISTORY DETAIL */}
+            {isDetail && sel && (
+              <div style={{ padding: '24px 22px 110px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
-                  <div style={{ fontSize: '16px', fontWeight: 600 }}>Visit Record</div>
+                  <div style={{ fontSize: '16px', fontWeight: 600 }}>History Detail</div>
                 </div>
 
-                <div style={{ marginTop: '22px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <div style={{ width: '52px', height: '52px', borderRadius: '15px', background: '#F1EBE1', flex: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ width: '20px', height: '15px', border: '1.8px solid #A67C52', borderRadius: '3px 3px 5px 5px', position: 'relative' }}><div style={{ position: 'absolute', top: '-4px', left: '50%', transform: 'translateX(-50%)', width: '10px', height: '5px', border: '1.8px solid #A67C52', borderBottom: 'none', borderRadius: '6px 6px 0 0' }}></div></div>
+                <div style={{ marginTop: '32px', background: '#fff', border: '1px solid #EFE8DE', borderRadius: '24px', padding: '28px 24px', boxShadow: '0 20px 40px -20px rgba(59,42,34,.2)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  
+                  <div style={{ width: '56px', height: '56px', borderRadius: '20px', background: '#F8F4EE', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+                    <span style={{ width: '16px', height: '16px', borderRadius: '50%', background: sel.dot }}></span>
                   </div>
-                  <div>
-                    <div style={{ fontSize: '19px', fontWeight: 600, letterSpacing: '-.02em' }}>{sel.outlet}</div>
-                    <div style={{ fontSize: '12.5px', color: '#A08A7B', marginTop: '3px' }}>{sel.dateFull}</div>
+
+                  <div style={{ textAlign: 'center', width: '100%' }}>
+                    <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-.02em', color: '#3B2A22' }}>{sel.title}</div>
+                    <div style={{ fontSize: '14px', color: '#8A7A6E', marginTop: '6px' }}>{sel.meta}</div>
+                    {sel.tag && (
+                      <div style={{ marginTop: '16px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '.04em', padding: '6px 14px', borderRadius: '999px', background: sel.tagBg, color: sel.tagColor, whiteSpace: 'nowrap' }}>{sel.tag}</span>
+                      </div>
+                    )}
                   </div>
-                </div>
 
-                <div style={{ marginTop: '22px', background: '#F8F4EE', borderRadius: '18px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '13px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Visit number</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{sel.visitNo}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Time</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{sel.time}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Outlet</span><span style={{ fontWeight: 600 }}>{sel.outlet}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Date</span><span style={{ fontWeight: 600 }}>{sel.dateFull}</span></div>
-                </div>
+                  <div style={{ marginTop: '28px', width: '100%', background: '#F8F4EE', borderRadius: '18px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}><span style={{ color: '#A08A7B' }}>Date</span><span style={{ fontWeight: 600 }}>{sel.dateFull}</span></div>
+                    
+                    {sel.type === 'visit' && sel.amount && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}><span style={{ color: '#A08A7B' }}>Amount</span><span style={{ fontWeight: 600 }}>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(sel.amount)}</span></div>
+                    )}
+                    
+                    {(sel.type === 'visit' || sel.type === 'redeemed') && sel.ref && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}><span style={{ color: '#A08A7B' }}>Reference</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{sel.ref}</span></div>
+                    )}
+                    
+                    {sel.type === 'earned' && sel.earnedVia && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}><span style={{ color: '#A08A7B' }}>Earned Via</span><span style={{ fontWeight: 600 }}>{sel.earnedVia}</span></div>
+                    )}
+                    
+                    {sel.time && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px' }}><span style={{ color: '#A08A7B' }}>Time</span><span style={{ fontWeight: 600 }}>{sel.time}</span></div>
+                    )}
+                  </div>
+                  
+                  {(sel as any).statusLine && (
+                    <div style={{ marginTop: '16px', width: '100%', background: (sel as any).statusBg, borderRadius: '14px', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                      <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: (sel as any).statusDot, flex: 'none' }}></span>
+                      <span style={{ fontSize: '13.5px', fontWeight: 600, color: (sel as any).statusColor }}>{(sel as any).statusLine}</span>
+                    </div>
+                  )}
 
-                <div style={{ marginTop: '20px', fontSize: '13.5px', lineHeight: 1.6, color: '#7A6A5F' }}>Counted toward your Visit Progress.</div>
-              </div>
-            )}
-
-            {/* EARNED DETAIL */}
-            {isEarnedDetail && sel && (
-              <div style={{ padding: '8px 22px 60px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
-                  <div style={{ fontSize: '16px', fontWeight: 600 }}>Reward Earned</div>
-                </div>
-
-                <div style={{ marginTop: '22px' }}>
-                  <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-.02em' }}>{sel.reward}</div>
-                  <div style={{ fontSize: '12.5px', color: '#A08A7B', marginTop: '5px' }}>Earned {sel.dateFull}</div>
-                </div>
-
-                <div style={{ marginTop: '22px', background: '#F8F4EE', borderRadius: '18px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '13px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reward</span><span style={{ fontWeight: 600 }}>{sel.reward}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Earned via</span><span style={{ fontWeight: 600 }}>{sel.earnedVia}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Date earned</span><span style={{ fontWeight: 600 }}>{sel.dateFull}</span></div>
-                </div>
-
-                <div style={{ marginTop: '18px', background: (sel as any).statusBg, borderRadius: '14px', padding: '13px 16px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: (sel as any).statusDot, flex: 'none' }}></span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: (sel as any).statusColor }}>{(sel as any).statusLine}</span>
-                </div>
-
-              </div>
-            )}
-
-            {/* REDEEMED DETAIL */}
-            {isRedeemedDetail && sel && (
-              <div style={{ padding: '8px 22px 60px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div onClick={() => setView('history')} style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#F1EBE1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#3B2A22' }}><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg></div>
-                  <div style={{ fontSize: '16px', fontWeight: 600 }}>Redemption Record</div>
-                </div>
-
-                <div style={{ marginTop: '22px' }}>
-                  <div style={{ fontSize: '20px', fontWeight: 600, letterSpacing: '-.02em' }}>{sel.reward}</div>
-                  <div style={{ fontSize: '12.5px', color: '#A08A7B', marginTop: '5px' }}>Redeemed {sel.dateFull}</div>
-                </div>
-
-                <div style={{ marginTop: '22px', background: '#F8F4EE', borderRadius: '18px', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '13px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reward</span><span style={{ fontWeight: 600 }}>{sel.reward}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Outlet</span><span style={{ fontWeight: 600 }}>{sel.outlet}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Reference No.</span><span style={{ fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{sel.ref}</span></div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#A08A7B' }}>Date redeemed</span><span style={{ fontWeight: 600 }}>{sel.dateFull}</span></div>
                 </div>
               </div>
             )}
