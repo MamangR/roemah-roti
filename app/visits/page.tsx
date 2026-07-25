@@ -220,7 +220,17 @@ export default function VisitsPage() {
             .map((r: any) => r.sourceTemplateId || (r.rewardType && r.rewardType.split('_')[0]))
         );
 
-        const available = templates.filter((t: any) => !t.id.startsWith('SYSTEM_') && !redeemedIds.has(t.id));
+        let currentTier = 'Insider';
+        const spend = member.lifetimeSpend || 0;
+        if (spend >= 5000000) currentTier = 'Inner Circle';
+        else if (spend >= 2000000) currentTier = 'Neighbor';
+        else if (spend >= 1000000) currentTier = 'Familiar';
+
+        const available = templates.filter((t: any) => 
+          !t.id.startsWith('SYSTEM_') && 
+          !redeemedIds.has(t.id) &&
+          (!t.targetTiers?.length || t.targetTiers.includes(currentTier))
+        );
         const next = available.find((t: any) => t.visitsRequired > member.totalVisits);
 
         if (next) {
