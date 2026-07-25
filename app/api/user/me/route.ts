@@ -58,3 +58,43 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
+
+import { createAccurateCustomer } from '@/lib/accurate';
+
+export async function POST(req: Request) {
+  try {
+    const sessionId = (await cookies()).get('rr_session')?.value;
+    if (!sessionId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const session = await prisma.session.findUnique({
+      where: { id: sessionId },
+      include: { member: true }
+    });
+
+    if (!session || new Date() > session.expiresAt) {
+      return NextResponse.json({ error: 'Session expired or invalid' }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const { name, email, dob } = body;
+
+    const updatedMember = await prisma.member.update({
+      where: { id: session.member.id },
+      data: {
+        name,
+        email,
+        birthday: dob
+      }
+    });
+
+    // Upsert to Accurate POS
+    await createAccurateCustomer(updatedMember.name, updatedMember.phone);
+
+    return NextResponse.json({ success: true, member: updatedMember });
+  } catch (error) {
+    console.error('API POST /user/me Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}

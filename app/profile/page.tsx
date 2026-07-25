@@ -64,10 +64,29 @@ export default function ProfilePage() {
   const outlet = 'Greenville Outlet';
   const referral = member?.referralCode || 'RR-CODE';
 
-  const saveProfile = () => {
-    setProfile({ ...form });
-    setView('main');
-    toast('Profile updated');
+  const [saving, setSaving] = useState(false);
+  const saveProfile = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await fetch('/api/user/me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: form.name, email: form.email, dob: form.dob })
+      });
+      if (res.ok) {
+        setProfile({ ...form });
+        setView('main');
+        toast('Profile updated');
+        await refreshMember();
+      } else {
+        toast('Failed to update profile');
+      }
+    } catch (e) {
+      toast('Error saving profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const confirmLogout = async () => {

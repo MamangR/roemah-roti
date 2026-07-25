@@ -173,7 +173,7 @@ export async function saveMember(id: string, data: { name: string; wa: string; s
   
   const oldMember = await prisma.member.findUnique({ where: { id } });
 
-  await prisma.member.update({
+  const updatedMember = await prisma.member.update({
     where: { id },
     data: {
       name: data.name,
@@ -182,6 +182,11 @@ export async function saveMember(id: string, data: { name: string; wa: string; s
       totalVisits: data.visits
     }
   });
+
+  if (oldMember && oldMember.name !== data.name) {
+    const { createAccurateCustomer } = await import('@/lib/accurate');
+    await createAccurateCustomer(updatedMember.name, updatedMember.phone);
+  }
 
   if (oldMember && data.visits > oldMember.totalVisits) {
     const visitsDiff = data.visits - oldMember.totalVisits;
