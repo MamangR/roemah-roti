@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { NextRequest } from "next/server";
-import { handleRedemptionVisit } from "@/app/admin/actions";
+
 
 // ─── GET /api/rewards?memberId=...&rewardType=... ─────────────────────────────
 // Fetch a specific reward for a member by type (e.g. "birthday_treat").
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
           data: { rewardsEarned: { increment: 1 } },
         });
 
-        await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+
 
         await tx.activity.create({
           data: {
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
           data: { rewardsEarned: { increment: 1 } },
         });
 
-        await handleRedemptionVisit(tx, memberId, member.totalVisits, 1, redeemedAt);
+
 
         await tx.activity.create({
           data: {
@@ -241,7 +241,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      await handleRedemptionVisit(tx, memberId, member.totalVisits, 1 - template.visitsRequired, redeemedAt);
+
       
       const newReward = await tx.memberReward.create({
         data: {
