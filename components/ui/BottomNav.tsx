@@ -26,7 +26,7 @@ export default function BottomNav() {
   );
 
   return (
-    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 6, display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '12px 24px 28px', background: 'rgba(255,255,255,0.92)', borderTop: '1px solid #EFE8DE', backdropFilter: 'blur(12px)' }}>
+    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 6, display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '10px 24px 18px', background: 'rgba(255,255,255,0.92)', borderTop: '1px solid #EFE8DE', backdropFilter: 'blur(12px)' }}>
       <NavItem active={isDash} onClick={() => router.push('/visits')} label="Dashboard" icon={
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="3" width="7" height="8" rx="1.5" />
