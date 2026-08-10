@@ -236,9 +236,10 @@ export default function RegisterPage() {
                 <input
                   type="tel"
                   inputMode="numeric"
-                  placeholder="812 3456 789"
+                  pattern="[0-9]*"
+                  placeholder="8123456789"
                   value={wa}
-                  onChange={e => setWa(e.target.value)}
+                  onChange={e => setWa(e.target.value.replace(/\D/g, ''))}
                   onFocus={() => setWaFocused(true)}
                   onBlur={() => setWaFocused(false)}
                   style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', paddingLeft: '10px' }}
@@ -427,14 +428,37 @@ export default function RegisterPage() {
 
           <div style={{ marginTop: '26px' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B' }}>6-DIGIT CODE</div>
-            <input
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="000000"
-              maxLength={6}
-              style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '24px', letterSpacing: '.5em', textAlign: 'center', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }}
-            />
+            <div style={{ position: 'relative', display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '8px' }}>
+              {[0, 1, 2, 3, 4, 5].map((index) => {
+                const digit = code[index] || '';
+                return (
+                  <div 
+                    key={index} 
+                    style={{
+                      width: '45px', height: '56px', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: '#3B2A22', fontWeight: 600,
+                      animation: digit ? 'otp-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' : 'none'
+                    }}
+                  >
+                    {digit}
+                  </div>
+                );
+              })}
+              <input 
+                type="tel" 
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'text' }}
+              />
+              <style>{`
+                @keyframes otp-pop {
+                  0% { transform: scale(0.5); opacity: 0; }
+                  100% { transform: scale(1); opacity: 1; }
+                }
+              `}</style>
+            </div>
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#A08A7B', cursor: 'pointer' }} onClick={() => { setStep('form'); setCode(''); setError(''); }}>
               Back to registration details
             </div>

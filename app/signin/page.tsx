@@ -103,13 +103,18 @@ export default function LoginPage() {
           <>
             <div style={{ marginTop: '26px' }}>
               <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B' }}>WHATSAPP NUMBER</div>
-              <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+62 812 3456 789"
-                style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }}
-              />
+              <div style={{ display: 'flex', alignItems: 'center', marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', transition: 'border-color .12s ease,box-shadow .12s ease' }}>
+                <span style={{ fontSize: '15px', fontWeight: 500, color: '#A08A7B', paddingRight: '10px', borderRight: '1px solid #E6DDD0' }}>+62</span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                  placeholder="8123456789"
+                  style={{ flex: 1, minWidth: 0, border: 'none', outline: 'none', background: 'transparent', fontSize: '15px', fontFamily: 'inherit', color: '#3B2A22', paddingLeft: '10px' }}
+                />
+              </div>
             </div>
 
             <div style={{ marginTop: '14px', background: '#F3F5F1', border: '1px solid #E1E8DD', borderRadius: '14px', padding: '14px 15px', display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
@@ -120,14 +125,37 @@ export default function LoginPage() {
         ) : (
           <div style={{ marginTop: '26px' }}>
             <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '.1em', color: '#A08A7B' }}>6-DIGIT CODE</div>
-            <input
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="000000"
-              maxLength={6}
-              style={{ marginTop: '8px', width: '100%', boxSizing: 'border-box', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '14px', padding: '15px 16px', fontSize: '24px', letterSpacing: '.5em', textAlign: 'center', fontFamily: 'inherit', color: '#3B2A22', outline: 'none' }}
-            />
+            <div style={{ position: 'relative', display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '8px' }}>
+              {[0, 1, 2, 3, 4, 5].map((index) => {
+                const digit = code[index] || '';
+                return (
+                  <div 
+                    key={index} 
+                    style={{
+                      width: '45px', height: '56px', background: '#fff', border: '1px solid #E6DDD0', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: '#3B2A22', fontWeight: 600,
+                      animation: digit ? 'otp-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards' : 'none'
+                    }}
+                  >
+                    {digit}
+                  </div>
+                );
+              })}
+              <input 
+                type="tel" 
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={6}
+                value={code}
+                onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'text' }}
+              />
+              <style>{`
+                @keyframes otp-pop {
+                  0% { transform: scale(0.5); opacity: 0; }
+                  100% { transform: scale(1); opacity: 1; }
+                }
+              `}</style>
+            </div>
             <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '13px', color: '#A08A7B', cursor: 'pointer' }} onClick={() => { setOtpStep(false); setCode(''); setError(''); }}>
               Use a different number
             </div>
