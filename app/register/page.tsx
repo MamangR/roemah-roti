@@ -26,8 +26,6 @@ export default function RegisterPage() {
   const [calYear, setCalYear] = useState(1995);
   const [referral, setReferral] = useState('');
   const [referralStatus, setReferralStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -104,8 +102,7 @@ export default function RegisterPage() {
   const referralValid = referralStatus === 'valid';
   const referralNotFound = referralStatus === 'invalid';
 
-  const passwordValid = password.length >= 6;
-  const canSubmit = nameValid && waValid && birthdayValid && passwordValid && !loading;
+  const canSubmit = nameValid && waValid && birthdayValid && !loading;
 
   const birthdayLabel = birthday
     ? String(birthday.d).padStart(2, '0') + '/' + String(birthday.m + 1).padStart(2, '0') + '/' + birthday.y
@@ -130,7 +127,7 @@ export default function RegisterPage() {
     }
   };
 
-  const submitForm = async () => {
+  const handleSendOtp = async () => {
     if (!canSubmit) return;
     setLoading(true);
     setError('');
@@ -148,6 +145,30 @@ export default function RegisterPage() {
         }
       }
 
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: wa })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send OTP');
+      if (data.devMode) {
+        console.log("DEV MODE OTP:", data.code);
+        alert(`DEV MODE OTP (Normally sent to WhatsApp): ${data.code}`);
+      }
+      setStep('otp');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const submitOtp = async () => {
+    if (!code) return setError('Please enter the 6-digit code');
+    setLoading(true);
+    setError('');
+    try {
       const birthdayInput = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(birthday!.d).padStart(2, '0')}`;
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -156,8 +177,8 @@ export default function RegisterPage() {
           phone: wa,
           name,
           birthdayInput,
-          password,
-          referralCode: finalReferralValid ? referralTrim : ''
+          code,
+          referralCode: referralValid ? referralTrim : ''
         })
       });
       const data = await res.json();
@@ -173,10 +194,6 @@ export default function RegisterPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const submitOtp = async () => {
-    // Unused: registration bypasses OTP
   };
 
   return (
@@ -367,47 +384,13 @@ export default function RegisterPage() {
               )}
             </div>
 
-            <div style={{ marginTop: '18px' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '8px' }}>
-                <span style={{ fontSize: 'var(--text-label)', fontWeight: 600, letterSpacing: 'var(--tracking-label)', color: 'var(--text-label)' }}>PASSWORD</span>
-              </div>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a password (min. 6 chars)"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  style={{ width: '100%', boxSizing: 'border-box', background: 'var(--surface-input)', border: '1px solid var(--border-hairline)', borderRadius: 'var(--radius-sm)', padding: '15px 44px 15px 16px', fontSize: 'var(--text-body)', fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '16px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: 'var(--text-label)',
-                  }}
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--text-label)', marginTop: '6px', lineHeight: 1.5 }}>You can use this to log in without WhatsApp OTP next time.</div>
-            </div>
 
           </div>
 
           <div style={{ flex: 1 }}></div>
 
           <div style={{ flex: 'none', marginTop: '16px' }}>
-            <button onClick={submitForm} disabled={!canSubmit || loading} style={{ width: '100%', margin: 0, background: 'var(--accent-primary)', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-body)', fontWeight: 600, border: 'none', cursor: canSubmit && !loading ? 'pointer' : 'default', boxShadow: 'var(--shadow-cta)', transition: 'transform .12s ease,box-shadow .12s ease,opacity .12s ease', opacity: canSubmit ? 1 : 0.45, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <button onClick={handleSendOtp} disabled={!canSubmit || loading} style={{ width: '100%', margin: 0, background: 'var(--accent-primary)', color: '#FFFCF7', textAlign: 'center', padding: '16px', borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-body)', fontWeight: 600, border: 'none', cursor: canSubmit && !loading ? 'pointer' : 'default', boxShadow: 'var(--shadow-cta)', transition: 'transform .12s ease,box-shadow .12s ease,opacity .12s ease', opacity: canSubmit ? 1 : 0.45, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               {loading ? (
                 <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid rgba(255,252,247,.35)', borderTopColor: '#FFFCF7', animation: 'rr-spin .7s linear infinite' }}></div>
               ) : (

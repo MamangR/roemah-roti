@@ -25,8 +25,8 @@ model Member {
   initials            String
   phone               String                            // masked display phone e.g. "+62 81 .... 7890"
   rawPhone            String
-  password            String?
   email               String?
+
   birthday            String                            // formatted display e.g. "June 15"
   birthdayInput       String                            // raw date input e.g. "1990-06-15"
   since               String                            // member-since label e.g. "July 2025"

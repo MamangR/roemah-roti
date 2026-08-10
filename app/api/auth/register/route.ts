@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
-import bcrypt from 'bcryptjs';
 import { createAccurateCustomer } from '@/lib/accurate';
 
 export async function POST(req: Request) {
   try {
-    const { phone, name, birthdayInput, referralCode, password } = await req.json();
+    const { phone, name, birthdayInput, referralCode, code } = await req.json();
     
-    if (!phone || !name || !birthdayInput || !password) {
+    if (!phone || !name || !birthdayInput || !code) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
@@ -24,38 +23,58 @@ export async function POST(req: Request) {
     if (member) {
       return NextResponse.json({ error: 'Phone number already registered. Please log in.' }, { status: 400 });
     }
-      // Create new member
-      const firstName = name.trim().split(' ')[0];
-      const initials = firstName.substring(0, 1).toUpperCase();
-      const phoneDisplay = `+62 ${formattedPhone.slice(2, 5)} ${formattedPhone.slice(5, 9)} ${formattedPhone.slice(9)}`;
-      
-      let bDate = new Date(birthdayInput);
-      if (isNaN(bDate.getTime())) bDate = new Date();
-      const birthdayDisplay = bDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const since = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-      
-      const userReferralCode = `${firstName.toUpperCase().replace(/[^A-Z]/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      let hashedPassword = null;
-      if (password && password.length >= 6) {
-        hashedPassword = await bcrypt.hash(password, 10);
-      }
+    // Verify OTP
+    const otpSession = await prisma.otpSession.findUnique({ where: { phone: formattedPhone } });
+    if (!otpSession) {
+      return NextResponse.json({ error: 'No OTP session found' }, { status: 400 });
+    }
 
-      member = await prisma.member.create({
-        data: {
-          id: formattedPhone,
-          name: name.trim(),
-          firstName,
-          initials,
-          phone: phoneDisplay,
-          rawPhone: formattedPhone,
-          password: hashedPassword,
-          birthday: birthdayDisplay,
-          birthdayInput,
-          since,
-          referralCode: userReferralCode,
-        }
+    if (otpSession.attempts >= 3) {
+      return NextResponse.json({ error: 'Too many failed attempts. Request a new code.' }, { status: 400 });
+    }
+
+    if (new Date() > otpSession.expiresAt) {
+      return NextResponse.json({ error: 'OTP expired. Request a new code.' }, { status: 400 });
+    }
+
+    if (otpSession.code !== code) {
+      await prisma.otpSession.update({
+        where: { phone: formattedPhone },
+        data: { attempts: otpSession.attempts + 1 }
       });
+      return NextResponse.json({ error: 'Invalid OTP code' }, { status: 400 });
+    }
+
+    // OTP is valid! Delete the session.
+    await prisma.otpSession.delete({ where: { phone: formattedPhone } });
+
+    // Create new member
+    const firstName = name.trim().split(' ')[0];
+    const initials = firstName.substring(0, 1).toUpperCase();
+    const phoneDisplay = `+62 ${formattedPhone.slice(2, 5)} ${formattedPhone.slice(5, 9)} ${formattedPhone.slice(9)}`;
+    
+    let bDate = new Date(birthdayInput);
+    if (isNaN(bDate.getTime())) bDate = new Date();
+    const birthdayDisplay = bDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const since = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    
+    const userReferralCode = `${firstName.toUpperCase().replace(/[^A-Z]/g, '')}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    member = await prisma.member.create({
+      data: {
+        id: formattedPhone,
+        name: name.trim(),
+        firstName,
+        initials,
+        phone: phoneDisplay,
+        rawPhone: formattedPhone,
+        birthday: birthdayDisplay,
+        birthdayInput,
+        since,
+        referralCode: userReferralCode,
+      }
+    });
       
       // Create customer in Accurate POS asynchronously
       createAccurateCustomer(member.name, member.id).catch(console.error);
